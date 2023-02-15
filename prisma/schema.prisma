@@ -1,0 +1,97 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+generator erd {
+  provider = "prisma-erd-generator"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Vet {
+  id            Int     @id @default(autoincrement())
+  name          String
+  cpf           String
+  rg            String
+  profile_photo String?
+  password      String
+
+  @@map("tbl_vet")
+}
+
+model PetOwner {
+  id            Int     @id @default(autoincrement())
+  name          String
+  cpf           String
+  rg            String
+  profile_photo String?
+  password      String
+
+  phone_number PhoneNumber[]
+
+  addressId Int     @map("address_id")
+  address   Address @relation(fields: [addressId], references: [id])
+
+  @@map("tbl_pet_owner")
+}
+
+model PhoneNumber {
+  id     Int    @id @default(autoincrement())
+  number String
+
+  petOwnerId Int      @map("pet_owner_id")
+  petOwner   PetOwner @relation(fields: [petOwnerId], references: [id])
+
+  @@map("tbl_phone_number")
+}
+
+model Address {
+  id         Int     @id @default(autoincrement())
+  cep        String
+  street     String
+  complement String?
+  number     String
+
+  neighborhoodId Int          @map("neighborhood_id")
+  neighborhood   Neighborhood @relation(fields: [neighborhoodId], references: [id])
+  PetOwner       PetOwner[]
+
+  @@map("tbl_address")
+}
+
+model Neighborhood {
+  id   Int    @id @default(autoincrement())
+  name String
+
+  cityId  Int       @map("city_id")
+  city    City      @relation(fields: [cityId], references: [id])
+  Address Address[]
+
+  @@map("tbl_neighborhood")
+}
+
+model City {
+  id   Int    @id @default(autoincrement())
+  name String
+
+  stateId      Int            @map("state_id")
+  state        State          @relation(fields: [stateId], references: [id])
+  Neighborhood Neighborhood[]
+
+  @@map("tbl_city")
+}
+
+model State {
+  id       Int    @id @default(autoincrement())
+  name     String
+  initials String
+  City     City[]
+
+  @@map("tbl_state")
+}

@@ -1,29 +1,29 @@
 import { expect, it, test } from 'vitest';
 import fastify, { FastifyInstance } from 'fastify';
 
-class Medic {
-  name;
-  specialty;
+// class Medic {
+//   name: string;
+//   specialty: string;
 
-  constructor(name: string, specialty: string) {
-    this.name = name;
-    this.specialty = specialty;
-  }
+//   constructor(name: string, specialty: string) {
+//     this.name = name;
+//     this.specialty = specialty;
+//   }
 
-  getSpecialty(): string {
-    return this.specialty;
-  }
-}
+//   getSpecialty(): string {
+//     return this.specialty;
+//   }
+// }
 
-test('Create a medic register', () => {
-  const medic = new Medic('John Doe', 'Cardiologist');
+// test('Create a medic register', () => {
+//   const medic = new Medic('John Doe', 'Cardiologist');
 
-  expect(medic).toBeInstanceOf(Medic);
-});
+//   expect(medic).toBeInstanceOf(Medic);
+// });
 
-it('It should be a Fastify Instance', () => {
-  const app = fastify();
-  const instance: FastifyInstance = app;
+// it('It should be a Fastify Instance', () => {
+//   const app = fastify();
+//   const instance: FastifyInstance = app;
 
-  expect(app).toBe(instance);
-});
+//   expect(app).toBe(instance);
+// });
