@@ -31,7 +31,7 @@ model User {
   Pet                Pet[]
 
   addressId Int     @map("address_id")
-  address   Address @relation(fields: [addressId], references: [id])
+  Address   Address @relation(fields: [addressId], references: [id])
 
   vetInfosId Int?      @map("vet_infos_id")
   vetInfos   VetInfos? @relation(fields: [vetInfosId], references: [id])
@@ -72,7 +72,7 @@ model VeterinarySpecialities {
   vetInfosId     Int          @map("vet_infos_id")
   specialitiesId Int          @map("specialities_id")
   vetInfos       VetInfos     @relation(fields: [vetInfosId], references: [id])
-  speecialities  Specialities @relation(fields: [specialitiesId], references: [id])
+  specialities   Specialities @relation(fields: [specialitiesId], references: [id])
 
   @@map("tbl_veterinary_specialities")
 }
@@ -100,7 +100,7 @@ model PhoneNumber {
   number String
 
   userId Int  @map("user_id")
-  user   User @relation(fields: [userId], references: [id])
+  User   User @relation(fields: [userId], references: [id])
 
   @@map("tbl_phone_number")
 }
