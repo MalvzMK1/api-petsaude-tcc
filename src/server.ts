@@ -1,16 +1,14 @@
 import fastify from 'fastify';
-// import fastifyCors from 'fastify-cors';
 import cors from '@fastify/cors';
-import { z } from 'zod';
-import { PrismaClient } from '@prisma/client';
-import ClientController from './controller/clientController';
+import { z } from 'zod'; //verifica que tipo vai chegar: boolean, string, number
+import UserController from './controller/userController';
 
 const app = fastify();
 app.register(cors);
 
-const clientController = new ClientController();
+const userController = new UserController();
 
-// CRUD CLIENTE
+// CRUD USUÁRIO
 
 app.get('/me', async (req, res) => {
   const queryParams = z.object({
@@ -18,32 +16,20 @@ app.get('/me', async (req, res) => {
   });
 
   const { userID } = queryParams.parse(req.query);
-  const userInfos = await clientController.selectClientById(parseInt(userID));
 
-  res.send({ userInfos });
+  if (!userID) res.status(400).send({ message: 'Required ID' });
+
+  const userInfos = await userController.getUserById(parseInt(userID));
+
+  if (userInfos)
+    res.status(userInfos.statusCode).send({ payload: userInfos?.message });
 });
 
-// CRUD VETERINÁRIO
+app.get('/all/user', async (req, res) => {
+  const allUsers = await userController.getAllUsers();
 
-app.get('/veterinario', async (req, res) => {
-  const queryParams = z.object({
-    userID: z.string(),
-  });
-
-  const { userID } = queryParams.parse(req.query);
-
-  // res.send({ userInfos });
+  res.send({ allUsers });
 });
-
-// app.get('/', (req, rep) => {
-//   const requestQuery = z.object({
-//     teste: z.stri\ng(),
-//   });
-
-//   const { teste } = requestQuery.parse(req.query);
-
-//   rep.status(200).send({ message: `Hello ${teste}!!` });
-// });
 
 app.listen({ port: 3333 });
 
