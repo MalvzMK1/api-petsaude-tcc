@@ -1,7 +1,7 @@
 import UserModel from '../model/userModel';
 const userModel = new UserModel();
 
-export default class UserController {
+class UserController {
   async getUserById(userID: number) {
     try {
       const userInfos = await userModel.selectClientById(userID);
@@ -12,6 +12,11 @@ export default class UserController {
           message: 'Didn`t found any register in the database',
         };
       }
+
+      return {
+        statusCode: 200,
+        message: userInfos,
+      };
     } catch (err) {
       console.log(err);
       return {
@@ -37,3 +42,5 @@ export default class UserController {
     }
   }
 }
+
+export default new UserController();

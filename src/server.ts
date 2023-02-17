@@ -1,36 +1,22 @@
-import fastify from 'fastify';
+import Fastify from 'fastify';
 import cors from '@fastify/cors';
+import jwt from '@fastify/jwt';
 import { z } from 'zod'; //verifica que tipo vai chegar: boolean, string, number
-import UserController from './controller/userController';
 
-const app = fastify();
-app.register(cors);
+const fastify = Fastify();
 
-const userController = new UserController();
+import userRoutes from './routes/user.routes';
 
-// CRUD USUÁRIO
-
-app.get('/me', async (req, res) => {
-  const queryParams = z.object({
-    userID: z.string(),
-  });
-
-  const { userID } = queryParams.parse(req.query);
-
-  if (!userID) res.status(400).send({ message: 'Required ID' });
-
-  const userInfos = await userController.getUserById(parseInt(userID));
-
-  if (userInfos)
-    res.status(userInfos.statusCode).send({ payload: userInfos?.message });
+fastify.register(cors, {
+  origin: true,
 });
 
-app.get('/all/user', async (req, res) => {
-  const allUsers = await userController.getAllUsers();
-
-  res.send({ allUsers });
+fastify.register(jwt, {
+  secret: 'Secret',
 });
 
-app.listen({ port: 3333 });
+fastify.register(userRoutes);
 
-export default app;
+fastify.listen({ port: 3333 });
+
+export default fastify;
