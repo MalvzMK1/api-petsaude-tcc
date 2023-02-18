@@ -10,7 +10,7 @@ export default class UserModel {
         include: {
           Pet: true,
           PhoneNumber: true,
-          address: {
+          Address: {
             include: {
               neighborhood: {
                 include: {
@@ -27,7 +27,7 @@ export default class UserModel {
             include: {
               VeterinaryEspecialities: {
                 include: {
-                  speecialities: true,
+                  specialities: true,
                 },
               },
               AnimalTypesVetInfos: {
@@ -49,7 +49,7 @@ export default class UserModel {
         include: {
           Pet: true,
           PhoneNumber: true,
-          address: {
+          Address: {
             include: {
               neighborhood: {
                 include: {
@@ -66,7 +66,7 @@ export default class UserModel {
             include: {
               VeterinaryEspecialities: {
                 include: {
-                  speecialities: true,
+                  specialities: true,
                 },
               },
               AnimalTypesVetInfos: {
@@ -91,7 +91,7 @@ export default class UserModel {
         include: {
           Pet: true,
           PhoneNumber: true,
-          address: {
+          Address: {
             include: {
               neighborhood: {
                 include: {
@@ -108,7 +108,7 @@ export default class UserModel {
             include: {
               VeterinaryEspecialities: {
                 include: {
-                  speecialities: true,
+                  specialities: true,
                 },
               },
               AnimalTypesVetInfos: {

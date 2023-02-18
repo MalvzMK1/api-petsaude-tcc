@@ -1,9 +1,8 @@
-import Message from "../messages/message";
+import Message from '../messages/message';
 import UserModel from '../model/userModel';
+
 const userModel = new UserModel();
-const message = new Message
-
-
+const message = new Message();
 
 class UserController {
   async getUserById(userID: number) {
@@ -34,58 +33,39 @@ class UserController {
       const getUsers = await userModel.selectAllUser();
 
       if (!getUsers) {
-
         return {
           statusCode: 404,
           message: message.MESSAGE_ERROR.INTERNAL_ERROR_DB,
         };
-
-      } else 
+      } else
         return {
-
           statusCode: 200,
-          message:getUsers
-          
+          message: getUsers,
         };
-      
     } catch (err) {
       console.log(err);
     }
   }
   async deleteUser(userID: number) {
-
     try {
-
       const userDelete = await userModel.DeletUser(userID);
 
       if (!userDelete) {
-
         return {
-
           statusCode: 404,
-          message: message.MESSAGE_ERROR.NOT_FOUND_DB
-
-        }
-
+          message: message.MESSAGE_ERROR.NOT_FOUND_DB,
+        };
       } else {
-
         return {
-
           statusCode: 200,
-          message: message.MESSAGE_SUCESS.DELETE_ITEM
-      
-        }
+          message: message.MESSAGE_SUCESS.DELETE_ITEM,
+        };
       }
-
     } catch (error) {
-
-      return{
-
+      return {
         statusCode: 500,
-        message: message.MESSAGE_ERROR.INTERNAL_ERROR_DB
-
-      }
-
+        message: message.MESSAGE_ERROR.INTERNAL_ERROR_DB,
+      };
     }
   }
 }

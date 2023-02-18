@@ -48,7 +48,7 @@ async function main() {
           number: '+55 (11) 99999-9999',
         },
       },
-      address: {
+      Address: {
         create: {
           cep: '00000-000',
           number: '000',
@@ -122,7 +122,7 @@ async function main() {
           },
         },
       },
-      address: {
+      Address: {
         create: {
           cep: '00000-000',
           number: '000',
