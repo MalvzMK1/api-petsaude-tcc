@@ -120,6 +120,8 @@ export default class UserModel {
           },
         },
       });
-    } catch (err) {}
+    } catch (err) {
+      throw new Error(`Unexpecter error in the database \n ERROR: ${err}`);
+    }
   }
 }
