@@ -23,7 +23,7 @@ export default async function userRoutes(fastify: FastifyInstance) {
   fastify.get('/all/user', async (req, res) => {
     const allUsers = await userController.getAllUsers();
 
-    res.send({ allUsers });
+    res.status(allUsers.statusCode).send({ allUsers: allUsers?.message });
   });
 
   fastify.delete('/user', async (req, res) => {

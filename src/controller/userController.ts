@@ -44,6 +44,10 @@ class UserController {
         };
     } catch (err) {
       console.log(err);
+      return {
+        statusCode: 500,
+        message: message.MESSAGE_ERROR.INTERNAL_ERROR_DB,
+      };
     }
   }
   async deleteUser(userID: number) {
@@ -61,7 +65,8 @@ class UserController {
           message: message.MESSAGE_SUCESS.DELETE_ITEM,
         };
       }
-    } catch (error) {
+    } catch (err) {
+      console.log(err);
       return {
         statusCode: 500,
         message: message.MESSAGE_ERROR.INTERNAL_ERROR_DB,
