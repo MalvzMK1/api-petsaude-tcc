@@ -7,7 +7,7 @@ const message = new Message();
 class UserController {
   async getUserById(userID: number) {
     try {
-      const userInfos = await userModel.selectClientById(userID);
+      const userInfos = await userModel.findUserById(userID);
 
       if (!userInfos) {
         return {
@@ -52,19 +52,26 @@ class UserController {
   }
   async deleteUser(userID: number) {
     try {
-      const userDelete = await userModel.DeletUser(userID);
+      const user = await userModel.findUserById(userID);
+      if (user) {
+        const userDelete = await userModel.deleteUser(userID);
 
-      if (!userDelete) {
-        return {
-          statusCode: 404,
-          message: message.MESSAGE_ERROR.NOT_FOUND_DB,
-        };
-      } else {
-        return {
-          statusCode: 200,
-          message: message.MESSAGE_SUCESS.DELETE_ITEM,
-        };
+        if (!userDelete) {
+          return {
+            statusCode: 500,
+            message: message.MESSAGE_ERROR.INTERNAL_ERROR_DB,
+          };
+        } else {
+          return {
+            statusCode: 200,
+            message: message.MESSAGE_SUCESS.DELETE_ITEM,
+          };
+        }
       }
+      return {
+        statusCode: 404,
+        message: message.MESSAGE_ERROR.NOT_FOUND_DB,
+      };
     } catch (err) {
       console.log(err);
       return {

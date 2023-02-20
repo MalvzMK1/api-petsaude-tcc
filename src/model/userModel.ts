@@ -1,14 +1,20 @@
 import prisma from '../lib/prisma';
 
 export default class UserModel {
-  async selectClientById(userID: number) {
+  async findUserById(userID: number) {
     try {
       return await prisma.user.findUnique({
         where: {
           id: userID,
         },
         include: {
-          Pet: true,
+          Pet: {
+            include: {
+              petGender: true,
+              petSize: true,
+              petSpecie: true,
+            },
+          },
           PhoneNumber: true,
           Address: {
             include: {
@@ -47,7 +53,13 @@ export default class UserModel {
     try {
       return await prisma.user.findMany({
         include: {
-          Pet: true,
+          Pet: {
+            include: {
+              petGender: true,
+              petSize: true,
+              petSpecie: true,
+            },
+          },
           PhoneNumber: true,
           Address: {
             include: {
@@ -82,44 +94,37 @@ export default class UserModel {
       throw new Error(`Unexpecter error in the database \n ERROR: ${err}`);
     }
   }
-  async DeletUser(userID: number) {
+  async deleteUser(userID: number) {
     try {
-      return await prisma.user.delete({
+      const userPhoneNumberDelete = await prisma.phoneNumber.deleteMany({
         where: {
-          id: userID,
+          userId: userID,
         },
-        include: {
-          Pet: true,
-          PhoneNumber: true,
-          Address: {
-            include: {
-              neighborhood: {
-                include: {
-                  city: {
-                    include: {
-                      state: true,
-                    },
-                  },
-                },
-              },
-            },
-          },
-          vetInfos: {
-            include: {
-              VeterinaryEspecialities: {
-                include: {
-                  specialities: true,
-                },
-              },
-              AnimalTypesVetInfos: {
-                include: {
-                  animalTypes: true,
-                },
-              },
+      });
+      const userPetDelete = await prisma.pet.deleteMany({
+        where: {
+          userId: userID,
+        },
+      });
+      const userVetInfos = await prisma.vetInfos.deleteMany({
+        where: {
+          User: {
+            every: {
+              id: userID,
             },
           },
         },
       });
+      const userDelete = await prisma.user.deleteMany({
+        where: {
+          id: userID,
+          Address: {},
+        },
+      });
+
+      if (userPhoneNumberDelete && userPetDelete && userVetInfos && userDelete)
+        return true;
+      return false;
     } catch (err) {
       throw new Error(`Unexpecter error in the database \n ERROR: ${err}`);
     }
