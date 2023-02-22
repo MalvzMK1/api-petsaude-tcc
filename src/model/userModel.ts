@@ -46,7 +46,7 @@ export default class UserModel {
         },
       });
     } catch (err) {
-      throw new Error(`Unexpecter error in the database \n ERROR: ${err}`);
+      throw new Error(`ERROR: ${err}`);
     }
   }
   async selectAllUser() {
@@ -91,7 +91,7 @@ export default class UserModel {
         },
       });
     } catch (err) {
-      throw new Error(`Unexpecter error in the database \n ERROR: ${err}`);
+      throw new Error(`ERROR: ${err}`);
     }
   }
   async deleteUser(userID: number) {
@@ -106,6 +106,30 @@ export default class UserModel {
           userId: userID,
         },
       });
+      const animalTypesVetInfosDelete =
+        await prisma.animalTypesVetInfos.deleteMany({
+          where: {
+            vet: {
+              User: {
+                every: {
+                  id: userID,
+                },
+              },
+            },
+          },
+        });
+      const veterinarySpecialitiesDelete =
+        await prisma.veterinarySpecialities.deleteMany({
+          where: {
+            vetInfos: {
+              User: {
+                every: {
+                  id: userID,
+                },
+              },
+            },
+          },
+        });
       const userVetInfos = await prisma.vetInfos.deleteMany({
         where: {
           User: {
@@ -122,11 +146,18 @@ export default class UserModel {
         },
       });
 
-      if (userPhoneNumberDelete && userPetDelete && userVetInfos && userDelete)
+      if (
+        userPhoneNumberDelete &&
+        userPetDelete &&
+        animalTypesVetInfosDelete &&
+        veterinarySpecialitiesDelete &&
+        userVetInfos &&
+        userDelete
+      )
         return true;
       return false;
     } catch (err) {
-      throw new Error(`Unexpecter error in the database \n ERROR: ${err}`);
+      throw new Error(`ERROR: ${err}`);
     }
   }
 }
