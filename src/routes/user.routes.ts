@@ -6,7 +6,7 @@ import Message from '../messages/message';
 const message = new Message();
 
 export default async function userRoutes(fastify: FastifyInstance) {
-  fastify.get('/me', async (req, res) => {
+  fastify.get('/user', async (req, res) => {
     const queryParams = z.object({
       userID: z.string(),
     });
@@ -20,7 +20,7 @@ export default async function userRoutes(fastify: FastifyInstance) {
     res.status(userInfos.statusCode).send({ user: userInfos?.message });
   });
 
-  fastify.get('/all/user', async (req, res) => {
+  fastify.get('/user/all', async (req, res) => {
     const allUsers = await userController.getAllUsers();
 
     res.status(allUsers.statusCode).send({ allUsers: allUsers?.message });
