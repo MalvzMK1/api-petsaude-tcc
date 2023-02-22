@@ -1,6 +1,86 @@
 import prisma from '../lib/prisma';
+import UserInfosProps from '../lib/userInfosProps';
 
 export default class UserModel {
+  async createUser(userInfos: UserInfosProps) {
+    if (!userInfos.isVet) {
+      return await prisma.user.create({
+        data: {
+          userName: userInfos.userName,
+          personName: userInfos.personName,
+          cpf: userInfos.cpf,
+          rg: userInfos.rg,
+          email: userInfos.email,
+          password: userInfos.password,
+          isVet: userInfos.isVet,
+          profilePhoto: userInfos.profilePhoto,
+          profileBannerPhoto: userInfos.profileBannerPhoto,
+          Address: {
+            create: {
+              cep: userInfos.cep,
+              number: userInfos.number,
+              street: userInfos.street,
+              complement: userInfos.complement,
+              neighborhood: userInfos.neighborhood,
+              city: {
+                connectOrCreate: {
+                  where: {
+                    id: userInfos.cityId,
+                  },
+                  create: {
+                    name: userInfos.cityName,
+                    stateId: userInfos.stateId,
+                  },
+                },
+              },
+            },
+          },
+        },
+      });
+    } else if (userInfos.vetInfos)
+      return await prisma.user.create({
+        data: {
+          userName: userInfos.userName,
+          personName: userInfos.personName,
+          cpf: userInfos.cpf,
+          rg: userInfos.rg,
+          email: userInfos.email,
+          password: userInfos.password,
+          isVet: userInfos.isVet,
+          profilePhoto: userInfos.profilePhoto,
+          profileBannerPhoto: userInfos.profileBannerPhoto,
+          Address: {
+            create: {
+              cep: userInfos.cep,
+              number: userInfos.number,
+              street: userInfos.street,
+              complement: userInfos.complement,
+              neighborhood: userInfos.neighborhood,
+              city: {
+                connectOrCreate: {
+                  where: {
+                    id: userInfos.cityId,
+                  },
+                  create: {
+                    name: userInfos.cityName,
+                    stateId: userInfos.stateId,
+                  },
+                },
+              },
+            },
+          },
+          vetInfos: {
+            create: {
+              crmv: userInfos.vetInfos.crmv,
+              formation: userInfos.vetInfos.formation,
+              occupationArea: userInfos.vetInfos.occupationArea,
+              institution: userInfos.vetInfos.institution,
+            },
+          },
+        },
+      });
+    return false;
+  }
   async findUserById(userID: number) {
     try {
       return await prisma.user.findUnique({
@@ -18,13 +98,9 @@ export default class UserModel {
           PhoneNumber: true,
           Address: {
             include: {
-              neighborhood: {
+              city: {
                 include: {
-                  city: {
-                    include: {
-                      state: true,
-                    },
-                  },
+                  state: true,
                 },
               },
             },
@@ -49,7 +125,7 @@ export default class UserModel {
       throw new Error(`ERROR: ${err}`);
     }
   }
-  async selectAllUser() {
+  async findAllUsers() {
     try {
       return await prisma.user.findMany({
         include: {
@@ -63,13 +139,9 @@ export default class UserModel {
           PhoneNumber: true,
           Address: {
             include: {
-              neighborhood: {
+              city: {
                 include: {
-                  city: {
-                    include: {
-                      state: true,
-                    },
-                  },
+                  state: true,
                 },
               },
             },

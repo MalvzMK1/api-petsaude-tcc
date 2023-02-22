@@ -1,10 +1,32 @@
+import { Address, User } from '@prisma/client';
 import Message from '../messages/message';
 import UserModel from '../model/userModel';
+import UserInfosProps from '../lib/userInfosProps';
 
 const userModel = new UserModel();
 const message = new Message();
 
 class UserController {
+  async createUser(userInfos: UserInfosProps) {
+    try {
+      const createdUser = await userModel.createUser(userInfos);
+      if (createdUser)
+        return {
+          statusCode: 201,
+          message: createdUser,
+        };
+      return {
+        statusCode: 400,
+        message: message.MESSAGE_ERROR.REQUIRED_FIELDS,
+      };
+    } catch (err) {
+      console.log(err);
+      return {
+        statusCode: 500,
+        message: message.MESSAGE_ERROR.INTERNAL_ERROR_DB,
+      };
+    }
+  }
   async getUserById(userID: number) {
     try {
       const userInfos = await userModel.findUserById(userID);
@@ -30,7 +52,7 @@ class UserController {
   }
   async getAllUsers() {
     try {
-      const getUsers = await userModel.selectAllUser();
+      const getUsers = await userModel.findAllUsers();
 
       if (!getUsers) {
         return {

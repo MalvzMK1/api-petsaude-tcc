@@ -6,6 +6,42 @@ import Message from '../messages/message';
 const message = new Message();
 
 export default async function userRoutes(fastify: FastifyInstance) {
+  fastify.post('/user', async (req, res) => {
+    const bodyParams = z.object({
+      personName: z.string(),
+      userName: z.string(),
+      cpf: z.string(),
+      rg: z.string(),
+      profilePhoto: z.optional(z.string()),
+      profileBannerPhoto: z.optional(z.string()),
+      email: z.string(),
+      password: z.string(),
+      isVet: z.boolean(),
+      cep: z.string(),
+      street: z.string(),
+      number: z.string(),
+      complement: z.optional(z.string()),
+      neighborhood: z.string(),
+      cityId: z.number(),
+      cityInitials: z.string(),
+      cityName: z.string(),
+      stateId: z.number(),
+      vetInfos: z.optional(
+        z.object({
+          occupationArea: z.string(),
+          formation: z.string(),
+          institution: z.string(),
+          crmv: z.string(),
+        })
+      ),
+    });
+
+    const body = bodyParams.parse(req.body);
+    const createUser = await userController.createUser(body);
+
+    res.status(createUser.statusCode).send(createUser.message);
+  });
+
   fastify.get('/user', async (req, res) => {
     const queryParams = z.object({
       userID: z.string(),

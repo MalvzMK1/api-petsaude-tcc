@@ -53,18 +53,14 @@ async function main() {
           cep: '00000-000',
           number: '000',
           street: 'Wall Street',
-          neighborhood: {
+          neighborhood: 'Unionhood',
+          city: {
             create: {
-              name: 'St. James',
-              city: {
+              name: "City ov God's Fire",
+              state: {
                 create: {
-                  name: 'City of Fire',
-                  state: {
-                    create: {
-                      initials: 'FS',
-                      name: 'Fire State',
-                    },
-                  },
+                  initials: 'GS',
+                  name: 'God State',
                 },
               },
             },
@@ -127,20 +123,11 @@ async function main() {
           cep: '00000-000',
           number: '000',
           street: 'Ground Street',
-          neighborhood: {
+          neighborhood: 'Happyhood',
+          city: {
             create: {
-              name: 'St. Charles',
-              city: {
-                create: {
-                  name: 'City of Ice',
-                  state: {
-                    create: {
-                      initials: 'IS',
-                      name: 'Ice State',
-                    },
-                  },
-                },
-              },
+              name: 'Ice City',
+              stateId: 1,
             },
           },
         },
