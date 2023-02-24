@@ -22,6 +22,8 @@ export interface CreateUserInfosProps {
     formation: string;
     institution: string;
     crmv: string;
+    animalTypes: {name: string, id: number}[];
+    specialities: {name: string, id: number}[]; 
   };
 }
 

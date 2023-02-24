@@ -80,6 +80,30 @@ export default class UserModel {
                 formation: userInfos.vetInfos.formation,
                 occupationArea: userInfos.vetInfos.occupationArea,
                 institution: userInfos.vetInfos.institution,
+                AnimalTypesVetInfos:{
+                  create:{
+                    animalTypes:{
+                      create:{
+
+                        id: userInfos.vetInfos.animalTypes[0].id,
+                        name: userInfos.vetInfos.animalTypes[0].name
+                        
+                      },
+                    },
+                  },
+                },
+                VeterinaryEspecialities:{
+                  create:{
+                    specialities:{
+                      create:{
+
+                        id: userInfos.vetInfos.specialities[0].id,
+                        name: userInfos.vetInfos.specialities[0].name
+
+                      },
+                    },
+                  },
+                },
               },
             },
           },
