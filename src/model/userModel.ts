@@ -89,6 +89,47 @@ export default class UserModel {
       throw new Error(`${err}`);
     }
   }
+  async findAllUsers() {
+    try {
+      return await prisma.user.findMany({
+        include: {
+          Pet: {
+            include: {
+              petGender: true,
+              petSize: true,
+              petSpecie: true,
+            },
+          },
+          PhoneNumber: true,
+          Address: {
+            include: {
+              city: {
+                include: {
+                  state: true,
+                },
+              },
+            },
+          },
+          vetInfos: {
+            include: {
+              VeterinaryEspecialities: {
+                include: {
+                  specialities: true,
+                },
+              },
+              AnimalTypesVetInfos: {
+                include: {
+                  animalTypes: true,
+                },
+              },
+            },
+          },
+        },
+      });
+    } catch (err) {
+      throw new Error(`${err}`);
+    }
+  }
   async findUserById(userID: number) {
     try {
       return await prisma.user.findUnique({
@@ -133,41 +174,11 @@ export default class UserModel {
       throw new Error(`ERROR: ${err}`);
     }
   }
-  async findAllUsers() {
+  async findUserByEmail(userEmail: string) {
     try {
       return await prisma.user.findMany({
-        include: {
-          Pet: {
-            include: {
-              petGender: true,
-              petSize: true,
-              petSpecie: true,
-            },
-          },
-          PhoneNumber: true,
-          Address: {
-            include: {
-              city: {
-                include: {
-                  state: true,
-                },
-              },
-            },
-          },
-          vetInfos: {
-            include: {
-              VeterinaryEspecialities: {
-                include: {
-                  specialities: true,
-                },
-              },
-              AnimalTypesVetInfos: {
-                include: {
-                  animalTypes: true,
-                },
-              },
-            },
-          },
+        where: {
+          email: userEmail,
         },
       });
     } catch (err) {

@@ -24,7 +24,7 @@ model User {
   rg                 String
   profilePhoto       String?       @map("profile_photo")
   profileBannerPhoto String?       @map("profile_banner_photo")
-  email              String
+  email              String        @unique
   password           String
   isVet              Boolean
   PhoneNumber        PhoneNumber[]

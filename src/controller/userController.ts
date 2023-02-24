@@ -53,6 +53,26 @@ class UserController {
       };
     }
   }
+  async getUserByEmail(userEmail: string) {
+    try {
+      const userInfos = await userModel.findUserByEmail(userEmail);
+
+      if (userInfos.length > 0)
+        return {
+          statusCode: 200,
+          message: userInfos[0],
+        };
+      return {
+        statusCode: 404,
+        message: message.MESSAGE_ERROR.NOT_FOUND_DB,
+      };
+    } catch (err) {
+      return {
+        statusCode: 500,
+        message: `${err}`,
+      };
+    }
+  }
   async getAllUsers() {
     try {
       const getUsers = await userModel.findAllUsers();
