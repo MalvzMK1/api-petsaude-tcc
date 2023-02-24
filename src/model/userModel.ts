@@ -1,85 +1,93 @@
 import prisma from '../lib/prisma';
-import UserInfosProps from '../lib/userInfosProps';
+import {
+  CreateUserInfosProps,
+  UpdateUserInfosProps,
+  UpdateUserVetInfosProps,
+} from '../lib/userInfosProps';
 
 export default class UserModel {
-  async createUser(userInfos: UserInfosProps) {
-    if (!userInfos.isVet) {
-      return await prisma.user.create({
-        data: {
-          userName: userInfos.userName,
-          personName: userInfos.personName,
-          cpf: userInfos.cpf,
-          rg: userInfos.rg,
-          email: userInfos.email,
-          password: userInfos.password,
-          isVet: userInfos.isVet,
-          profilePhoto: userInfos.profilePhoto,
-          profileBannerPhoto: userInfos.profileBannerPhoto,
-          Address: {
-            create: {
-              cep: userInfos.cep,
-              number: userInfos.number,
-              street: userInfos.street,
-              complement: userInfos.complement,
-              neighborhood: userInfos.neighborhood,
-              city: {
-                connectOrCreate: {
-                  where: {
-                    id: userInfos.cityId,
-                  },
-                  create: {
-                    name: userInfos.cityName,
-                    stateId: userInfos.stateId,
-                  },
-                },
-              },
-            },
-          },
-        },
-      });
-    } else if (userInfos.vetInfos)
-      return await prisma.user.create({
-        data: {
-          userName: userInfos.userName,
-          personName: userInfos.personName,
-          cpf: userInfos.cpf,
-          rg: userInfos.rg,
-          email: userInfos.email,
-          password: userInfos.password,
-          isVet: userInfos.isVet,
-          profilePhoto: userInfos.profilePhoto,
-          profileBannerPhoto: userInfos.profileBannerPhoto,
-          Address: {
-            create: {
-              cep: userInfos.cep,
-              number: userInfos.number,
-              street: userInfos.street,
-              complement: userInfos.complement,
-              neighborhood: userInfos.neighborhood,
-              city: {
-                connectOrCreate: {
-                  where: {
-                    id: userInfos.cityId,
-                  },
-                  create: {
-                    name: userInfos.cityName,
-                    stateId: userInfos.stateId,
+  async createUser(userInfos: CreateUserInfosProps) {
+    try {
+      if (!userInfos.isVet) {
+        return await prisma.user.create({
+          data: {
+            userName: userInfos.userName,
+            personName: userInfos.personName,
+            cpf: userInfos.cpf,
+            rg: userInfos.rg,
+            email: userInfos.email,
+            password: userInfos.password,
+            isVet: userInfos.isVet,
+            profilePhoto: userInfos.profilePhoto,
+            profileBannerPhoto: userInfos.profileBannerPhoto,
+            Address: {
+              create: {
+                cep: userInfos.cep,
+                number: userInfos.number,
+                street: userInfos.street,
+                complement: userInfos.complement,
+                neighborhood: userInfos.neighborhood,
+                city: {
+                  connectOrCreate: {
+                    where: {
+                      id: userInfos.cityId,
+                    },
+                    create: {
+                      name: userInfos.cityName,
+                      stateId: userInfos.stateId,
+                    },
                   },
                 },
               },
             },
           },
-          vetInfos: {
-            create: {
-              crmv: userInfos.vetInfos.crmv,
-              formation: userInfos.vetInfos.formation,
-              occupationArea: userInfos.vetInfos.occupationArea,
-              institution: userInfos.vetInfos.institution,
+        });
+      } else if (userInfos.vetInfos)
+        return await prisma.user.create({
+          data: {
+            userName: userInfos.userName,
+            personName: userInfos.personName,
+            cpf: userInfos.cpf,
+            rg: userInfos.rg,
+            email: userInfos.email,
+            password: userInfos.password,
+            isVet: userInfos.isVet,
+            profilePhoto: userInfos.profilePhoto,
+            profileBannerPhoto: userInfos.profileBannerPhoto,
+            Address: {
+              create: {
+                cep: userInfos.cep,
+                number: userInfos.number,
+                street: userInfos.street,
+                complement: userInfos.complement,
+                neighborhood: userInfos.neighborhood,
+                city: {
+                  connectOrCreate: {
+                    where: {
+                      id: userInfos.cityId,
+                    },
+                    create: {
+                      name: userInfos.cityName,
+                      stateId: userInfos.stateId,
+                    },
+                  },
+                },
+              },
+            },
+            vetInfos: {
+              create: {
+                crmv: userInfos.vetInfos.crmv,
+                formation: userInfos.vetInfos.formation,
+                occupationArea: userInfos.vetInfos.occupationArea,
+                institution: userInfos.vetInfos.institution,
+              },
             },
           },
-        },
-      });
-    return false;
+        });
+      return false;
+    } catch (err) {
+      throw new Error(`${err}`);
+    }
   }
   async findUserById(userID: number) {
     try {
@@ -163,7 +171,48 @@ export default class UserModel {
         },
       });
     } catch (err) {
-      throw new Error(`ERROR: ${err}`);
+      throw new Error(`${err}`);
+    }
+  }
+  async updateVetInfos(vetInfosID: number, vetInfos: UpdateUserVetInfosProps) {
+    try {
+      return await prisma.vetInfos.update({
+        where: {
+          id: vetInfosID,
+        },
+        data: {
+          crmv: vetInfos.crmv,
+          formation: vetInfos.formation,
+          institution: vetInfos.institution,
+          occupationArea: vetInfos.occupationArea,
+        },
+      });
+    } catch (err) {
+      throw new Error(`${err}`);
+    }
+  }
+  async updateUser(userID: number, userInfos: UpdateUserInfosProps) {
+    try {
+      return await prisma.user.update({
+        where: {
+          id: userID,
+        },
+        data: {
+          userName: userInfos.userName,
+          personName: userInfos.personName,
+          cpf: userInfos.cpf,
+          rg: userInfos.rg,
+          email: userInfos.email,
+          password: userInfos.password,
+          isVet: userInfos.isVet,
+          profilePhoto: userInfos.profilePhoto,
+          profileBannerPhoto: userInfos.profileBannerPhoto,
+          addressId: userInfos.addressId,
+          vetInfosId: userInfos.vetInfosId,
+        },
+      });
+    } catch (err) {
+      throw new Error(`${err}`);
     }
   }
   async deleteUser(userID: number) {
@@ -229,7 +278,7 @@ export default class UserModel {
         return true;
       return false;
     } catch (err) {
-      throw new Error(`ERROR: ${err}`);
+      throw new Error(`${err}`);
     }
   }
 }

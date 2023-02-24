@@ -1,13 +1,16 @@
-import { Address, User } from '@prisma/client';
 import Message from '../messages/message';
 import UserModel from '../model/userModel';
-import UserInfosProps from '../lib/userInfosProps';
+import {
+  CreateUserInfosProps,
+  UpdateUserInfosProps,
+} from '../lib/userInfosProps';
+import { VetInfos } from '@prisma/client';
 
 const userModel = new UserModel();
 const message = new Message();
 
 class UserController {
-  async createUser(userInfos: UserInfosProps) {
+  async createUser(userInfos: CreateUserInfosProps) {
     try {
       const createdUser = await userModel.createUser(userInfos);
       if (createdUser)
@@ -64,6 +67,38 @@ class UserController {
           statusCode: 200,
           message: getUsers,
         };
+    } catch (err) {
+      console.log(err);
+      return {
+        statusCode: 500,
+        message: message.MESSAGE_ERROR.INTERNAL_ERROR_DB,
+      };
+    }
+  }
+  async updateUser(userID: number, userInfos: UpdateUserInfosProps) {
+    try {
+      let vetInfosUpdate: VetInfos;
+      if (userInfos.isVet && userInfos.vetInfosId && userInfos.vetInfos) {
+        vetInfosUpdate = await userModel.updateVetInfos(
+          userInfos.vetInfosId,
+          userInfos.vetInfos
+        );
+        if (!vetInfosUpdate)
+          return {
+            statusCode: 400,
+            message: message.MESSAGE_ERROR.INTERNAL_ERROR_DB,
+          };
+      }
+      const updatedUser = await userModel.updateUser(userID, userInfos);
+      if (updatedUser)
+        return {
+          statusCode: 204,
+          message: message.MESSAGE_SUCESS.UPDATE_ITEM,
+        };
+      return {
+        statusCode: 500,
+        message: message.MESSAGE_ERROR.INTERNAL_ERROR_DB,
+      };
     } catch (err) {
       console.log(err);
       return {

@@ -62,6 +62,31 @@ export default async function userRoutes(fastify: FastifyInstance) {
     res.status(allUsers.statusCode).send({ allUsers: allUsers?.message });
   });
 
+  fastify.put('/user', async (req, res) => {
+    const bodyParams = z.object({
+      personName: z.string(),
+      userName: z.string(),
+      cpf: z.string(),
+      rg: z.string(),
+      profilePhoto: z.optional(z.string()),
+      profileBannerPhoto: z.optional(z.string()),
+      email: z.string(),
+      password: z.string(),
+      isVet: z.boolean(),
+      addressId: z.number(),
+    });
+    const queryParams = z.object({
+      userID: z.string(),
+    });
+
+    const body = bodyParams.parse(req.body);
+    const { userID } = queryParams.parse(req.query);
+
+    const updateUser = await userController.updateUser(parseInt(userID), body);
+
+    res.status(updateUser.statusCode).send(updateUser.message);
+  });
+
   fastify.delete('/user', async (req, res) => {
     const queryParams = z.object({
       userID: z.string(),
