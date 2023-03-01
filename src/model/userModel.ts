@@ -1,3 +1,4 @@
+import { create } from 'domain';
 import prisma from '../lib/prisma';
 import {
   CreateUserInfosProps,
@@ -40,6 +41,13 @@ export default class UserModel {
                 },
               },
             },
+            PhoneNumber: {
+              create: {
+
+                number: userInfos.phoneNumber[0].number
+
+              }
+            }
           },
         });
       } else if (userInfos.vetInfos)
@@ -85,7 +93,6 @@ export default class UserModel {
                     animalTypes:{
                       create:{
 
-                        id: userInfos.vetInfos.animalTypes[0].id,
                         name: userInfos.vetInfos.animalTypes[0].name
                         
                       },
@@ -97,7 +104,6 @@ export default class UserModel {
                     specialities:{
                       create:{
 
-                        id: userInfos.vetInfos.specialities[0].id,
                         name: userInfos.vetInfos.specialities[0].name
 
                       },
@@ -312,6 +318,7 @@ export default class UserModel {
       )
         return true;
       return false;
+
     } catch (err) {
       throw new Error(`${err}`);
     }

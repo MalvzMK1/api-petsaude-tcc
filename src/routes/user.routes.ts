@@ -1,7 +1,9 @@
 import { FastifyInstance } from 'fastify';
 import userController from '../controller/userController';
+import PhoneNumberController from '../controller/phoneNumberController';
 import { z } from 'zod';
 import Message from '../messages/message';
+import { request } from 'http';
 
 const message = new Message();
 
@@ -32,8 +34,17 @@ export default async function userRoutes(fastify: FastifyInstance) {
           formation: z.string(),
           institution: z.string(),
           crmv: z.string(),
+          animalTypes: z.array(z.object({
+            name: z.string()
+          })),
+          specialities: z.array(z.object({
+            name: z.string()
+          })),
         })
       ),
+      phoneNumber: z.array(z.object({
+        number: z.string()
+      })),
     });
 
     const body = bodyParams.parse(req.body);
@@ -42,7 +53,32 @@ export default async function userRoutes(fastify: FastifyInstance) {
     res.status(createUser.statusCode).send(createUser.message);
   });
 
-  fastify.get('/user', async (req, res) => {
+  fastify.post('/user/phone/:id', async (req, res) => {
+
+    const bodyParams = z.object({
+
+      number: z.string()
+
+    })
+
+    const queryParams = z.object({
+
+      userID: z.string(),
+
+    })
+
+    const {userID} = queryParams.parse(req.query)
+    const {number} = bodyParams.parse(req.body)
+
+    if (!userID) res.status(400).send({ message: 'Required ID' });
+
+    const userInfos = await PhoneNumberController.PhoneUserAdd(parseInt(userID), number)
+
+    res.status(userInfos.statusCode).send({ user: userInfos?.message });
+
+  })
+
+  fastify.get('/user/:id', async (req, res) => {
     const queryParams = z.object({
       userID: z.string(),
     });
@@ -54,12 +90,16 @@ export default async function userRoutes(fastify: FastifyInstance) {
     const userInfos = await userController.getUserById(parseInt(userID));
 
     res.status(userInfos.statusCode).send({ user: userInfos?.message });
+
+
   });
 
   fastify.get('/user/all', async (req, res) => {
+
     const allUsers = await userController.getAllUsers();
 
     res.status(allUsers.statusCode).send({ allUsers: allUsers?.message });
+
   });
 
   fastify.put('/user', async (req, res) => {

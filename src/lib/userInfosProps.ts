@@ -22,9 +22,13 @@ export interface CreateUserInfosProps {
     formation: string;
     institution: string;
     crmv: string;
-    animalTypes: {name: string, id: number}[];
-    specialities: {name: string, id: number}[]; 
+    animalTypes: {name: string}[];
+    specialities: {name: string}[]; 
   };
+  phoneNumber: {
+    number: string;
+
+  }[];
 }
 
 export interface UpdateUserInfosProps {
@@ -52,4 +56,11 @@ export interface UpdateUserVetInfosProps {
   formation: string;
   institution: string;
   crmv: string;
+}
+
+export interface postPhoneUser {
+    
+  userId: number;
+  number: string;
+
 }

@@ -1,5 +1,6 @@
 import Message from '../messages/message';
 import UserModel from '../model/userModel';
+import phoneNumberModel from '../model/phoneNumberModel';
 import {
   CreateUserInfosProps,
   UpdateUserInfosProps,
@@ -13,6 +14,7 @@ class UserController {
   async createUser(userInfos: CreateUserInfosProps) {
     try {
       const createdUser = await userModel.createUser(userInfos);
+
       if (createdUser)
         return {
           statusCode: 201,
@@ -31,6 +33,7 @@ class UserController {
     }
   }
   async getUserById(userID: number) {
+
     try {
       const userInfos = await userModel.findUserById(userID);
 
@@ -45,6 +48,7 @@ class UserController {
         statusCode: 200,
         message: userInfos,
       };
+      
     } catch (err) {
       console.log(err);
       return {
@@ -99,10 +103,7 @@ class UserController {
     try {
       let vetInfosUpdate: VetInfos;
       if (userInfos.isVet && userInfos.vetInfosId && userInfos.vetInfos) {
-        vetInfosUpdate = await userModel.updateVetInfos(
-          userInfos.vetInfosId,
-          userInfos.vetInfos
-        );
+        vetInfosUpdate = await userModel.updateVetInfos(userInfos.vetInfosId,userInfos.vetInfos);
         if (!vetInfosUpdate)
           return {
             statusCode: 400,
