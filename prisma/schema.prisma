@@ -24,7 +24,7 @@ model User {
   rg                 String
   profilePhoto       String?       @map("profile_photo")
   profileBannerPhoto String?       @map("profile_banner_photo")
-  email              String
+  email              String        @unique
   password           String
   isVet              Boolean
   PhoneNumber        PhoneNumber[]
@@ -97,7 +97,7 @@ model AnimalTypes {
 
 model PhoneNumber {
   id     Int    @id @default(autoincrement())
-  number String
+  number String @unique
 
   userId Int  @map("user_id")
   User   User @relation(fields: [userId], references: [id])
@@ -108,37 +108,28 @@ model PhoneNumber {
 // ************************** ADDRESS **************************
 
 model Address {
-  id         Int     @id @default(autoincrement())
-  cep        String
-  street     String
-  complement String?
-  number     String
+  id           Int     @id @default(autoincrement())
+  cep          String
+  street       String
+  complement   String?
+  number       String
+  neighborhood String
 
-  neighborhoodId Int          @map("neighborhood_id")
-  neighborhood   Neighborhood @relation(fields: [neighborhoodId], references: [id])
-  User           User[]
+  cityId Int  @map("city_id")
+  city   City @relation(fields: [cityId], references: [id])
+
+  User User[]
 
   @@map("tbl_address")
-}
-
-model Neighborhood {
-  id   Int    @id @default(autoincrement())
-  name String
-
-  cityId  Int       @map("city_id")
-  city    City      @relation(fields: [cityId], references: [id])
-  Address Address[]
-
-  @@map("tbl_neighborhood")
 }
 
 model City {
   id   Int    @id @default(autoincrement())
   name String
 
-  stateId      Int            @map("state_id")
-  state        State          @relation(fields: [stateId], references: [id])
-  Neighborhood Neighborhood[]
+  stateId Int       @map("state_id")
+  state   State     @relation(fields: [stateId], references: [id])
+  Address Address[]
 
   @@map("tbl_city")
 }
@@ -170,8 +161,8 @@ model Pet {
   petSpecieId Int       @map("pet_specie_id")
   petSpecie   PetSpecie @relation(fields: [petSpecieId], references: [id])
 
-  owner  User @relation(fields: [userId], references: [id])
   userId Int
+  owner  User @relation(fields: [userId], references: [id])
 
   @@map("tbl_pet")
 }
