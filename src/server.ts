@@ -8,11 +8,11 @@ import userRoutes from './routes/user.routes';
 import authRoutes from './routes/auth.routes';
 
 fastify.register(cors, {
-  origin: true,
+	origin: true,
 });
 
 fastify.register(jwt, {
-  secret: 'Secret',
+	secret: 'Secret',
 });
 
 fastify.register(userRoutes);

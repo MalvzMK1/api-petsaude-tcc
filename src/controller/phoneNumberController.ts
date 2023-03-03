@@ -1,10 +1,5 @@
 import PhoneNumberModel from '../model/phoneNumberModel';
 import Message from '../messages/message';
-import {
-	CreateUserInfosProps,
-	UpdateUserInfosProps,
-} from '../lib/userInfosProps';
-import { VetInfos } from '@prisma/client';
 
 const message = new Message();
 const phoneNumberModel = new PhoneNumberModel();
