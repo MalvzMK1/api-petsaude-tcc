@@ -60,7 +60,6 @@ export default async function userRoutes(fastify: FastifyInstance) {
       number: z.string()
 
     })
-
     const queryParams = z.object({
 
       userID: z.string(),
@@ -79,6 +78,7 @@ export default async function userRoutes(fastify: FastifyInstance) {
   })
 
   fastify.get('/user/:id', async (req, res) => {
+    
     const queryParams = z.object({
       userID: z.string(),
     });
@@ -102,7 +102,7 @@ export default async function userRoutes(fastify: FastifyInstance) {
 
   });
 
-  fastify.put('/user', async (req, res) => {
+  fastify.put('/user/:id', async (req, res) => {
     const bodyParams = z.object({
       personName: z.string(),
       userName: z.string(),
@@ -114,6 +114,7 @@ export default async function userRoutes(fastify: FastifyInstance) {
       password: z.string(),
       isVet: z.boolean(),
       addressId: z.number(),
+      vetInfosId: z.number()
     });
     const queryParams = z.object({
       userID: z.string(),
@@ -125,6 +126,10 @@ export default async function userRoutes(fastify: FastifyInstance) {
     const updateUser = await userController.updateUser(parseInt(userID), body);
 
     res.status(updateUser.statusCode).send(updateUser.message);
+  });
+
+  fastify.put('/veterinario/user/:id', async (req, res) => {
+
   });
 
   fastify.delete('/user', async (req, res) => {

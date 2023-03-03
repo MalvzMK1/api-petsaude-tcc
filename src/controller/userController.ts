@@ -111,9 +111,10 @@ class UserController {
           };
       }
       const updatedUser = await userModel.updateUser(userID, userInfos);
+      
       if (updatedUser)
         return {
-          statusCode: 204,
+          statusCode: 200,
           message: message.MESSAGE_SUCESS.UPDATE_ITEM,
         };
       return {
