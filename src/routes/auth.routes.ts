@@ -3,8 +3,6 @@ import { z } from 'zod';
 import authenticate from '../middlewares/authenticate';
 import userController from '../controller/userController';
 import SpecialtiesController from '../controller/specialtiesController';
-import { User } from '@prisma/client';
-import fastifyJwt = require('@fastify/jwt');
 
 export default async function authRoutes(fastify: FastifyInstance) {
 	fastify.get('/auth', { onRequest: [authenticate] }, (req) => {

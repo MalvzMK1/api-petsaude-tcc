@@ -71,17 +71,12 @@ export default async function userRoutes(fastify: FastifyInstance) {
 		const { userID } = queryParams.parse(req.query);
 		const { number } = bodyParams.parse(req.body);
 
-<<<<<<< HEAD
 		if (!userID) res.status(400).send({ message: 'Required ID' });
 
 		const userInfos = await PhoneNumberController.PhoneUserAdd(
 			parseInt(userID),
 			number
 		);
-=======
-    })
-    const queryParams = z.object({
->>>>>>> b3cb1615b347f5b1dcafeee0e82ee61213fc3d07
 
 		res.status(userInfos.statusCode).send({ user: userInfos?.message });
 	});
@@ -103,109 +98,99 @@ export default async function userRoutes(fastify: FastifyInstance) {
 	fastify.get('/user/all', async (req, res) => {
 		const allUsers = await userController.getAllUsers();
 
-<<<<<<< HEAD
-		res.status(allUsers.statusCode).send({ allUsers: allUsers?.message });
-	});
-=======
-  fastify.get('/user/:id', async (req, res) => {
-    
-    const queryParams = z.object({
-      userID: z.string(),
-    });
->>>>>>> b3cb1615b347f5b1dcafeee0e82ee61213fc3d07
+		fastify.get('/user/:id', async (req, res) => {
 
-	fastify.put('/user', async (req, res) => {
-		const bodyParams = z.object({
-			personName: z.string(),
-			userName: z.string(),
-			cpf: z.string(),
-			rg: z.string(),
-			profilePhoto: z.optional(z.string()),
-			profileBannerPhoto: z.optional(z.string()),
-			email: z.string(),
-			password: z.string(),
-			isVet: z.boolean(),
-			addressId: z.number(),
-		});
-		const queryParams = z.object({
-			userID: z.string(),
-		});
-
-		const body = bodyParams.parse(req.body);
-		const { userID } = queryParams.parse(req.query);
-
-		const updateUser = await userController.updateUser(parseInt(userID), body);
-
-		res.status(updateUser.statusCode).send(updateUser.message);
-	});
-
-	fastify.delete('/user', async (req, res) => {
-		const queryParams = z.object({
-			userID: z.string(),
-		});
-
-		const { userID } = queryParams.parse(req.query);
-
-		if (!userID)
-			res.status(400).send({
-				message: message.MESSAGE_ERROR.REQUIRED_ID,
+			const queryParams = z.object({
+				userID: z.string(),
 			});
 
-		const result = await userController.deleteUser(parseInt(userID));
+			fastify.put('/user', async (req, res) => {
+				const bodyParams = z.object({
+					personName: z.string(),
+					userName: z.string(),
+					cpf: z.string(),
+					rg: z.string(),
+					profilePhoto: z.optional(z.string()),
+					profileBannerPhoto: z.optional(z.string()),
+					email: z.string(),
+					password: z.string(),
+					isVet: z.boolean(),
+					addressId: z.number(),
+				});
+				const queryParams = z.object({
+					userID: z.string(),
+				});
 
-<<<<<<< HEAD
-		res.status(result.statusCode).send(result.message);
-	});
-=======
-    res.status(allUsers.statusCode).send({ allUsers: allUsers?.message });
+				const body = bodyParams.parse(req.body);
+				const { userID } = queryParams.parse(req.query);
 
-  });
+				const updateUser = await userController.updateUser(parseInt(userID), body);
 
-  fastify.put('/user/:id', async (req, res) => {
-    const bodyParams = z.object({
-      personName: z.string(),
-      userName: z.string(),
-      cpf: z.string(),
-      rg: z.string(),
-      profilePhoto: z.optional(z.string()),
-      profileBannerPhoto: z.optional(z.string()),
-      email: z.string(),
-      password: z.string(),
-      isVet: z.boolean(),
-      addressId: z.number(),
-      vetInfosId: z.number()
-    });
-    const queryParams = z.object({
-      userID: z.string(),
-    });
+				res.status(updateUser.statusCode).send(updateUser.message);
+			});
 
-    const body = bodyParams.parse(req.body);
-    const { userID } = queryParams.parse(req.query);
+			fastify.delete('/user', async (req, res) => {
+				const queryParams = z.object({
+					userID: z.string(),
+				});
 
-    const updateUser = await userController.updateUser(parseInt(userID), body);
+				const { userID } = queryParams.parse(req.query);
 
-    res.status(updateUser.statusCode).send(updateUser.message);
-  });
+				if (!userID)
+					res.status(400).send({
+						message: message.MESSAGE_ERROR.REQUIRED_ID,
+					});
 
-  fastify.put('/veterinario/user/:id', async (req, res) => {
+				const result = await userController.deleteUser(parseInt(userID));
 
-  });
+				res.status(allUsers.statusCode).send({ allUsers: allUsers?.message });
 
-  fastify.delete('/user', async (req, res) => {
-    const queryParams = z.object({
-      userID: z.string(),
-    });
+			});
 
-    const { userID } = queryParams.parse(req.query);
+			fastify.put('/user/:id', async (req, res) => {
+				const bodyParams = z.object({
+					personName: z.string(),
+					userName: z.string(),
+					cpf: z.string(),
+					rg: z.string(),
+					profilePhoto: z.optional(z.string()),
+					profileBannerPhoto: z.optional(z.string()),
+					email: z.string(),
+					password: z.string(),
+					isVet: z.boolean(),
+					addressId: z.number(),
+					vetInfosId: z.number()
+				});
+				const queryParams = z.object({
+					userID: z.string(),
+				});
 
-    if (!userID)
-      res.status(400).send({
-        message: message.MESSAGE_ERROR.REQUIRED_ID,
-      });
+				const body = bodyParams.parse(req.body);
+				const { userID } = queryParams.parse(req.query);
 
-    const result = await userController.deleteUser(parseInt(userID));
+				const updateUser = await userController.updateUser(parseInt(userID), body);
 
-    res.status(result.statusCode).send(result.message);
-  });
->>>>>>> b3cb1615b347f5b1dcafeee0e82ee61213fc3d07
-}
+				res.status(updateUser.statusCode).send(updateUser.message);
+			});
+
+			fastify.put('/veterinario/user/:id', async (req, res) => {
+
+			});
+
+			fastify.delete('/user', async (req, res) => {
+				const queryParams = z.object({
+					userID: z.string(),
+				});
+
+				const { userID } = queryParams.parse(req.query);
+
+				if (!userID)
+					res.status(400).send({
+						message: message.MESSAGE_ERROR.REQUIRED_ID,
+					});
+
+				const result = await userController.deleteUser(parseInt(userID));
+
+				res.status(result.statusCode).send(result.message);
+			});
+		});

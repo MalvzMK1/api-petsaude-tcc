@@ -161,8 +161,8 @@ model Pet {
   petSpecieId Int       @map("pet_specie_id")
   petSpecie   PetSpecie @relation(fields: [petSpecieId], references: [id])
 
-  userId Int
-  owner  User @relation(fields: [userId], references: [id])
+  ownerId Int  @map("owner_id")
+  Owner   User @relation(fields: [ownerId], references: [id])
 
   @@map("tbl_pet")
 }
