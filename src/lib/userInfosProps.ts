@@ -56,7 +56,10 @@ export interface UpdateUserVetInfosProps {
   formation: string;
   institution: string;
   crmv: string;
+  animalTypes?: {id:number, name: String}[];
+  specialities?: {id: number, name: String}[]
 }
+
 
 export interface postPhoneUser {
     

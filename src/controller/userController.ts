@@ -133,8 +133,6 @@ class UserController {
 			const user = await userModel.findUserById(userID);
 			if (user) {
 				const userDelete = await userModel.deleteUser(userID);
-
-<<<<<<< HEAD
 				if (!userDelete) {
 					return {
 						statusCode: 500,
@@ -159,86 +157,6 @@ class UserController {
 			};
 		}
 	}
-=======
-      if (!getUsers) {
-        return {
-          statusCode: 404,
-          message: message.MESSAGE_ERROR.INTERNAL_ERROR_DB,
-        };
-      } else
-        return {
-          statusCode: 200,
-          message: getUsers,
-        };
-    } catch (err) {
-      console.log(err);
-      return {
-        statusCode: 500,
-        message: message.MESSAGE_ERROR.INTERNAL_ERROR_DB,
-      };
-    }
-  }
-  async updateUser(userID: number, userInfos: UpdateUserInfosProps) {
-    try {
-      let vetInfosUpdate: VetInfos;
-      if (userInfos.isVet && userInfos.vetInfosId && userInfos.vetInfos) {
-        vetInfosUpdate = await userModel.updateVetInfos(userInfos.vetInfosId,userInfos.vetInfos);
-        if (!vetInfosUpdate)
-          return {
-            statusCode: 400,
-            message: message.MESSAGE_ERROR.INTERNAL_ERROR_DB,
-          };
-      }
-      const updatedUser = await userModel.updateUser(userID, userInfos);
-      
-      if (updatedUser)
-        return {
-          statusCode: 200,
-          message: message.MESSAGE_SUCESS.UPDATE_ITEM,
-        };
-      return {
-        statusCode: 500,
-        message: message.MESSAGE_ERROR.INTERNAL_ERROR_DB,
-      };
-    } catch (err) {
-      console.log(err);
-      return {
-        statusCode: 500,
-        message: message.MESSAGE_ERROR.INTERNAL_ERROR_DB,
-      };
-    }
-  }
-  async deleteUser(userID: number) {
-    try {
-      const user = await userModel.findUserById(userID);
-      if (user) {
-        const userDelete = await userModel.deleteUser(userID);
-
-        if (!userDelete) {
-          return {
-            statusCode: 500,
-            message: message.MESSAGE_ERROR.INTERNAL_ERROR_DB,
-          };
-        } else {
-          return {
-            statusCode: 200,
-            message: message.MESSAGE_SUCESS.DELETE_ITEM,
-          };
-        }
-      }
-      return {
-        statusCode: 404,
-        message: message.MESSAGE_ERROR.NOT_FOUND_DB,
-      };
-    } catch (err) {
-      console.log(err);
-      return {
-        statusCode: 500,
-        message: message.MESSAGE_ERROR.INTERNAL_ERROR_DB,
-      };
-    }
-  }
->>>>>>> b3cb1615b347f5b1dcafeee0e82ee61213fc3d07
 }
 
 export default new UserController();

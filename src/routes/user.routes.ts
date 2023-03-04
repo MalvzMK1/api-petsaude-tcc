@@ -96,101 +96,58 @@ export default async function userRoutes(fastify: FastifyInstance) {
 	});
 
 	fastify.get('/user/all', async (req, res) => {
+
 		const allUsers = await userController.getAllUsers();
 
-		fastify.get('/user/:id', async (req, res) => {
-
-			const queryParams = z.object({
-				userID: z.string(),
-			});
-
-			fastify.put('/user', async (req, res) => {
-				const bodyParams = z.object({
-					personName: z.string(),
-					userName: z.string(),
-					cpf: z.string(),
-					rg: z.string(),
-					profilePhoto: z.optional(z.string()),
-					profileBannerPhoto: z.optional(z.string()),
-					email: z.string(),
-					password: z.string(),
-					isVet: z.boolean(),
-					addressId: z.number(),
-				});
-				const queryParams = z.object({
-					userID: z.string(),
-				});
-
-				const body = bodyParams.parse(req.body);
-				const { userID } = queryParams.parse(req.query);
-
-				const updateUser = await userController.updateUser(parseInt(userID), body);
-
-				res.status(updateUser.statusCode).send(updateUser.message);
-			});
-
-			fastify.delete('/user', async (req, res) => {
-				const queryParams = z.object({
-					userID: z.string(),
-				});
-
-				const { userID } = queryParams.parse(req.query);
-
-				if (!userID)
-					res.status(400).send({
-						message: message.MESSAGE_ERROR.REQUIRED_ID,
-					});
-
-				const result = await userController.deleteUser(parseInt(userID));
-
-				res.status(allUsers.statusCode).send({ allUsers: allUsers?.message });
-
-			});
-
-			fastify.put('/user/:id', async (req, res) => {
-				const bodyParams = z.object({
-					personName: z.string(),
-					userName: z.string(),
-					cpf: z.string(),
-					rg: z.string(),
-					profilePhoto: z.optional(z.string()),
-					profileBannerPhoto: z.optional(z.string()),
-					email: z.string(),
-					password: z.string(),
-					isVet: z.boolean(),
-					addressId: z.number(),
-					vetInfosId: z.number()
-				});
-				const queryParams = z.object({
-					userID: z.string(),
-				});
-
-				const body = bodyParams.parse(req.body);
-				const { userID } = queryParams.parse(req.query);
-
-				const updateUser = await userController.updateUser(parseInt(userID), body);
-
-				res.status(updateUser.statusCode).send(updateUser.message);
-			});
-
-			fastify.put('/veterinario/user/:id', async (req, res) => {
-
-			});
-
-			fastify.delete('/user', async (req, res) => {
-				const queryParams = z.object({
-					userID: z.string(),
-				});
-
-				const { userID } = queryParams.parse(req.query);
-
-				if (!userID)
-					res.status(400).send({
-						message: message.MESSAGE_ERROR.REQUIRED_ID,
-					});
-
-				const result = await userController.deleteUser(parseInt(userID));
-
-				res.status(result.statusCode).send(result.message);
-			});
+	})
+	
+	fastify.put('/user/:id', async (req, res) => {
+		const bodyParams = z.object({
+			personName: z.string(),
+			userName: z.string(),
+			cpf: z.string(),
+			rg: z.string(),
+			profilePhoto: z.optional(z.string()),
+			profileBannerPhoto: z.optional(z.string()),
+			email: z.string(),
+			password: z.string(),
+			isVet: z.boolean(),
+			addressId: z.number(),
+			vetInfosId: z.number()
 		});
+		const queryParams = z.object({
+			userID: z.string(),
+		});
+
+		const body = bodyParams.parse(req.body);
+		const { userID } = queryParams.parse(req.query);
+
+		const updateUser = await userController.updateUser(parseInt(userID), body);
+
+		res.status(updateUser.statusCode).send(updateUser.message);
+	});
+
+	fastify.delete('/user/:id', async (req, res) => {
+		const queryParams = z.object({
+			userID: z.string(),
+		});
+
+		const { userID } = queryParams.parse(req.query);
+
+		if (!userID)
+			res.status(400).send({
+				message: message.MESSAGE_ERROR.REQUIRED_ID,
+			});
+
+		const result = await userController.deleteUser(parseInt(userID));
+
+		res.status(result.statusCode).send({ allUsers: result?.message });
+
+	});
+
+
+	fastify.put('/veterinario/user/:id', async (req, res) => {
+
+	});
+
+}

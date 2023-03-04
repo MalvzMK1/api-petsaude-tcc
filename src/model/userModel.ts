@@ -219,8 +219,18 @@ export default class UserModel {
 					formation: vetInfos.formation,
 					institution: vetInfos.institution,
 					occupationArea: vetInfos.occupationArea,
+					AnimalTypesVetInfos:{
+						
+					}
 				},
 			});
+		} catch (err) {
+			throw new Error(`${err}`);
+		}
+	}
+	async updateSpecialtiesInfos(vetSpecialtiesID: number,  ){
+		try {
+			
 		} catch (err) {
 			throw new Error(`${err}`);
 		}
@@ -258,7 +268,7 @@ export default class UserModel {
 			});
 			const userPetDelete = await prisma.pet.deleteMany({
 				where: {
-					userId: userID,
+					id: userID,
 				},
 			});
 			const animalTypesVetInfosDelete =
