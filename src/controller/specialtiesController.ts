@@ -1,5 +1,10 @@
 import Message from '../messages/message';
 import SpecialtiesModel from '../model/specialtiesModel';
+import {
+	CreateUserInfosProps,
+	UpdateUserInfosProps,
+	UpdateSpecialities
+} from '../lib/userInfosProps';
 
 const specialtiesModel = new SpecialtiesModel();
 const message = new Message();
@@ -25,6 +30,15 @@ class SpecialtiesController {
 				statusCode: 500,
 				message: message.MESSAGE_ERROR.INTERNAL_ERROR_DB,
 			};
+		}
+	}
+	async updateSpecialties(specialtiesID: Number, specialities: UpdateSpecialities){
+		try {
+			
+			
+
+		} catch (err) {
+			
 		}
 	}
 }

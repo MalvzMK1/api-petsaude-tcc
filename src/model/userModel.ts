@@ -1,8 +1,10 @@
+import { date } from 'zod';
 import prisma from '../lib/prisma';
 import {
 	CreateUserInfosProps,
 	UpdateUserInfosProps,
-	UpdateUserVetInfosProps,
+	UpdateVetInfosProps,
+	UpdateSpecialties
 } from '../lib/userInfosProps';
 
 export default class UserModel {
@@ -208,7 +210,7 @@ export default class UserModel {
 			throw new Error(`${err}`);
 		}
 	}
-	async updateVetInfos(vetInfosID: number, vetInfos: UpdateUserVetInfosProps) {
+	async updateVetInfos(vetInfosID: number, vetInfos: UpdateVetInfosProps) {
 		try {
 			return await prisma.vetInfos.update({
 				where: {
@@ -219,22 +221,32 @@ export default class UserModel {
 					formation: vetInfos.formation,
 					institution: vetInfos.institution,
 					occupationArea: vetInfos.occupationArea,
-					AnimalTypesVetInfos:{
-						
-					}
 				},
 			});
 		} catch (err) {
 			throw new Error(`${err}`);
 		}
 	}
-	async updateSpecialtiesInfos(vetSpecialtiesID: number,  ){
-		try {
-			
-		} catch (err) {
-			throw new Error(`${err}`);
-		}
-	}
+	// async updateSpecialtiesInfos(userID: number, vetSpecialtiesID: number, specialities: UpdateSpecialties ){
+	// 	try {
+	// 		return await prisma.user.update({
+	// 			where:{
+	// 				id: userID
+	// 			},
+	// 			data:{
+	// 				vetInfos:{
+	// 					update:{
+	// 						VeterinaryEspecialities:{
+								
+	// 						},
+	// 					},
+	// 				},
+	// 			},
+	// 		});		
+	// 	} catch (err) {
+	// 		throw new Error(`${err}`);
+	// 	}
+	// }
 	async updateUser(userID: number, userInfos: UpdateUserInfosProps) {
 		try {
 			return await prisma.user.update({

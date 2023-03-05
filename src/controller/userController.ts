@@ -3,13 +3,15 @@ import UserModel from '../model/userModel';
 import {
 	CreateUserInfosProps,
 	UpdateUserInfosProps,
+	UpdateSpecialties
 } from '../lib/userInfosProps';
-import { VetInfos } from '@prisma/client';
+import { VetInfos, Specialities, AnimalTypes, Address } from '@prisma/client';
 
 const userModel = new UserModel();
 const message = new Message();
 
 class UserController {
+
 	async createUser(userInfos: CreateUserInfosProps) {
 		try {
 			const createdUser = await userModel.createUser(userInfos);
@@ -31,6 +33,7 @@ class UserController {
 			};
 		}
 	}
+
 	async getUserById(userID: number) {
 		try {
 			const userInfos = await userModel.findUserById(userID);
@@ -54,6 +57,7 @@ class UserController {
 			};
 		}
 	}
+
 	async getUserByEmail(userEmail: string) {
 		try {
 			const userInfos = await userModel.findUserByEmail(userEmail);
@@ -74,6 +78,7 @@ class UserController {
 			};
 		}
 	}
+
 	async getAllUsers() {
 		try {
 			const getUsers = await userModel.findAllUsers();
@@ -96,19 +101,27 @@ class UserController {
 			};
 		}
 	}
+
 	async updateUser(userID: number, userInfos: UpdateUserInfosProps) {
 		try {
+
 			let vetInfosUpdate: VetInfos;
+			let Address: Address;
+
+
 			if (userInfos.isVet && userInfos.vetInfosId && userInfos.vetInfos) {
+
 				vetInfosUpdate = await userModel.updateVetInfos(
 					userInfos.vetInfosId,
 					userInfos.vetInfos
 				);
+
 				if (!vetInfosUpdate)
 					return {
 						statusCode: 400,
 						message: message.MESSAGE_ERROR.INTERNAL_ERROR_DB,
 					};
+
 			}
 			const updatedUser = await userModel.updateUser(userID, userInfos);
 			if (updatedUser)
@@ -128,6 +141,7 @@ class UserController {
 			};
 		}
 	}
+
 	async deleteUser(userID: number) {
 		try {
 			const user = await userModel.findUserById(userID);
@@ -159,4 +173,36 @@ class UserController {
 	}
 }
 
-export default new UserController();
+// class vetInfos {
+
+// 	async updateSpecialities(specialitiesID: number, specialities: UpdateSpecialties) {
+
+// 		try {
+
+// 			const updatedUser = await userModel.updateSpecialtiesInfos(specialitiesID, specialities);
+// 			if (updatedUser)
+// 				return {
+// 					statusCode: 204,
+// 					message: message.MESSAGE_SUCESS.UPDATE_ITEM,
+// 				};
+// 			return {
+// 				statusCode: 500,
+// 				message: message.MESSAGE_ERROR.INTERNAL_ERROR_DB,
+// 			};
+
+// 		} catch (err) {
+// 			console.log(err);
+// 			return {
+// 				statusCode: 500,
+// 				message: message.MESSAGE_ERROR.INTERNAL_ERROR_DB,
+// 			};
+// 		}
+
+// 	}
+
+// }
+
+export default
+	new UserController();
+	// new vetInfos();
+

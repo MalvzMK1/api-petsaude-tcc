@@ -5,6 +5,7 @@ import userController from '../controller/userController';
 import SpecialtiesController from '../controller/specialtiesController';
 
 export default async function authRoutes(fastify: FastifyInstance) {
+	
 	fastify.get('/auth', { onRequest: [authenticate] }, (req) => {
 		return { user: req.user };
 	});
@@ -41,7 +42,7 @@ export default async function authRoutes(fastify: FastifyInstance) {
 		}
 		res.status(foundUser.statusCode).send({ message: foundUser.message });
 	});
-	fastify.post('/specialties', async (req, res) => {
+	fastify.post('/specialties', { onRequest: [authenticate] }, async (req, res) => {
 		const bodyParams = z.object({
 			name: z.string(),
 		});
@@ -62,7 +63,7 @@ export default async function authRoutes(fastify: FastifyInstance) {
 		} else
 			res.status(415).send('The request header has no valid content-type!');
 	});
-	fastify.post('/pet/specialties', async (req, res) => {
+	fastify.post('/pet/specialties',{ onRequest: [authenticate] }, async (req, res) => {
 		const bodyParams = z.object({
 			name: z.string(),
 		});

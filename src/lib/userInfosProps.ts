@@ -49,15 +49,24 @@ export interface UpdateUserInfosProps {
     institution: string;
     crmv: string;
   };
+  animalTypes?: {id:number, name: String}[];
+  specialities?: {id: number, name: String}[]
 }
 
-export interface UpdateUserVetInfosProps {
+export interface UpdateVetInfosProps {
   occupationArea: string;
   formation: string;
   institution: string;
   crmv: string;
   animalTypes?: {id:number, name: String}[];
   specialities?: {id: number, name: String}[]
+}
+
+export interface UpdateSpecialties {
+
+  id: number;
+  name: string;
+
 }
 
 
