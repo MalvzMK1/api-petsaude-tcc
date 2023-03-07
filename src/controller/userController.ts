@@ -106,8 +106,6 @@ class UserController {
 		try {
 
 			let vetInfosUpdate: VetInfos;
-			let Address: Address;
-
 
 			if (userInfos.isVet && userInfos.vetInfosId && userInfos.vetInfos) {
 
@@ -171,38 +169,35 @@ class UserController {
 			};
 		}
 	}
+	
+	async updateSpecialities(userID: number, specialitiesIDs: Array<number>) {
+
+		try { 
+
+			const updatedUser = await userModel.updateSpecialtiesInfos(userID, specialitiesIDs);
+
+			if (updatedUser)
+				return {
+					statusCode: 204,
+					message: message.MESSAGE_SUCESS.UPDATE_ITEM ,
+				};
+			return {
+				statusCode: 500,
+				message: message.MESSAGE_ERROR.INTERNAL_ERROR_DB,
+			};
+
+		} catch (err) {
+			console.log(err);
+			return {
+				statusCode: 500,
+				message: message.MESSAGE_ERROR.INTERNAL_ERROR_DB,
+			};
+		}
+
+	}
 }
-
-// class vetInfos {
-
-// 	async updateSpecialities(specialitiesID: number, specialities: UpdateSpecialties) {
-
-// 		try {
-
-// 			const updatedUser = await userModel.updateSpecialtiesInfos(specialitiesID, specialities);
-// 			if (updatedUser)
-// 				return {
-// 					statusCode: 204,
-// 					message: message.MESSAGE_SUCESS.UPDATE_ITEM,
-// 				};
-// 			return {
-// 				statusCode: 500,
-// 				message: message.MESSAGE_ERROR.INTERNAL_ERROR_DB,
-// 			};
-
-// 		} catch (err) {
-// 			console.log(err);
-// 			return {
-// 				statusCode: 500,
-// 				message: message.MESSAGE_ERROR.INTERNAL_ERROR_DB,
-// 			};
-// 		}
-
-// 	}
-
-// }
 
 export default
 	new UserController();
-	// new vetInfos();
+
 

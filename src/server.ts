@@ -18,6 +18,6 @@ fastify.register(jwt, {
 fastify.register(userRoutes);
 fastify.register(authRoutes);
 
-fastify.listen({ port: 3333 });
+fastify.listen({ port: 8080 });
 
 export default fastify;

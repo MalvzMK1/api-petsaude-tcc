@@ -1,4 +1,3 @@
-import { date } from 'zod';
 import prisma from '../lib/prisma';
 import {
 	CreateUserInfosProps,
@@ -6,6 +5,7 @@ import {
 	UpdateVetInfosProps,
 	UpdateSpecialties
 } from '../lib/userInfosProps';
+import { features } from 'process';
 
 export default class UserModel {
 	async createUser(userInfos: CreateUserInfosProps) {
@@ -227,26 +227,30 @@ export default class UserModel {
 			throw new Error(`${err}`);
 		}
 	}
-	// async updateSpecialtiesInfos(userID: number, vetSpecialtiesID: number, specialities: UpdateSpecialties ){
-	// 	try {
-	// 		return await prisma.user.update({
-	// 			where:{
-	// 				id: userID
-	// 			},
-	// 			data:{
-	// 				vetInfos:{
-	// 					update:{
-	// 						VeterinaryEspecialities:{
-								
-	// 						},
-	// 					},
-	// 				},
-	// 			},
-	// 		});		
-	// 	} catch (err) {
-	// 		throw new Error(`${err}`);
-	// 	}
-	// }
+
+	async updateSpecialtiesInfos(vetInfosID: number, specialtiesID: Array<number>) {
+		try {
+			return await prisma.vetInfos.update({
+				where: {
+					id: vetInfosID,
+				},
+				data: {
+					VeterinaryEspecialities: {
+						update:{
+							specialitiesId: {
+								updateMany: {
+									specialitiesID: specialtiesID
+								},
+							}
+						}
+					}
+				},
+			});
+		} catch (err) {
+			throw new Error(`${err}`);
+		}
+	}
+
 	async updateUser(userID: number, userInfos: UpdateUserInfosProps) {
 		try {
 			return await prisma.user.update({
