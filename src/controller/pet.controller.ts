@@ -96,4 +96,24 @@ export default class PetController {
 			};
 		}
 	}
+	async deletePet(petID: number) {
+		try {
+			const deletedPet = await petModel.deletePet(petID);
+			if (deletedPet)
+				return {
+					statusCode: 200,
+					message: messages.MESSAGE_SUCESS.DELETE_ITEM,
+				};
+			return {
+				statusCode: 400,
+				message: messages.MESSAGE_ERROR.INTERNAL_ERROR_DB,
+			};
+		} catch (err) {
+			console.log(err);
+			return {
+				statusCode: 500,
+				message: `${err}`,
+			};
+		}
+	}
 }

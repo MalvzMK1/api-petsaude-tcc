@@ -57,4 +57,18 @@ export default async function petRoutes(fastify: FastifyInstance) {
 
 		reply.send({ response: controllerResponse });
 	});
+	fastify.delete(
+		'/pet',
+		{ onRequest: authenticate },
+		async (request, reply) => {
+			const queryParams = z.object({
+				petID: z.string(),
+			});
+
+			const { petID } = queryParams.parse(request.query);
+			const controllerResponse = await petController.deletePet(parseInt(petID));
+
+			reply.status(200).send({ response: controllerResponse });
+		}
+	);
 }

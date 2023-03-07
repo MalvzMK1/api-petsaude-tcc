@@ -57,6 +57,23 @@ export default class Pet {
 			throw new Error(`${err}`);
 		}
 	}
+	async deletePet(petID: number) {
+		try {
+			return prisma.pet.delete({
+				where: {
+					id: petID,
+				},
+				include: {
+					petSize: true,
+					petGender: true,
+					petSpecie: true,
+				},
+			});
+		} catch (err) {
+			console.log(err);
+			throw new Error(`${err}`);
+		}
+	}
 }
 
 export class PetComplements {
