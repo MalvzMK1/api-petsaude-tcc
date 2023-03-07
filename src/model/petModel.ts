@@ -3,6 +3,40 @@ import { CreatePetInfosModelProps } from '../lib/petInfosProps';
 import prisma from '../lib/prisma';
 
 export default class Pet {
+	async findPet(petID: number) {
+		try {
+			const pet = await prisma.pet.findUnique({
+				where: {
+					id: petID,
+				},
+				include: {
+					petSize: true,
+					petGender: true,
+					petSpecie: true,
+				},
+			});
+			if (pet) return pet;
+			return false;
+		} catch (err) {
+			console.log(err);
+			throw new Error(`${err}`);
+		}
+	}
+	async findAllPets(userID: number) {
+		try {
+			const pets = await prisma.pet.findMany({
+				where: {
+					ownerId: userID,
+				},
+			});
+
+			if (pets.length > 0) return pets;
+			return false;
+		} catch (err) {
+			console.log(err);
+			throw new Error(`${err}`);
+		}
+	}
 	async createNewPet(pet: CreatePetInfosModelProps) {
 		try {
 			const createdPet = await prisma.pet.create({
@@ -18,6 +52,23 @@ export default class Pet {
 				},
 			});
 			return createdPet;
+		} catch (err) {
+			console.log(err);
+			throw new Error(`${err}`);
+		}
+	}
+	async deletePet(petID: number) {
+		try {
+			return prisma.pet.delete({
+				where: {
+					id: petID,
+				},
+				include: {
+					petSize: true,
+					petGender: true,
+					petSpecie: true,
+				},
+			});
 		} catch (err) {
 			console.log(err);
 			throw new Error(`${err}`);
