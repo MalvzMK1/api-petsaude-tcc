@@ -33,7 +33,8 @@ export default class Pet {
 			if (pets.length > 0) return pets;
 			return false;
 		} catch (err) {
-			throw new Error('No pets found in the database');
+			console.log(err);
+			throw new Error(`${err}`);
 		}
 	}
 	async createNewPet(pet: CreatePetInfosModelProps) {
