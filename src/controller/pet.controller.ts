@@ -10,7 +10,42 @@ const messages = new Messages();
 const petComplementsModel = new PetComplements();
 const petModel = new Pet();
 
-class PetController {
+export default class PetController {
+	async getPetById(petID: number) {
+		try {
+			const pet = await petModel.findPet(petID);
+			if (pet)
+				return {
+					statusCode: 200,
+					pet,
+				};
+			return {
+				statusCode: 404,
+				message: messages.MESSAGE_ERROR.NOT_FOUND_DB,
+			};
+		} catch (err) {
+			console.log(err);
+			return {
+				statusCode: 500,
+				message: messages.MESSAGE_ERROR.INTERNAL_ERROR_DB,
+			};
+		}
+	}
+	async getAllPets(userID: number) {
+		try {
+			const pets = await petModel.findAllPets(userID);
+			if (pets) return { statusCode: 200, pets };
+			return {
+				statusCode: 404,
+				message: messages.MESSAGE_ERROR.NOT_FOUND_DB,
+			};
+		} catch (err) {
+			return {
+				statusCode: 500,
+				message: messages.MESSAGE_ERROR.INTERNAL_ERROR_DB,
+			};
+		}
+	}
 	async createPet(pet: CreatePetInfosControllerProps) {
 		const petInfos = pet;
 
@@ -23,12 +58,13 @@ class PetController {
 			return { statusCode: 404, message: messages.MESSAGE_ERROR.NOT_FOUND_DB };
 
 		try {
-			const splitedDate = petInfos.birthDate.split('/');
+			const splittedDate = petInfos.birthDate.split('-');
 			birthDate = new Date(
-				`${parseInt(splitedDate[0])}-${parseInt(splitedDate[1])}-${parseInt(
-					splitedDate[2]
-				)}`
+				parseInt(splittedDate[0]),
+				parseInt(splittedDate[1]),
+				parseInt(splittedDate[2])
 			);
+			console.log(birthDate);
 		} catch (err) {
 			console.log(err);
 			return {
