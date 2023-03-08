@@ -3,15 +3,20 @@ import UserModel from '../model/userModel';
 import {
 	CreateUserInfosProps,
 	UpdateUserInfosProps,
-	UpdateSpecialties
+	UpdateSpecialities,
 } from '../lib/userInfosProps';
-import { VetInfos, Specialities, AnimalTypes, Address } from '@prisma/client';
+import {
+	VetInfos,
+	Specialities,
+	AnimalTypes,
+	Address,
+	User,
+} from '@prisma/client';
 
 const userModel = new UserModel();
 const message = new Message();
 
 class UserController {
-
 	async createUser(userInfos: CreateUserInfosProps) {
 		try {
 			const createdUser = await userModel.createUser(userInfos);
@@ -65,7 +70,7 @@ class UserController {
 			if (userInfos.length > 0)
 				return {
 					statusCode: 200,
-					message: userInfos[0],
+					user: userInfos[0],
 				};
 			return {
 				statusCode: 404,
@@ -104,11 +109,9 @@ class UserController {
 
 	async updateUser(userID: number, userInfos: UpdateUserInfosProps) {
 		try {
-
 			let vetInfosUpdate: VetInfos;
 
 			if (userInfos.isVet && userInfos.vetInfosId && userInfos.vetInfos) {
-
 				vetInfosUpdate = await userModel.updateVetInfos(
 					userInfos.vetInfosId,
 					userInfos.vetInfos
@@ -119,7 +122,6 @@ class UserController {
 						statusCode: 400,
 						message: message.MESSAGE_ERROR.INTERNAL_ERROR_DB,
 					};
-
 			}
 			const updatedUser = await userModel.updateUser(userID, userInfos);
 			if (updatedUser)
@@ -169,35 +171,31 @@ class UserController {
 			};
 		}
 	}
-	
-	async updateSpecialities(userID: number, specialitiesIDs: Array<number>) {
 
-		try { 
+	// TODO: async updateSpecialities(userID: number, specialitiesIDs: Array<number>) {
+	// 	try {
+	// 		const updatedUser = await userModel.updateSpecialtiesInfos(
+	// 			userID,
+	// 			specialitiesIDs
+	// 		);
 
-			const updatedUser = await userModel.updateSpecialtiesInfos(userID, specialitiesIDs);
-
-			if (updatedUser)
-				return {
-					statusCode: 204,
-					message: message.MESSAGE_SUCESS.UPDATE_ITEM ,
-				};
-			return {
-				statusCode: 500,
-				message: message.MESSAGE_ERROR.INTERNAL_ERROR_DB,
-			};
-
-		} catch (err) {
-			console.log(err);
-			return {
-				statusCode: 500,
-				message: message.MESSAGE_ERROR.INTERNAL_ERROR_DB,
-			};
-		}
-
-	}
+	// 		if (updatedUser)
+	// 			return {
+	// 				statusCode: 204,
+	// 				message: message.MESSAGE_SUCESS.UPDATE_ITEM,
+	// 			};
+	// 		return {
+	// 			statusCode: 500,
+	// 			message: message.MESSAGE_ERROR.INTERNAL_ERROR_DB,
+	// 		};
+	// 	} catch (err) {
+	// 		console.log(err);
+	// 		return {
+	// 			statusCode: 500,
+	// 			message: message.MESSAGE_ERROR.INTERNAL_ERROR_DB,
+	// 		};
+	// 	}
+	// }
 }
 
-export default
-	new UserController();
-
-
+export default new UserController();

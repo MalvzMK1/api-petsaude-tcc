@@ -139,27 +139,27 @@ export default async function userRoutes(fastify: FastifyInstance) {
 		res.status(updateUser.statusCode).send(updateUser.message);
 	});
 
-	fastify.put(
-		'/veterinarian/user/:id',
-		{ onRequest: authenticate },
-		async (req, res) => {
-			const bodyParams = z.array(z.number());
+	// TODO: fastify.put(
+	// 	'/veterinarian/user/:id',
+	// 	{ onRequest: authenticate },
+	// 	async (req, res) => {
+	// 		const bodyParams = z.array(z.number());
 
-			const queryParams = z.object({
-				userID: z.string(),
-			});
+	// 		const queryParams = z.object({
+	// 			userID: z.string(),
+	// 		});
 
-			const body = bodyParams.parse(req.body);
-			const { userID } = queryParams.parse(req.query);
+	// 		const body = bodyParams.parse(req.body);
+	// 		const { userID } = queryParams.parse(req.query);
 
-			const updateUser = await userController.updateSpecialities(
-				parseInt(userID),
-				body
-			);
+	// 		const updateUser = await userController.updateSpecialities(
+	// 			parseInt(userID),
+	// 			body
+	// 		);
 
-			res.status(updateUser.statusCode).send(updateUser.message);
-		}
-	);
+	// 		res.status(updateUser.statusCode).send(updateUser.message);
+	// 	}
+	// );
 
 	// fastify.put('/veterinarian/user/animal/:id', async (req, res) => {
 

@@ -3,6 +3,7 @@ import { z } from 'zod';
 import authenticate from '../middlewares/authenticate';
 import userController from '../controller/user.controller';
 import SpecialtiesController from '../controller/specialties.controller';
+import { jwtSignUser } from '../lib/userInfosProps';
 
 export default async function authRoutes(fastify: FastifyInstance) {
 	fastify.get('/auth', { onRequest: [authenticate] }, (req) => {
@@ -19,15 +20,25 @@ export default async function authRoutes(fastify: FastifyInstance) {
 
 		const foundUser = await userController.getUserByEmail(body.email);
 
-		if (foundUser.statusCode !== 404) {
-			if (body.password === foundUser.message.password) {
-				const { message } = foundUser;
+		if (foundUser.user) {
+			if (body.password === foundUser.user.password) {
+				const user: jwtSignUser = {
+					email: foundUser.user.email,
+					isVet: foundUser.user.isVet,
+					userName: foundUser.user.userName,
+					profileBannerPhoto: foundUser.user.profileBannerPhoto
+						? foundUser.user.profileBannerPhoto
+						: '',
+					profilePhoto: foundUser.user.profilePhoto
+						? foundUser.user.profilePhoto
+						: '',
+				};
 				const token = fastify.jwt.sign(
 					{
-						email: message.email,
-						profilePhoto: message.profilePhoto,
-						profileBannerPhoto: message.profileBannerPhoto,
-						isVet: message.isVet,
+						email: user.email,
+						profilePhoto: user.profilePhoto,
+						profileBannerPhoto: user.profileBannerPhoto,
+						isVet: user.isVet,
 						createdAt: new Date(),
 					},
 					{

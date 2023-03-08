@@ -3,7 +3,7 @@ import {
 	CreateUserInfosProps,
 	UpdateUserInfosProps,
 	UpdateVetInfosProps,
-	UpdateSpecialties
+	UpdateSpecialities,
 } from '../lib/userInfosProps';
 import { features } from 'process';
 
@@ -228,28 +228,31 @@ export default class UserModel {
 		}
 	}
 
-	async updateSpecialtiesInfos(vetInfosID: number, specialtiesID: Array<number>) {
-		try {
-			return await prisma.vetInfos.update({
-				where: {
-					id: vetInfosID,
-				},
-				data: {
-					VeterinaryEspecialities: {
-						update:{
-							specialitiesId: {
-								updateMany: {
-									specialitiesID: specialtiesID
-								},
-							}
-						}
-					}
-				},
-			});
-		} catch (err) {
-			throw new Error(`${err}`);
-		}
-	}
+	// TODO: async updateSpecialtiesInfos(
+	// 	vetInfosID: number,
+	// 	specialtiesID: Array<number>
+	// ) {
+	// 	try {
+	// 		return await prisma.vetInfos.update({
+	// 			where: {
+	// 				id: vetInfosID,
+	// 			},
+	// 			data: {
+	// 				VeterinaryEspecialities: {
+	// 					update: {
+	// 						specialitiesId: {
+	// 							updateMany: {
+	// 								specialitiesID: specialtiesID,
+	// 							},
+	// 						},
+	// 					},
+	// 				},
+	// 			},
+	// 		});
+	// 	} catch (err) {
+	// 		throw new Error(`${err}`);
+	// 	}
+	// }
 
 	async updateUser(userID: number, userInfos: UpdateUserInfosProps) {
 		try {
