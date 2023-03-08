@@ -6,6 +6,7 @@ import {
 	UpdateSpecialities,
 } from '../lib/userInfosProps';
 import { features } from 'process';
+import { create } from 'domain';
 
 export default class UserModel {
 	async createUser(userInfos: CreateUserInfosProps) {
@@ -228,31 +229,30 @@ export default class UserModel {
 		}
 	}
 
-	// TODO: async updateSpecialtiesInfos(
-	// 	vetInfosID: number,
-	// 	specialtiesID: Array<number>
-	// ) {
-	// 	try {
-	// 		return await prisma.vetInfos.update({
-	// 			where: {
-	// 				id: vetInfosID,
-	// 			},
-	// 			data: {
-	// 				VeterinaryEspecialities: {
-	// 					update: {
-	// 						specialitiesId: {
-	// 							updateMany: {
-	// 								specialitiesID: specialtiesID,
-	// 							},
-	// 						},
-	// 					},
-	// 				},
-	// 			},
-	// 		});
-	// 	} catch (err) {
-	// 		throw new Error(`${err}`);
-	// 	}
-	// }
+	async updateSpecialtiesInfos(vetInfosID: number, specialtiesID: any) {
+		try {
+			return specialtiesID.map(async element =>{
+				await prisma.veterinarySpecialities.upsert({
+					where: {
+					  id: vetInfosID
+					},
+					create:{
+
+						vetInfosId: vetInfosID,
+						specialitiesId: element
+						
+					},
+					update: {
+
+						specialitiesId: element
+						
+					},
+				})
+			})
+		} catch (err) {
+			throw new Error(`${err}`);
+		}
+	}
 
 	async updateUser(userID: number, userInfos: UpdateUserInfosProps) {
 		try {
@@ -261,15 +261,15 @@ export default class UserModel {
 					id: userID,
 				},
 				data: {
-					userName: userInfos.userName,
 					personName: userInfos.personName,
+					userName: userInfos.userName,
 					cpf: userInfos.cpf,
 					rg: userInfos.rg,
+					profilePhoto: userInfos.profilePhoto,
+					profileBannerPhoto: userInfos.profileBannerPhoto,
 					email: userInfos.email,
 					password: userInfos.password,
 					isVet: userInfos.isVet,
-					profilePhoto: userInfos.profilePhoto,
-					profileBannerPhoto: userInfos.profileBannerPhoto,
 					addressId: userInfos.addressId,
 					vetInfosId: userInfos.vetInfosId,
 				},

@@ -139,27 +139,41 @@ export default async function userRoutes(fastify: FastifyInstance) {
 		res.status(updateUser.statusCode).send(updateUser.message);
 	});
 
-	// TODO: fastify.put(
-	// 	'/veterinarian/user/:id',
-	// 	{ onRequest: authenticate },
-	// 	async (req, res) => {
-	// 		const bodyParams = z.array(z.number());
+	fastify.put('/veterinarian/user/:id', { onRequest: authenticate }, async (req, res) => {
 
-	// 		const queryParams = z.object({
-	// 			userID: z.string(),
-	// 		});
+		const bodyParams = z.object({
+			VeterinaryEspecialities: z.array(
+				z.object({
+					id: z.number(),
+					vetInfosId: z.number(),
+					specialitiesId: z.number(),
+					specialities: z.object({
+						id: z.number(),
+						name: z.string()
+					}),
+				}),
+			),
+		})
 
-	// 		const body = bodyParams.parse(req.body);
-	// 		const { userID } = queryParams.parse(req.query);
+		const queryParams = z.object({
+			vetInfosSpecialities: z.string(),
+		});
 
-	// 		const updateUser = await userController.updateSpecialities(
-	// 			parseInt(userID),
-	// 			body
-	// 		);
+		const body = bodyParams.parse(req.body);
 
-	// 		res.status(updateUser.statusCode).send(updateUser.message);
-	// 	}
-	// );
+
+		const { vetInfosSpecialities } = queryParams.parse(req.query);
+
+		const updateUser = await userController.updateSpecialities(
+			parseInt(vetInfosSpecialities),
+			body
+		);
+
+
+		res.status(updateUser.statusCode).send(updateUser.message);
+	}
+
+	);
 
 	// fastify.put('/veterinarian/user/animal/:id', async (req, res) => {
 
