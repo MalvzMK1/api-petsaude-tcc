@@ -20,6 +20,6 @@ fastify.register(userRoutes);
 fastify.register(authRoutes);
 fastify.register(petRoutes);
 
-fastify.listen({ port: 8080 });
+fastify.listen({ port: 3333 });
 
 export default fastify;

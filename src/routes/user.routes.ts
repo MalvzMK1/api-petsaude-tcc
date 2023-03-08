@@ -1,15 +1,13 @@
 import { FastifyInstance } from 'fastify';
-import userController from '../controller/userController';
-import PhoneNumberController from '../controller/phoneNumberController';
+import userController from '../controller/user.controller';
+import PhoneNumberController from '../controller/phoneNumber.controller';
 import authenticate from '../middlewares/authenticate';
 import { z } from 'zod';
 import Message from '../messages/message';
 
-
 const message = new Message();
 
 export default async function userRoutes(fastify: FastifyInstance) {
-
 	fastify.post('/user', async (req, res) => {
 		const bodyParams = z.object({
 			personName: z.string(),
@@ -61,27 +59,31 @@ export default async function userRoutes(fastify: FastifyInstance) {
 		res.status(createUser.statusCode).send(createUser.message);
 	});
 
-	fastify.post('/user/phone/:id', { onRequest: authenticate }, async (req, res) => {
-		const bodyParams = z.object({
-			number: z.string(),
-		});
+	fastify.post(
+		'/user/phone/:id',
+		{ onRequest: authenticate },
+		async (req, res) => {
+			const bodyParams = z.object({
+				number: z.string(),
+			});
 
-		const queryParams = z.object({
-			userID: z.string(),
-		});
+			const queryParams = z.object({
+				userID: z.string(),
+			});
 
-		const { userID } = queryParams.parse(req.query);
-		const { number } = bodyParams.parse(req.body);
+			const { userID } = queryParams.parse(req.query);
+			const { number } = bodyParams.parse(req.body);
 
-		if (!userID) res.status(400).send({ message: 'Required ID' });
+			if (!userID) res.status(400).send({ message: 'Required ID' });
 
-		const userInfos = await PhoneNumberController.PhoneUserAdd(-
-			parseInt(userID),
-			number
-		);
+			const userInfos = await PhoneNumberController.PhoneUserAdd(
+				-parseInt(userID),
+				number
+			);
 
-		res.status(userInfos.statusCode).send({ user: userInfos?.message });
-	});
+			res.status(userInfos.statusCode).send({ user: userInfos?.message });
+		}
+	);
 
 	fastify.get('/user/:id', { onRequest: authenticate }, async (req, res) => {
 		const queryParams = z.object({
@@ -98,12 +100,10 @@ export default async function userRoutes(fastify: FastifyInstance) {
 	});
 
 	fastify.get('/user/all', async (req, res) => {
-
 		const allUsers = await userController.getAllUsers();
 
-		res.status(allUsers.statusCode).send(allUsers.message)
-
-	})
+		res.status(allUsers.statusCode).send(allUsers.message);
+	});
 
 	fastify.put('/user/:id', { onRequest: authenticate }, async (req, res) => {
 		const bodyParams = z.object({
@@ -118,12 +118,14 @@ export default async function userRoutes(fastify: FastifyInstance) {
 			isVet: z.boolean(),
 			addressId: z.number(),
 			vetInfosId: z.optional(z.number()),
-			vetInfos: z.optional(z.object({
-				occupationArea: z.string(),
-				formation: z.string(),
-				institution: z.string(),
-				crmv: z.string(),
-			}))
+			vetInfos: z.optional(
+				z.object({
+					occupationArea: z.string(),
+					formation: z.string(),
+					institution: z.string(),
+					crmv: z.string(),
+				})
+			),
 		});
 		const queryParams = z.object({
 			userID: z.string(),
@@ -135,27 +137,29 @@ export default async function userRoutes(fastify: FastifyInstance) {
 		const updateUser = await userController.updateUser(parseInt(userID), body);
 
 		res.status(updateUser.statusCode).send(updateUser.message);
-
 	});
 
-	fastify.put('/veterinarian/user/:id', { onRequest: authenticate }, async (req, res) => {
+	fastify.put(
+		'/veterinarian/user/:id',
+		{ onRequest: authenticate },
+		async (req, res) => {
+			const bodyParams = z.array(z.number());
 
-		const bodyParams = z.array(z.number())
+			const queryParams = z.object({
+				userID: z.string(),
+			});
 
-		const queryParams = z.object({
-			userID: z.string(),
-		});
+			const body = bodyParams.parse(req.body);
+			const { userID } = queryParams.parse(req.query);
 
-		const body = bodyParams.parse(req.body);
-		const { userID } = queryParams.parse(req.query);
+			const updateUser = await userController.updateSpecialities(
+				parseInt(userID),
+				body
+			);
 
-		const updateUser = await userController.updateSpecialities(parseInt(userID), body)
-
-		res.status(updateUser.statusCode).send(updateUser.message);
-
-
-
-	});
+			res.status(updateUser.statusCode).send(updateUser.message);
+		}
+	);
 
 	// fastify.put('/veterinarian/user/animal/:id', async (req, res) => {
 
@@ -191,8 +195,5 @@ export default async function userRoutes(fastify: FastifyInstance) {
 		const result = await userController.deleteUser(parseInt(userID));
 
 		res.status(result.statusCode).send({ allUsers: result?.message });
-
 	});
-
-
 }

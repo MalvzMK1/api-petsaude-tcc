@@ -1,11 +1,10 @@
 import { FastifyInstance } from 'fastify';
 import { z } from 'zod';
 import authenticate from '../middlewares/authenticate';
-import userController from '../controller/userController';
-import SpecialtiesController from '../controller/specialtiesController';
+import userController from '../controller/user.controller';
+import SpecialtiesController from '../controller/specialties.controller';
 
 export default async function authRoutes(fastify: FastifyInstance) {
-	
 	fastify.get('/auth', { onRequest: [authenticate] }, (req) => {
 		return { user: req.user };
 	});
@@ -42,46 +41,52 @@ export default async function authRoutes(fastify: FastifyInstance) {
 		}
 		res.status(foundUser.statusCode).send({ message: foundUser.message });
 	});
-	fastify.post('/specialties', { onRequest: [authenticate] }, async (req, res) => {
-		const bodyParams = z.object({
-			name: z.string(),
-		});
+	fastify.post(
+		'/specialties',
+		{ onRequest: [authenticate] },
+		async (req, res) => {
+			const bodyParams = z.object({
+				name: z.string(),
+			});
 
-		const body = bodyParams.parse(req.body);
+			const body = bodyParams.parse(req.body);
 
-		let headerContentType = req.headers['content-type'];
+			let headerContentType = req.headers['content-type'];
 
-		if (headerContentType == 'application/json') {
-			if (JSON.stringify(body) != '{}') {
-				const foundSpecialties = await SpecialtiesController.createSpecialties(
-					body.name
-				);
-				res
-					.status(foundSpecialties.statusCode)
-					.send({ message: foundSpecialties.message });
-			} else res.status(404).send('the body cannot be empty');
-		} else
-			res.status(415).send('The request header has no valid content-type!');
-	});
-	fastify.post('/pet/specialties',{ onRequest: [authenticate] }, async (req, res) => {
-		const bodyParams = z.object({
-			name: z.string(),
-		});
+			if (headerContentType == 'application/json') {
+				if (JSON.stringify(body) != '{}') {
+					const foundSpecialties =
+						await SpecialtiesController.createSpecialties(body.name);
+					res
+						.status(foundSpecialties.statusCode)
+						.send({ message: foundSpecialties.message });
+				} else res.status(404).send('the body cannot be empty');
+			} else
+				res.status(415).send('The request header has no valid content-type!');
+		}
+	);
+	fastify.post(
+		'/pet/specialties',
+		{ onRequest: [authenticate] },
+		async (req, res) => {
+			const bodyParams = z.object({
+				name: z.string(),
+			});
 
-		const body = bodyParams.parse(req.body);
+			const body = bodyParams.parse(req.body);
 
-		let headerContentType = req.headers['content-type'];
+			let headerContentType = req.headers['content-type'];
 
-		if (headerContentType == 'application/json') {
-			if (JSON.stringify(body) != '{}') {
-				const foundSpecialties = await SpecialtiesController.createSpecialties(
-					body.name
-				);
-				res
-					.status(foundSpecialties.statusCode)
-					.send({ message: foundSpecialties.message });
-			} else res.status(404).send('the body cannot be empty');
-		} else
-			res.status(415).send('The request header has no valid content-type!');
-	});
+			if (headerContentType == 'application/json') {
+				if (JSON.stringify(body) != '{}') {
+					const foundSpecialties =
+						await SpecialtiesController.createSpecialties(body.name);
+					res
+						.status(foundSpecialties.statusCode)
+						.send({ message: foundSpecialties.message });
+				} else res.status(404).send('the body cannot be empty');
+			} else
+				res.status(415).send('The request header has no valid content-type!');
+		}
+	);
 }
