@@ -1,8 +1,8 @@
 import { FastifyInstance } from 'fastify';
 import authenticate from '../middlewares/authenticate';
 import { z } from 'zod';
-import { CreatePetInfosControllerProps } from '../lib/petInfosProps';
 import PetController from '../controller/pet.controller';
+import { PetInfosControllerProps } from '../lib/petInfosProps';
 
 const petController = new PetController();
 
@@ -48,7 +48,7 @@ export default async function petRoutes(fastify: FastifyInstance) {
 		const body = bodyParams.parse(request.body);
 		const { userID } = queryParams.parse(request.query);
 
-		const createPetInfos: CreatePetInfosControllerProps = {
+		const createPetInfos: PetInfosControllerProps = {
 			...body,
 			ownerId: parseInt(userID),
 		};
@@ -71,4 +71,36 @@ export default async function petRoutes(fastify: FastifyInstance) {
 			reply.status(200).send({ response: controllerResponse });
 		}
 	);
+	fastify.put('/pet', { onRequest: authenticate }, async (request, reply) => {
+		const bodyParams = z.object({
+			name: z.string(),
+			birthDate: z.string(),
+			photo: z.string(),
+			microship: z.boolean(),
+			size: z.string(),
+			gender: z.string(),
+			specie: z.string(),
+			ownerID: z.number(),
+		});
+		const queryParams = z.object({
+			petID: z.string(),
+		});
+
+		const { petID } = queryParams.parse(request.query);
+		const petInfos = bodyParams.parse(request.body);
+
+		const controllerResponse = await petController.updatePet(
+			parseInt(petID),
+			petInfos
+		);
+
+		if (controllerResponse.pet)
+			reply.status(controllerResponse.statusCode).send({
+				pet: controllerResponse.pet,
+				message: controllerResponse.message,
+			});
+		reply
+			.status(controllerResponse.statusCode)
+			.send({ message: controllerResponse.message });
+	});
 }

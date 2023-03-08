@@ -1,5 +1,8 @@
 import { PetGender, PetSize, PetSpecie } from '@prisma/client';
-import { CreatePetInfosModelProps } from '../lib/petInfosProps';
+import {
+	CreatePetInfosModelProps,
+	UpdatePetInfosModelProps,
+} from '../lib/petInfosProps';
 import prisma from '../lib/prisma';
 
 export default class Pet {
@@ -69,6 +72,29 @@ export default class Pet {
 					petSpecie: true,
 				},
 			});
+		} catch (err) {
+			console.log(err);
+			throw new Error(`${err}`);
+		}
+	}
+	async updatePet(petID: number, petInfos: UpdatePetInfosModelProps) {
+		try {
+			const updatedPet = await prisma.pet.update({
+				where: {
+					id: petID,
+				},
+				data: {
+					name: petInfos.name,
+					birthDate: petInfos.birthDate,
+					microship: petInfos.microship,
+					petGenderId: petInfos.genderId,
+					petSizeId: petInfos.sizeId,
+					petSpecieId: petInfos.specieId,
+					photo: petInfos.photo,
+				},
+			});
+			if (updatedPet) return updatedPet;
+			return null;
 		} catch (err) {
 			console.log(err);
 			throw new Error(`${err}`);
