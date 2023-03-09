@@ -211,49 +211,6 @@ export default class UserModel {
 			throw new Error(`${err}`);
 		}
 	}
-	async updateVetInfos(vetInfosID: number, vetInfos: UpdateVetInfosProps) {
-		try {
-			return await prisma.vetInfos.update({
-				where: {
-					id: vetInfosID,
-				},
-				data: {
-					crmv: vetInfos.crmv,
-					formation: vetInfos.formation,
-					institution: vetInfos.institution,
-					occupationArea: vetInfos.occupationArea,
-				},
-			});
-		} catch (err) {
-			throw new Error(`${err}`);
-		}
-	}
-
-	async updateSpecialtiesInfos(vetInfosID: number, specialtiesID: any) {
-		try {
-			return specialtiesID.map(async element =>{
-				await prisma.veterinarySpecialities.upsert({
-					where: {
-					  id: vetInfosID
-					},
-					create:{
-
-						vetInfosId: vetInfosID,
-						specialitiesId: element
-						
-					},
-					update: {
-
-						specialitiesId: element
-						
-					},
-				})
-			})
-		} catch (err) {
-			throw new Error(`${err}`);
-		}
-	}
-
 	async updateUser(userID: number, userInfos: UpdateUserInfosProps) {
 		try {
 			return await prisma.user.update({
@@ -340,6 +297,46 @@ export default class UserModel {
 			)
 				return true;
 			return false;
+		} catch (err) {
+			throw new Error(`${err}`);
+		}
+	}
+	async updateVetInfos(vetInfosID: number, vetInfos: UpdateVetInfosProps) {
+		try {
+			return await prisma.vetInfos.update({
+				where: {
+					id: vetInfosID,
+				},
+				data: {
+					crmv: vetInfos.crmv,
+					formation: vetInfos.formation,
+					institution: vetInfos.institution,
+					occupationArea: vetInfos.occupationArea,
+				},
+			});
+		} catch (err) {
+			throw new Error(`${err}`);
+		}
+	}
+	async updateSpecialtiesInfos(
+		vetInfosID: number,
+		specialtiesID: Array<{ specialitiesId: number }>
+	) {
+		try {
+			return specialtiesID.map(async (element) => {
+				await prisma.veterinarySpecialities.upsert({
+					where: {
+						id: vetInfosID,
+					},
+					create: {
+						vetInfosId: vetInfosID,
+						specialitiesId: element.specialitiesId,
+					},
+					update: {
+						specialitiesId: element.specialitiesId,
+					},
+				});
+			});
 		} catch (err) {
 			throw new Error(`${err}`);
 		}
