@@ -5,6 +5,8 @@ import authenticate from '../middlewares/authenticate';
 import { z } from 'zod';
 import Message from '../messages/message';
 import Messages from '../messages/message';
+import validateEmptyBody from '../utils/validateBody';
+import { UpdateUserInfosProps } from '../lib/userInfosProps';
 
 const message = new Message();
 
@@ -80,7 +82,7 @@ export default async function userRoutes(fastify: FastifyInstance) {
 
 			if (!userID) res.status(400).send({ message: 'Required ID' });
 
-			const userInfos = await PhoneNumberController.PhoneUserAdd(
+			const userInfos = await PhoneNumberController.createPhoneNumber(
 				-parseInt(userID),
 				number
 			);
@@ -103,13 +105,13 @@ export default async function userRoutes(fastify: FastifyInstance) {
 		res.status(userInfos.statusCode).send({ user: userInfos?.message });
 	});
 
-	fastify.get('/user/all', async (req, res) => {
+	fastify.get('/user/all', async (req, reply) => {
 		const allUsers = await userController.getAllUsers();
 
-		res.status(allUsers.statusCode).send(allUsers.message);
+		reply.status(allUsers.statusCode).send(allUsers.message);
 	});
 
-	fastify.put('/user/:id', { onRequest: authenticate }, async (req, res) => {
+	fastify.put('/user', { onRequest: authenticate }, async (request, reply) => {
 		const bodyParams = z.object({
 			personName: z.string(),
 			userName: z.string(),
@@ -118,20 +120,33 @@ export default async function userRoutes(fastify: FastifyInstance) {
 			profilePhoto: z.optional(z.string()),
 			profileBannerPhoto: z.optional(z.string()),
 			email: z.string(),
-			password: z.string(),
 			isVet: z.boolean(),
-			addressId: z.number(),
 		});
 		const queryParams = z.object({
 			userID: z.string(),
 		});
 
-		const body = bodyParams.parse(req.body);
-		const { userID } = queryParams.parse(req.query);
+		const rawBody: object = request.body!!;
+		if (!validateEmptyBody(rawBody)) {
+			reply
+				.status(400)
+				.send({ message: new Messages().MESSAGE_ERROR.EMPTY_BODY });
+		}
+		try {
+			bodyParams.parse(request.body);
+		} catch (error) {
+			console.log(error);
+			reply
+				.status(400)
+				.send({ message: message.MESSAGE_ERROR.TYPES_DOESNT_MATCH });
+		}
+
+		const body: UpdateUserInfosProps = bodyParams.parse(request.body);
+		const { userID } = queryParams.parse(request.query);
 
 		const updateUser = await userController.updateUser(parseInt(userID), body);
 
-		res.status(updateUser.statusCode).send(updateUser.message);
+		reply.status(updateUser.statusCode).send(updateUser.message);
 	});
 
 	fastify.put(

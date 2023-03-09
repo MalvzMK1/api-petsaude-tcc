@@ -5,7 +5,7 @@ const message = new Message();
 const phoneNumberModel = new PhoneNumberModel();
 
 class PhoneNumber {
-	async PhoneUserAdd(userID: number, PhoneNumber: string) {
+	async createPhoneNumber(userID: number, PhoneNumber: string) {
 		try {
 			const addPhone = await phoneNumberModel.createPhone(userID, PhoneNumber);
 
@@ -20,6 +20,26 @@ class PhoneNumber {
 					message: message.MESSAGE_ERROR.REQUIRED_FIELDS,
 				};
 			}
+		} catch (err) {
+			console.log(err);
+			return {
+				statusCode: 500,
+				message: message.MESSAGE_ERROR.INTERNAL_ERROR_DB,
+			};
+		}
+	}
+	async updatePhoneNumber(phoneNumberID: number, phoneNumber: string) {
+		try {
+			const updatedPhone = await phoneNumberModel.updatePhone(
+				phoneNumberID,
+				phoneNumber
+			);
+			console.log(updatedPhone);
+
+			return {
+				statusCode: 200,
+				message: message.MESSAGE_SUCESS.UPDATE_ITEM,
+			};
 		} catch (err) {
 			console.log(err);
 			return {

@@ -5,16 +5,11 @@ import {
 	UpdateUserInfosProps,
 	UpdateSpecialities,
 } from '../lib/userInfosProps';
-import {
-	VetInfos,
-	Specialities,
-	AnimalTypes,
-	Address,
-	User,
-} from '@prisma/client';
+import ValidateUserInfosProps from '../utils/validateUserInfosProps';
 
 const userModel = new UserModel();
 const message = new Message();
+const userValidation = new ValidateUserInfosProps();
 
 class UserController {
 	async createUser(userInfos: CreateUserInfosProps) {
@@ -107,20 +102,11 @@ class UserController {
 	}
 	async updateUser(userID: number, userInfos: UpdateUserInfosProps) {
 		try {
-			let vetInfosUpdate: VetInfos;
-
-			if (userInfos.isVet && userInfos.vetInfosId && userInfos.vetInfos) {
-				vetInfosUpdate = await userModel.updateVetInfos(
-					userInfos.vetInfosId,
-					userInfos.vetInfos
-				);
-
-				if (!vetInfosUpdate)
-					return {
-						statusCode: 400,
-						message: message.MESSAGE_ERROR.INTERNAL_ERROR_DB,
-					};
-			}
+			if (!userValidation.validateUpdateUserInfos(userInfos))
+				return {
+					statusCode: 400,
+					message: message.MESSAGE_ERROR.REQUIRED_FIELDS,
+				};
 			const updatedUser = await userModel.updateUser(userID, userInfos);
 			if (updatedUser)
 				return {

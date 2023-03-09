@@ -3,10 +3,7 @@ import {
 	CreateUserInfosProps,
 	UpdateUserInfosProps,
 	UpdateVetInfosProps,
-	UpdateSpecialities,
 } from '../lib/userInfosProps';
-import { features } from 'process';
-import { create } from 'domain';
 
 export default class UserModel {
 	async createUser(userInfos: CreateUserInfosProps) {
@@ -225,10 +222,7 @@ export default class UserModel {
 					profilePhoto: userInfos.profilePhoto,
 					profileBannerPhoto: userInfos.profileBannerPhoto,
 					email: userInfos.email,
-					password: userInfos.password,
 					isVet: userInfos.isVet,
-					addressId: userInfos.addressId,
-					vetInfosId: userInfos.vetInfosId,
 				},
 			});
 		} catch (err) {

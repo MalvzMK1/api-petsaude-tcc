@@ -13,4 +13,19 @@ export default class UserModel {
 			throw new Error(`${err}`);
 		}
 	}
+	async updatePhone(phoneID: number, phoneNumber: string) {
+		try {
+			return await prisma.phoneNumber.update({
+				where: {
+					id: phoneID,
+				},
+				data: {
+					number: phoneNumber,
+				},
+			});
+		} catch (err) {
+			console.log(err);
+			throw new Error(`${err}`);
+		}
+	}
 }

@@ -38,18 +38,7 @@ export interface UpdateUserInfosProps {
 	profilePhoto?: string;
 	profileBannerPhoto?: string;
 	email: string;
-	password: string;
 	isVet: boolean;
-	addressId: number;
-	vetInfosId?: number;
-	vetInfos?: {
-		occupationArea: string;
-		formation: string;
-		institution: string;
-		crmv: string;
-	};
-	animalTypes?: { id: number; name: String }[];
-	specialities?: { id: number; name: String }[];
 }
 
 export interface UpdateVetInfosProps {

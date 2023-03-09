@@ -14,6 +14,9 @@ export default class Messages {
 		NO_PET_SIZE_FOUND: 'Este tamanho de pet é invalido',
 		NO_PET_SPECIE_FOUND: 'Esta espécie de pet é invalida',
 		COULDNT_UPDATE_ITEM: 'Não foi possível atualizar o item',
+		TYPES_DOESNT_MATCH: 'Os tipos dos campos não condizem',
+		CITY_NOT_FOUND: 'A cidade requisitada não existe no banco de dados',
+		STATE_NOT_FOUND: 'O estado requisitado não existe no banco de dados',
 	};
 
 	MESSAGE_SUCESS = {
