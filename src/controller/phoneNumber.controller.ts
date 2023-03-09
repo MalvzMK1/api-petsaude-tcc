@@ -4,7 +4,7 @@ import Message from '../messages/message';
 const message = new Message();
 const phoneNumberModel = new PhoneNumberModel();
 
-class PhoneNumber {
+export default class PhoneNumberController {
 	async createPhoneNumber(userID: number, PhoneNumber: string) {
 		try {
 			const addPhone = await phoneNumberModel.createPhone(userID, PhoneNumber);
@@ -49,5 +49,3 @@ class PhoneNumber {
 		}
 	}
 }
-
-export default new PhoneNumber();
