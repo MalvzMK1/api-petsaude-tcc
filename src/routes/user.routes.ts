@@ -10,6 +10,7 @@ import validateEmptyBody from '../utils/validateBody';
 import { UpdateUserInfosProps } from '../lib/userInfosProps';
 
 const message = new Message();
+const phoneNumber = new PhoneNumberController()
 
 export default async function userRoutes(fastify: FastifyInstance) {
 	fastify.post('/user', async (req, res) => {
@@ -83,8 +84,8 @@ export default async function userRoutes(fastify: FastifyInstance) {
 
 			if (!userID) res.status(400).send({ message: 'Required ID' });
 
-			const userInfos = await PhoneNumberController.createPhoneNumber(
-				-parseInt(userID),
+			const userInfos = await phoneNumber.createPhoneNumber(
+				parseInt(userID),
 				number
 			);
 
@@ -157,7 +158,7 @@ export default async function userRoutes(fastify: FastifyInstance) {
 
 		const updateUser = await userController.updateUser(parseInt(userID), body);
 		
-		res.status(updateUser.statusCode).send(updateUser.message);
+		reply.status(updateUser.statusCode).send(updateUser.message);
 		
 	});
 
@@ -187,7 +188,7 @@ export default async function userRoutes(fastify: FastifyInstance) {
 		);
 
 
-		reply.status(updateUser.statusCode).send(updateUser.message);
+		res.status(updateUser.statusCode).send(updateUser.message);
 	});
 
 	fastify.put('/veterinarian/user/:id', { onRequest: authenticate }, async (req, res) => {
