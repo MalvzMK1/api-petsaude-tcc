@@ -7,11 +7,12 @@ import {
 } from '../lib/userInfosProps';
 import {
 	VetInfos,
-	Specialities,
 	AnimalTypes,
 	Address,
 	User,
 } from '@prisma/client';
+import prisma from '../lib/prisma';
+import SpecialtiesModel from '../model/specialtiesModel';
 
 const userModel = new UserModel();
 const message = new Message();
@@ -116,7 +117,6 @@ class UserController {
 					userInfos.vetInfosId,
 					userInfos.vetInfos
 				);
-
 				if (!vetInfosUpdate)
 					return {
 						statusCode: 400,
@@ -171,13 +171,60 @@ class UserController {
 			};
 		}
 	}
-	async updateSpecialities(vetInfosID: number, specialitiesIDs: object) {
+	async getSpecialtiesUser(vetInfosId: number) {
+
 		try {
-			const updatedUser = await userModel.updateSpecialtiesInfos(vetInfosID, specialitiesIDs);
+			const userInfos = await userModel.getSpecialities(vetInfosId);
+
+			if (!userInfos) {
+				return {
+					statusCode: 404,
+					message: message.MESSAGE_ERROR.NOT_FOUND_DB,
+				};
+			}
+
+			return {
+				statusCode: 200,
+				message: userInfos,
+			};
+		} catch (err) {
+			console.log(err);
+			return {
+				statusCode: 500,
+				message: message.MESSAGE_ERROR.INTERNAL_ERROR_DB,
+			};
+		}
+
+	}
+
+	async updateSpecialities(vetInfosId: number, specialitiesIDs: Array<{ id: number, specialtiesId: number, vetInfosId: number }>) {
+		try {
+			const updatedUser = await userModel.updateSpecialtiesInfos(vetInfosId, specialitiesIDs);
 			if (updatedUser)
 				return {
 					statusCode: 204,
-					message: message.MESSAGE_SUCESS.UPDATE_ITEM,
+					message: updatedUser,
+				};
+			return {
+				statusCode: 500,
+				message: message.MESSAGE_ERROR.INTERNAL_ERROR_DB,
+			};
+		} catch (err) {
+			console.log(err);
+			return {
+				statusCode: 500,
+				message: message.MESSAGE_ERROR.INTERNAL_ERROR_DB,
+			};
+		}
+	}
+
+	async updateSpecialitiesPet(vetInfosId: number, specialitiesPet: Array<{ id: number, animalTypesId: number, vetInfosId: number }>) {
+		try {
+			const updatedUser = await userModel.updatePetSpecialtiesInfos(vetInfosId, specialitiesPet);
+			if (updatedUser)
+				return {
+					statusCode: 204,
+					message: updatedUser,
 				};
 			return {
 				statusCode: 500,

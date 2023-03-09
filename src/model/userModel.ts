@@ -301,6 +301,7 @@ export default class UserModel {
 			throw new Error(`${err}`);
 		}
 	}
+
 	async updateVetInfos(vetInfosID: number, vetInfos: UpdateVetInfosProps) {
 		try {
 			return await prisma.vetInfos.update({
@@ -318,27 +319,92 @@ export default class UserModel {
 			throw new Error(`${err}`);
 		}
 	}
-	async updateSpecialtiesInfos(
-		vetInfosID: number,
-		specialtiesID: Array<{ specialitiesId: number }>
-	) {
+
+	async getSpecialities(vetInfosId: number){
 		try {
-			return specialtiesID.map(async (element) => {
-				await prisma.veterinarySpecialities.upsert({
-					where: {
-						id: vetInfosID,
-					},
-					create: {
-						vetInfosId: vetInfosID,
-						specialitiesId: element.specialitiesId,
-					},
-					update: {
-						specialitiesId: element.specialitiesId,
-					},
-				});
-			});
+			const specialties = await prisma.vetInfos.findUnique({
+				where:{
+					id: vetInfosId
+				},
+				include:{
+					VeterinaryEspecialities:{
+						include:{
+							specialities:true
+						}
+					}
+				}
+			})
+
+			return specialties?.VeterinaryEspecialities
+
 		} catch (err) {
 			throw new Error(`${err}`);
 		}
 	}
+
+	async updateSpecialtiesInfos(vetInfosId: number, specialtiesID: Array<{ id:number , specialtiesId: number, vetInfosId: number}>) {
+		try {
+
+			const specialties = specialtiesID.map(async (element) => {
+				await prisma.vetInfos.update({
+					where: {
+						id: element.vetInfosId
+					},
+					data:{
+						VeterinaryEspecialities:{
+							upsert:{
+								where:{
+									id: element.id
+								},
+								create:{
+									specialitiesId: element.specialtiesId
+								},
+								update:{
+									specialitiesId: element.specialtiesId
+								}
+							}
+						}
+					}
+				});
+			});
+
+			return specialties
+
+		} catch (err) { 
+			throw new Error(`${err}`);
+		}
+	}
+	async updatePetSpecialtiesInfos(vetInfosId: number, specialtiesPet: Array<{ id:number , animalTypesId: number, vetInfosId: number}>) {
+		try {
+
+			const specialties = specialtiesPet.map(async (element) => {
+				await prisma.vetInfos.update({
+					where: {
+						id: element.vetInfosId
+					},
+					data:{
+						AnimalTypesVetInfos:{
+							upsert:{
+								where:{
+									id: element.id
+								},
+								create:{
+									animalTypesId: element.animalTypesId
+								},
+								update:{
+									animalTypesId: element.animalTypesId
+								}
+							}
+						}
+					}
+				});
+			});
+
+			return specialties
+
+		} catch (err) { 
+			throw new Error(`${err}`);
+		}
+	}
+
 }
