@@ -329,77 +329,11 @@ export default class UserModel {
 				}
 			})
 
-			return specialties?.VeterinaryEspecialities
-
+			return specialties?.VeterinaryEspecialities;
+		
 		} catch (err) {
 			throw new Error(`${err}`);
 		}
 	}
-
-	async updateSpecialtiesInfos(vetInfosId: number, specialtiesID: Array<{ id:number , specialtiesId: number, vetInfosId: number}>) {
-		try {
-
-			const specialties = specialtiesID.map(async (element) => {
-				await prisma.vetInfos.update({
-					where: {
-						id: vetInfosId
-					},
-					data:{
-						VeterinaryEspecialities:{
-							upsert:{
-								where:{
-									id: element.id
-								},
-								create:{
-									specialitiesId: element.specialtiesId
-								},
-								update:{
-									specialitiesId: element.specialtiesId
-								}
-							}
-						}
-					}
-				});
-			});
-
-			return specialties
-
-		} catch (err) { 
-			throw new Error(`${err}`);
-		}
-	}
-
-	async updatePetSpecialtiesInfos(vetInfosId: number, specialtiesPet: Array<{ id:number , animalTypesId: number, vetInfosId: number}>) {
-		
-		try {
-			const petSpecialties = specialtiesPet.map(async (element) => {
-				await prisma.vetInfos.update({
-					where: {
-						id: vetInfosId
-					},
-					data:{
-						AnimalTypesVetInfos:{
-							upsert:{
-								where:{
-									id: element.id
-								},
-								create:{
-									animalTypesId: element.animalTypesId
-								},
-								update:{
-									animalTypesId: element.animalTypesId
-								}
-							}
-						}
-					}
-				});
-			});
-
-			return petSpecialties
-
-		} catch (err) { 
-			throw new Error(`${err}`);
-		}
-	}
-
+	
 }

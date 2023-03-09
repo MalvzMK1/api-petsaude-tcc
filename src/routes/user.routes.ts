@@ -1,7 +1,8 @@
 import { FastifyInstance } from 'fastify';
 import userController from '../controller/user.controller';
-import Specialities from '../controller/user.controller';
+import specialtiesPetsController from '../controller/specialtiesPets.controller';
 import PhoneNumberController from '../controller/phoneNumber.controller';
+import specialtiesController from '../controller/specialties.controller';
 import authenticate from '../middlewares/authenticate';
 import { z } from 'zod';
 import Message from '../messages/message';
@@ -182,7 +183,7 @@ export default async function userRoutes(fastify: FastifyInstance) {
 
 		const body = bodyParams.parse(req.body);
 
-		const updateUser = await userController.updateSpecialitiesPet(
+		const updateUser = await specialtiesPetsController.updateSpecialitiesPet(
 			parseInt(vetInfosId),
 			body.AnimalTypesVetInfos
 		);
@@ -211,7 +212,65 @@ export default async function userRoutes(fastify: FastifyInstance) {
 
 		const body = bodyParams.parse(req.body);
 
-		const updateUser = await userController.updateSpecialities(
+		const updateUser = await specialtiesController.updateSpecialities(
+			parseInt(vetInfosId),
+			body.VeterinaryEspecialities
+		);
+
+
+		res.status(updateUser.statusCode).send(updateUser.message);
+	});
+
+	fastify.delete('/veterinarian/user/pet/:id', { onRequest: authenticate }, async (req, res) => {
+
+		const bodyParams = z.object({
+			AnimalTypesVetInfos: z.array(
+				z.object({
+					id: z.number(),
+					vetInfosId: z.number(),
+					animalTypesId: z.number(),
+				}),
+			),
+		})
+
+		const queryParams = z.object({
+			vetInfosId: z.string(),
+		});
+
+		const { vetInfosId } = queryParams.parse(req.query);
+
+		const body = bodyParams.parse(req.body);
+
+		const updateUser = await specialtiesPetsController.deleteSpecialitiesPet(
+			parseInt(vetInfosId),
+			body.AnimalTypesVetInfos
+		);
+
+
+		res.status(updateUser.statusCode).send(updateUser.message);
+	});
+
+	fastify.delete('/veterinarian/user/:id', { onRequest: authenticate }, async (req, res) => {
+
+		const bodyParams = z.object({
+			VeterinaryEspecialities: z.array(
+				z.object({
+					id: z.number(),
+					vetInfosId: z.number(),
+					specialtiesId: z.number(),
+				}),
+			),
+		})
+
+		const queryParams = z.object({
+			vetInfosId: z.string(),
+		});
+
+		const { vetInfosId } = queryParams.parse(req.query);
+
+		const body = bodyParams.parse(req.body);
+
+		const updateUser = await specialtiesController.deleteSpecialities(
 			parseInt(vetInfosId),
 			body.VeterinaryEspecialities
 		);

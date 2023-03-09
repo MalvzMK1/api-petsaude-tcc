@@ -195,48 +195,6 @@ class UserController {
 		}
 
 	}
-
-	async updateSpecialities(vetInfosId: number, specialitiesIDs: Array<{ id: number, specialtiesId: number, vetInfosId: number }>) {
-		try {
-			const updatedUser = await userModel.updateSpecialtiesInfos(vetInfosId, specialitiesIDs);
-			if (updatedUser)
-				return {
-					statusCode: 204,
-					message: updatedUser,
-				};
-			return {
-				statusCode: 500,
-				message: message.MESSAGE_ERROR.INTERNAL_ERROR_DB,
-			};
-		} catch (err) {
-			console.log(err);
-			return {
-				statusCode: 500,
-				message: message.MESSAGE_ERROR.INTERNAL_ERROR_DB,
-			};
-		}
-	}
-
-	async updateSpecialitiesPet(vetInfosId: number, specialitiesPet: Array<{ id: number, animalTypesId: number, vetInfosId: number }>) {
-		try {
-			const updatedUser = await userModel.updatePetSpecialtiesInfos(vetInfosId, specialitiesPet);
-			if (updatedUser)
-				return {
-					statusCode: 204,
-					message: updatedUser,
-				};
-			return {
-				statusCode: 500,
-				message: message.MESSAGE_ERROR.INTERNAL_ERROR_DB,
-			};
-		} catch (err) {
-			console.log(err);
-			return {
-				statusCode: 500,
-				message: message.MESSAGE_ERROR.INTERNAL_ERROR_DB,
-			};
-		}
-	}
 }
 
 export default new UserController();

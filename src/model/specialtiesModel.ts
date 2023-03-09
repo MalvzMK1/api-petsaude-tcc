@@ -12,4 +12,58 @@ export default class SpecialtiesModel {
 			throw new Error(`${err}`);
 		}
 	}
+	async updateSpecialtiesInfos(vetInfosId: number, specialtiesID: Array<{ id: number, specialtiesId: number, vetInfosId: number }>) {
+
+		try {
+
+			const specialties = specialtiesID.map(async (element) => {
+				await prisma.vetInfos.update({
+					where: {
+						id: vetInfosId
+					},
+					data: {
+						VeterinaryEspecialities: {
+							upsert: {
+								where: {
+									id: element.id
+								},
+								create: {
+									specialitiesId: element.specialtiesId
+								},
+								update: {
+									specialitiesId: element.specialtiesId
+								}
+							}
+						}
+					}
+				});
+			});
+
+			return specialties
+
+		} catch (err) {
+			throw new Error(`${err}`);
+		}
+	}
+
+	async DeleteSpecialtiesInfos(vetInfosId: number, specialtiesID: Array<{ id: number, specialtiesId: number, vetInfosId: number }>) {
+
+		try {
+
+			const specialties = specialtiesID.map(async (element) => {
+				await prisma.veterinarySpecialities.deleteMany({
+					where: {
+						specialitiesId: element.specialtiesId,
+						vetInfosId: vetInfosId
+					},
+				});
+			});
+
+			return specialties
+
+		} catch (err) {
+			throw new Error(`${err}`);
+		}
+	}
+
 }
