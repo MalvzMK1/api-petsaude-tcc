@@ -83,7 +83,6 @@ class UserController {
 			};
 		}
 	}
-
 	async getAllUsers() {
 		try {
 			const getUsers = await userModel.findAllUsers();
@@ -106,7 +105,6 @@ class UserController {
 			};
 		}
 	}
-
 	async updateUser(userID: number, userInfos: UpdateUserInfosProps) {
 		try {
 			let vetInfosUpdate: VetInfos;
@@ -141,7 +139,6 @@ class UserController {
 			};
 		}
 	}
-
 	async deleteUser(userID: number) {
 		try {
 			const user = await userModel.findUserById(userID);
@@ -171,9 +168,15 @@ class UserController {
 			};
 		}
 	}
-	async updateSpecialities(vetInfosID: number, specialitiesIDs: object) {
+	async updateSpecialities(
+		vetInfosID: number,
+		specialitiesID: Array<{ specialitiesId: number }>
+	) {
 		try {
-			const updatedUser = await userModel.updateSpecialtiesInfos(vetInfosID, specialitiesIDs);
+			const updatedUser = await userModel.updateSpecialtiesInfos(
+				vetInfosID,
+				specialitiesID
+			);
 			if (updatedUser)
 				return {
 					statusCode: 204,
