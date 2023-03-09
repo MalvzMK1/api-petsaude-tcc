@@ -39,6 +39,14 @@ export interface UpdateUserInfosProps {
 	profileBannerPhoto?: string;
 	email: string;
 	isVet: boolean;
+	addressId: number;
+	vetInfosId?: number;
+	vetInfos?: {
+		occupationArea: string;
+		formation: string;
+		institution: string;
+		crmv: string;
+	};
 }
 
 export interface UpdateVetInfosProps {

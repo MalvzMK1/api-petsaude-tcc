@@ -1,5 +1,6 @@
 import Message from '../messages/message';
 import UserModel from '../model/userModel';
+import ValidateUserInfosProps from "../utils/validateUserInfosProps";
 import {
 	CreateUserInfosProps,
 	UpdateUserInfosProps,

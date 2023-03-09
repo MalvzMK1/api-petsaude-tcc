@@ -342,7 +342,7 @@ export default class UserModel {
 			const specialties = specialtiesID.map(async (element) => {
 				await prisma.vetInfos.update({
 					where: {
-						id: element.vetInfosId
+						id: vetInfosId
 					},
 					data:{
 						VeterinaryEspecialities:{
@@ -368,13 +368,14 @@ export default class UserModel {
 			throw new Error(`${err}`);
 		}
 	}
-	async updatePetSpecialtiesInfos(vetInfosId: number, specialtiesPet: Array<{ id:number , animalTypesId: number, vetInfosId: number}>) {
-		try {
 
-			const specialties = specialtiesPet.map(async (element) => {
+	async updatePetSpecialtiesInfos(vetInfosId: number, specialtiesPet: Array<{ id:number , animalTypesId: number, vetInfosId: number}>) {
+		
+		try {
+			const petSpecialties = specialtiesPet.map(async (element) => {
 				await prisma.vetInfos.update({
 					where: {
-						id: element.vetInfosId
+						id: vetInfosId
 					},
 					data:{
 						AnimalTypesVetInfos:{
@@ -394,7 +395,7 @@ export default class UserModel {
 				});
 			});
 
-			return specialties
+			return petSpecialties
 
 		} catch (err) { 
 			throw new Error(`${err}`);
