@@ -21,7 +21,7 @@ model User {
   personName         String        @map("person_name")
   userName           String        @map("user_name")
   cpf                String
-  rg                 String
+  rg                 String?
   profilePhoto       String?       @map("profile_photo")
   profileBannerPhoto String?       @map("profile_banner_photo")
   email              String        @unique

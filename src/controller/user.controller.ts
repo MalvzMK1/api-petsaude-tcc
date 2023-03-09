@@ -16,6 +16,7 @@ import SpecialtiesModel from '../model/specialtiesModel';
 
 const userModel = new UserModel();
 const message = new Message();
+const userValidation = new ValidateUserInfosProps();
 
 class UserController {
 	async createUser(userInfos: CreateUserInfosProps) {
@@ -84,7 +85,6 @@ class UserController {
 			};
 		}
 	}
-
 	async getAllUsers() {
 		try {
 			const getUsers = await userModel.findAllUsers();
@@ -107,7 +107,6 @@ class UserController {
 			};
 		}
 	}
-
 	async updateUser(userID: number, userInfos: UpdateUserInfosProps) {
 		try {
 			let vetInfosUpdate: VetInfos;
@@ -141,7 +140,6 @@ class UserController {
 			};
 		}
 	}
-
 	async deleteUser(userID: number) {
 		try {
 			const user = await userModel.findUserById(userID);
