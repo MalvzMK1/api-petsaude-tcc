@@ -5,6 +5,7 @@ import {
 	UpdateUserInfosProps,
 	UpdateSpecialities
 } from '../lib/userInfosProps';
+import { error } from 'console';
 
 const specialtiesModel = new SpecialtiesModel();
 const message = new Message();
@@ -34,7 +35,9 @@ class SpecialtiesController {
 	}
 	async updateSpecialities(vetInfosId: number, specialitiesIDs: Array<{ id: number, specialtiesId: number, vetInfosId: number }>) {
 		try {
+
 			const updatedUser = await specialtiesModel.updateSpecialtiesInfos(vetInfosId, specialitiesIDs);
+
 			if (updatedUser)
 				return {
 					statusCode: 204,
@@ -44,6 +47,7 @@ class SpecialtiesController {
 				statusCode: 500,
 				message: message.MESSAGE_ERROR.INTERNAL_ERROR_DB,
 			};
+
 		} catch (err) {
 			console.log(err);
 			return {
@@ -55,6 +59,7 @@ class SpecialtiesController {
 
 	async deleteSpecialities(vetInfosId: number, specialitiesIDs: Array<{ id: number, specialtiesId: number, vetInfosId: number }>) {
 		try {
+
 			const deleteUser = await specialtiesModel.DeleteSpecialtiesInfos(vetInfosId, specialitiesIDs);
 			if (deleteUser)
 				return {
@@ -65,6 +70,7 @@ class SpecialtiesController {
 				statusCode: 500,
 				message: message.MESSAGE_ERROR.INTERNAL_ERROR_DB,
 			};
+			
 		} catch (err) {
 			console.log(err);
 			return {

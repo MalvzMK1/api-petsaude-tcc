@@ -115,6 +115,7 @@ export default async function userRoutes(fastify: FastifyInstance) {
 	});
 
 	fastify.put('/user', { onRequest: authenticate }, async (request, reply) => {
+
 		const bodyParams = z.object({
 			personName: z.string(),
 			userName: z.string(),
@@ -135,11 +136,13 @@ export default async function userRoutes(fastify: FastifyInstance) {
 				}),
 			),
 		});
+
 		const queryParams = z.object({
 			userID: z.string(),
 		});
 
-		const rawBody: object = request.body!!;
+		const rawBody: object = request.body;
+		
 		if (!validateEmptyBody(rawBody)) {
 			reply
 				.status(400)
@@ -192,7 +195,7 @@ export default async function userRoutes(fastify: FastifyInstance) {
 		res.status(updateUser.statusCode).send(updateUser.message);
 	});
 
-	fastify.put('/veterinarian/user/:id', { onRequest: authenticate }, async (req, res) => {
+	fastify.put('/veterinarian/user/', { onRequest: authenticate }, async (req, res) => {
 
 		const bodyParams = z.object({
 			VeterinaryEspecialities: z.array(
@@ -279,20 +282,6 @@ export default async function userRoutes(fastify: FastifyInstance) {
 		res.status(updateUser.statusCode).send(updateUser.message);
 	});
 
-	fastify.get('/user/specialties/:id', async (req, res) => {
-
-		const queryParams = z.object({
-			vetInfosId: z.string(),
-		});
-
-		const { vetInfosId } = queryParams.parse(req.query);
-
-		const updateUser = await userController.getSpecialtiesUser(parseInt(vetInfosId))
-
-		res.status(updateUser.statusCode).send(updateUser.message);
-
-	});
-
 	fastify.delete('/user/:id', { onRequest: authenticate }, async (req, res) => {
 		const queryParams = z.object({
 			userID: z.string(),
@@ -308,5 +297,22 @@ export default async function userRoutes(fastify: FastifyInstance) {
 		const result = await userController.deleteUser(parseInt(userID));
 
 		res.status(result.statusCode).send({ allUsers: result?.message });
+	});
+
+	fastify.get('/user/:id', { onRequest: authenticate }, async (req, res) => {
+		const queryParams = z.object({
+			userID: z.string(),
+		});
+
+		const { userID } = queryParams.parse(req.query);
+
+		if (!userID)
+			res.status(400).send({
+				message: message.MESSAGE_ERROR.REQUIRED_ID,
+			});
+
+		const result = await userController.getUserById(parseInt(userID));
+
+		res.status(result.statusCode).send(result.message);
 	});
 }

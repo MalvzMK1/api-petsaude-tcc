@@ -170,31 +170,6 @@ class UserController {
 			};
 		}
 	}
-	async getSpecialtiesUser(vetInfosId: number) {
-
-		try {
-			const userInfos = await userModel.getSpecialities(vetInfosId);
-
-			if (!userInfos) {
-				return {
-					statusCode: 404,
-					message: message.MESSAGE_ERROR.NOT_FOUND_DB,
-				};
-			}
-
-			return {
-				statusCode: 200,
-				message: userInfos,
-			};
-		} catch (err) {
-			console.log(err);
-			return {
-				statusCode: 500,
-				message: message.MESSAGE_ERROR.INTERNAL_ERROR_DB,
-			};
-		}
-
-	}
 }
 
 export default new UserController();

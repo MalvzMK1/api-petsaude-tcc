@@ -313,27 +313,5 @@ export default class UserModel {
 			throw new Error(`${err}`);
 		}
 	}
-
-	async getSpecialities(vetInfosId: number){
-		try {
-			const specialties = await prisma.vetInfos.findUnique({
-				where:{
-					id: vetInfosId
-				},
-				include:{
-					VeterinaryEspecialities:{
-						include:{
-							specialities:true
-						}
-					}
-				}
-			})
-
-			return specialties?.VeterinaryEspecialities;
-		
-		} catch (err) {
-			throw new Error(`${err}`);
-		}
-	}
 	
 }

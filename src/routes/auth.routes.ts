@@ -3,6 +3,7 @@ import { z } from 'zod';
 import authenticate from '../middlewares/authenticate';
 import userController from '../controller/user.controller';
 import SpecialtiesController from '../controller/specialties.controller';
+import  SpecialtiesPetController  from "../controller/specialtiesPets.controller";
 import { jwtSignUser } from '../lib/userInfosProps';
 
 export default async function authRoutes(fastify: FastifyInstance) {
@@ -91,7 +92,7 @@ export default async function authRoutes(fastify: FastifyInstance) {
 			if (headerContentType == 'application/json') {
 				if (JSON.stringify(body) != '{}') {
 					const foundSpecialties =
-						await SpecialtiesController.createSpecialties(body.name);
+						await SpecialtiesPetController.createPetSpecialties(body.name);
 					res
 						.status(foundSpecialties.statusCode)
 						.send({ message: foundSpecialties.message });
