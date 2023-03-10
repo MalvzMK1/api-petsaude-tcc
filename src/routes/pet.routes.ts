@@ -50,7 +50,7 @@ export default async function petRoutes(fastify: FastifyInstance) {
 
 		const createPetInfos: PetInfosControllerProps = {
 			...body,
-			ownerId: parseInt(userID),
+			ownerID: parseInt(userID),
 		};
 
 		const controllerResponse = await petController.createPet(createPetInfos);
