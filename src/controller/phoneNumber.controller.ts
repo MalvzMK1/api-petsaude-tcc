@@ -1,16 +1,11 @@
 import PhoneNumberModel from '../model/phoneNumberModel';
 import Message from '../messages/message';
-import {
-	CreateUserInfosProps,
-	UpdateUserInfosProps,
-} from '../lib/userInfosProps';
-import { VetInfos } from '@prisma/client';
 
 const message = new Message();
 const phoneNumberModel = new PhoneNumberModel();
 
-class PhoneNumber {
-	async PhoneUserAdd(userID: number, PhoneNumber: string) {
+export default class PhoneNumberController {
+	async createPhoneNumber(userID: number, PhoneNumber: string) {
 		try {
 			const addPhone = await phoneNumberModel.createPhone(userID, PhoneNumber);
 
@@ -33,6 +28,24 @@ class PhoneNumber {
 			};
 		}
 	}
-}
+	async updatePhoneNumber(phoneNumberID: number, phoneNumber: string) {
+		try {
+			const updatedPhone = await phoneNumberModel.updatePhone(
+				phoneNumberID,
+				phoneNumber
+			);
+			console.log(updatedPhone);
 
-export default new PhoneNumber();
+			return {
+				statusCode: 200,
+				message: message.MESSAGE_SUCESS.UPDATE_ITEM,
+			};
+		} catch (err) {
+			console.log(err);
+			return {
+				statusCode: 500,
+				message: message.MESSAGE_ERROR.INTERNAL_ERROR_DB,
+			};
+		}
+	}
+}
