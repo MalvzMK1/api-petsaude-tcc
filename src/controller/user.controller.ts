@@ -2,18 +2,8 @@ import Message from '../messages/message';
 import UserModel from '../model/userModel';
 import ValidateUserInfosProps from "../utils/validateUserInfosProps";
 import {
-	CreateUserInfosProps,
-	UpdateUserInfosProps,
-	UpdateSpecialities,
-} from '../lib/userInfosProps';
-import {
 	VetInfos,
-	AnimalTypes,
-	Address,
-	User,
 } from '@prisma/client';
-import prisma from '../lib/prisma';
-import SpecialtiesModel from '../model/specialtiesModel';
 
 const userModel = new UserModel();
 const message = new Message();

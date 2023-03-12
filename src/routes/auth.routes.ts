@@ -2,9 +2,8 @@ import { FastifyInstance } from 'fastify';
 import { z } from 'zod';
 import authenticate from '../middlewares/authenticate';
 import userController from '../controller/user.controller';
-import SpecialtiesController from '../controller/specialties.controller';
-import  SpecialtiesPetController  from "../controller/specialtiesPets.controller";
-import { jwtSignUser } from '../lib/userInfosProps';
+import SpecialtiesController from '../controller/specialtiesController';
+import SpecialtiesPetController from '../controller/specialtiesPetsController';
 
 export default async function authRoutes(fastify: FastifyInstance) {
 	fastify.get('/auth', { onRequest: [authenticate] }, (req) => {
@@ -63,7 +62,7 @@ export default async function authRoutes(fastify: FastifyInstance) {
 
 			const body = bodyParams.parse(req.body);
 
-			let headerContentType = req.headers['content-type'];
+			const headerContentType = req.headers['content-type'];
 
 			if (headerContentType == 'application/json') {
 				if (JSON.stringify(body) != '{}') {
@@ -87,7 +86,7 @@ export default async function authRoutes(fastify: FastifyInstance) {
 
 			const body = bodyParams.parse(req.body);
 
-			let headerContentType = req.headers['content-type'];
+			const headerContentType = req.headers['content-type'];
 
 			if (headerContentType == 'application/json') {
 				if (JSON.stringify(body) != '{}') {

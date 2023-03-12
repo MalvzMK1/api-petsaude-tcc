@@ -1,4 +1,3 @@
-import { AddressUpdateModelProps } from '../lib/addressProps';
 import prisma from '../lib/prisma';
 
 export default class Address {

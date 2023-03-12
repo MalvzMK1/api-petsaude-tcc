@@ -1,4 +1,4 @@
-export interface CreatePetInfosModelProps {
+type CreatePetInfosModelProps = {
 	name: string;
 	birthDate: Date;
 	photo: string;
@@ -7,9 +7,9 @@ export interface CreatePetInfosModelProps {
 	genderId: number;
 	specieId: number;
 	ownerId: number;
-}
+};
 
-export interface PetInfosControllerProps {
+type PetInfosControllerProps = {
 	name: string;
 	birthDate: string;
 	photo: string;
@@ -18,9 +18,9 @@ export interface PetInfosControllerProps {
 	gender: string;
 	specie: string;
 	ownerID: number;
-}
+};
 
-export interface UpdatePetInfosModelProps {
+type UpdatePetInfosModelProps = {
 	name: string;
 	birthDate: Date;
 	photo: string;
@@ -29,4 +29,4 @@ export interface UpdatePetInfosModelProps {
 	genderId: number;
 	specieId: number;
 	ownerId: number;
-}
+};

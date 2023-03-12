@@ -1,4 +1,4 @@
-export interface CreateUserInfosProps {
+type CreateUserInfosProps = {
 	personName: string;
 	userName: string;
 	cpf: string;
@@ -28,9 +28,9 @@ export interface CreateUserInfosProps {
 	phoneNumber: {
 		number: string;
 	}[];
-}
+};
 
-export interface UpdateUserInfosProps {
+type UpdateUserInfosProps = {
 	personName: string;
 	userName: string;
 	cpf: string;
@@ -47,31 +47,31 @@ export interface UpdateUserInfosProps {
 		institution: string;
 		crmv: string;
 	};
-}
+};
 
-export interface UpdateVetInfosProps {
+type UpdateVetInfosProps = {
 	occupationArea: string;
 	formation: string;
 	institution: string;
 	crmv: string;
-	animalTypes?: { id: number; name: String }[];
-	specialities?: { id: number; name: String }[];
-}
+	animalTypes?: { id: number; name: string }[];
+	specialities?: { id: number; name: string }[];
+};
 
-export interface UpdateSpecialities {
+type UpdateSpecialities = {
 	id: number;
 	name: string;
-}
+};
 
-export interface postPhoneUser {
+type postPhoneUser = {
 	userId: number;
 	number: string;
-}
+};
 
-export interface jwtSignUser {
+type jwtSignUser = {
 	userName: string;
 	email: string;
 	profilePhoto: string;
 	profileBannerPhoto: string;
 	isVet: boolean;
-}
+};

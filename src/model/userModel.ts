@@ -1,9 +1,4 @@
 import prisma from '../lib/prisma';
-import {
-	CreateUserInfosProps,
-	UpdateUserInfosProps,
-	UpdateVetInfosProps,
-} from '../lib/userInfosProps';
 
 export default class UserModel {
 	async createUser(userInfos: CreateUserInfosProps) {
@@ -313,5 +308,5 @@ export default class UserModel {
 			throw new Error(`${err}`);
 		}
 	}
-	
+
 }

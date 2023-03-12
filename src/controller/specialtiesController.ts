@@ -1,11 +1,5 @@
 import Message from '../messages/message';
 import SpecialtiesModel from '../model/specialtiesModel';
-import {
-	CreateUserInfosProps,
-	UpdateUserInfosProps,
-	UpdateSpecialities
-} from '../lib/userInfosProps';
-import { error } from 'console';
 
 const specialtiesModel = new SpecialtiesModel();
 const message = new Message();
@@ -70,7 +64,7 @@ class SpecialtiesController {
 				statusCode: 500,
 				message: message.MESSAGE_ERROR.INTERNAL_ERROR_DB,
 			};
-			
+
 		} catch (err) {
 			console.log(err);
 			return {
