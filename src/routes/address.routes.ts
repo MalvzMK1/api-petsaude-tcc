@@ -2,8 +2,7 @@ import { FastifyInstance } from 'fastify';
 import authenticate from '../middlewares/authenticate';
 import { z } from 'zod';
 import Messages from '../messages/message';
-import { AddressUpdateControllerProps } from '../lib/addressProps';
-import AddressController from '../controller/address.controller';
+import AddressController from '../controller/addressController';
 
 const messages = new Messages();
 const addressController = new AddressController();

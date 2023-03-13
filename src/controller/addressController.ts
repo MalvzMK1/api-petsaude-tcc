@@ -1,7 +1,3 @@
-import {
-	AddressUpdateControllerProps,
-	AddressUpdateModelProps,
-} from '../lib/addressProps';
 import Messages from '../messages/message';
 import Address, { AddressComplements } from '../model/address.model';
 
