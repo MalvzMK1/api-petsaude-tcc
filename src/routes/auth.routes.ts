@@ -1,7 +1,7 @@
 import { FastifyInstance } from 'fastify';
 import { z } from 'zod';
 import authenticate from '../middlewares/authenticate';
-import userController from '../controller/user.controller';
+import userController from '../controller/userController';
 import SpecialtiesController from '../controller/specialtiesController';
 import SpecialtiesPetController from '../controller/specialtiesPetsController';
 

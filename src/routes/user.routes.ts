@@ -1,5 +1,5 @@
 import { FastifyInstance } from 'fastify';
-import userController from '../controller/user.controller';
+import userController from '../controller/userController';
 import specialtiesPetsController from '../controller/specialtiesPetsController';
 import PhoneNumberController from '../controller/phoneNumberController';
 import specialtiesController from '../controller/specialtiesController';
