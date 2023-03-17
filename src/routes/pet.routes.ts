@@ -1,8 +1,7 @@
 import { FastifyInstance } from 'fastify';
 import authenticate from '../middlewares/authenticate';
 import { z } from 'zod';
-import PetController from '../controller/pet.controller';
-import { PetInfosControllerProps } from '../lib/petInfosProps';
+import PetController from '../controller/petController';
 
 const petController = new PetController();
 
@@ -19,6 +18,7 @@ export default async function petRoutes(fastify: FastifyInstance) {
 			.status(controllerResponse.statusCode)
 			.send({ message: controllerResponse });
 	});
+
 	fastify.get('/pet/all', async (request, reply) => {
 		const queryParams = z.object({
 			userID: z.string(),
@@ -31,6 +31,7 @@ export default async function petRoutes(fastify: FastifyInstance) {
 			.status(controllerResponse.statusCode)
 			.send({ message: controllerResponse });
 	});
+
 	fastify.post('/pet', { onRequest: authenticate }, async (request, reply) => {
 		const bodyParams = z.object({
 			name: z.string(),
@@ -57,6 +58,7 @@ export default async function petRoutes(fastify: FastifyInstance) {
 
 		reply.send({ response: controllerResponse });
 	});
+
 	fastify.delete(
 		'/pet',
 		{ onRequest: authenticate },
@@ -71,6 +73,7 @@ export default async function petRoutes(fastify: FastifyInstance) {
 			reply.status(200).send({ response: controllerResponse });
 		}
 	);
+
 	fastify.put('/pet', { onRequest: authenticate }, async (request, reply) => {
 		const bodyParams = z.object({
 			name: z.string(),

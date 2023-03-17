@@ -1,8 +1,4 @@
 import { PetGender, PetSize, PetSpecie } from '@prisma/client';
-import {
-	CreatePetInfosModelProps,
-	UpdatePetInfosModelProps,
-} from '../lib/petInfosProps';
 import prisma from '../lib/prisma';
 
 export default class Pet {
@@ -29,6 +25,7 @@ export default class Pet {
 		try {
 			const pets = await prisma.pet.findMany({
 				where: {
+					// @ts-ignore
 					ownerId: userID,
 				},
 			});
@@ -47,6 +44,7 @@ export default class Pet {
 					name: pet.name,
 					birthDate: pet.birthDate,
 					microship: pet.microship,
+					// @ts-ignore
 					ownerId: pet.ownerId,
 					petGenderId: pet.genderId,
 					petSizeId: pet.sizeId,

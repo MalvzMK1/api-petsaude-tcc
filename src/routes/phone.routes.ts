@@ -3,7 +3,7 @@ import authenticate from '../middlewares/authenticate';
 import { z } from 'zod';
 import validateEmptyBody from '../utils/validateBody';
 import Messages from '../messages/message';
-import PhoneNumberController from '../controller/phoneNumber.controller';
+import PhoneNumberController from '../controller/phoneNumberController';
 
 const messages = new Messages();
 const phoneNumberController = new PhoneNumberController();
@@ -17,7 +17,7 @@ export default async function phoneRoutes(fastify: FastifyInstance) {
 			phoneNumber: z.string(),
 		});
 
-		const rawBody: object = request.body!!;
+		const rawBody = bodyParams.parse(request.body);
 		if (!validateEmptyBody(rawBody)) {
 			reply.status(400).send({ message: messages.MESSAGE_ERROR.EMPTY_BODY });
 		}

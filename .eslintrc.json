@@ -16,5 +16,7 @@
     "project": ["./tsconfig.json"]
   },
   "plugins": ["@typescript-eslint"],
-  "rules": {}
+  "rules": {
+		"@typescript-eslint/ban-ts-comment": "off"
+	}
 }

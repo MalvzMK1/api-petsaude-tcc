@@ -1,5 +1,3 @@
-import { UpdateUserInfosProps } from '../lib/userInfosProps';
-
 export default class ValidateUserInfosProps {
 	validateUpdateUserInfos(userInfos: UpdateUserInfosProps) {
 		if (

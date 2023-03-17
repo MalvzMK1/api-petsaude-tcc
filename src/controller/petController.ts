@@ -1,8 +1,3 @@
-import {
-	PetInfosControllerProps,
-	CreatePetInfosModelProps,
-	UpdatePetInfosModelProps,
-} from '../lib/petInfosProps';
 import Messages from '../messages/message';
 import { PetComplements } from '../model/petModel';
 import Pet from '../model/petModel';

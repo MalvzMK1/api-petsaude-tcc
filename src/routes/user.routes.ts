@@ -1,17 +1,16 @@
 import { FastifyInstance } from 'fastify';
-import userController from '../controller/user.controller';
-import specialtiesPetsController from '../controller/specialtiesPets.controller';
-import PhoneNumberController from '../controller/phoneNumber.controller';
-import specialtiesController from '../controller/specialties.controller';
+import userController from '../controller/userController';
+import specialtiesPetsController from '../controller/specialtiesPetsController';
+import PhoneNumberController from '../controller/phoneNumberController';
+import specialtiesController from '../controller/specialtiesController';
 import authenticate from '../middlewares/authenticate';
 import { z } from 'zod';
 import Message from '../messages/message';
 import Messages from '../messages/message';
 import validateEmptyBody from '../utils/validateBody';
-import { UpdateUserInfosProps } from '../lib/userInfosProps';
 
 const message = new Message();
-const phoneNumber = new PhoneNumberController()
+const phoneNumber = new PhoneNumberController();
 
 export default async function userRoutes(fastify: FastifyInstance) {
 	fastify.post('/user', async (req, res) => {
@@ -132,14 +131,16 @@ export default async function userRoutes(fastify: FastifyInstance) {
 					formation: z.string(),
 					institution: z.string(),
 					crmv: z.string(),
-				}),
+				})
 			),
 		});
+
 		const queryParams = z.object({
 			userID: z.string(),
 		});
 
-		const rawBody: object = request.body!!;
+		const rawBody = bodyParams.parse(request.body);
+
 		if (!validateEmptyBody(rawBody)) {
 			reply
 				.status(400)
@@ -158,140 +159,133 @@ export default async function userRoutes(fastify: FastifyInstance) {
 		const { userID } = queryParams.parse(request.query);
 
 		const updateUser = await userController.updateUser(parseInt(userID), body);
-		
+
 		reply.status(updateUser.statusCode).send(updateUser.message);
-		
 	});
 
-	fastify.put('/veterinarian/user/pet/:id', { onRequest: authenticate }, async (req, res) => {
+	fastify.put(
+		'/veterinarian/user/pet/:id',
+		{ onRequest: authenticate },
+		async (req, res) => {
+			const bodyParams = z.object({
+				AnimalTypesVetInfos: z.array(
+					z.object({
+						id: z.number(),
+						vetInfosId: z.number(),
+						animalTypesId: z.number(),
+					})
+				),
+			});
 
-		const bodyParams = z.object({
-			AnimalTypesVetInfos: z.array(
-				z.object({
-					id: z.number(),
-					vetInfosId: z.number(),
-					animalTypesId: z.number(),
-				}),
-			),
-		})
+			const queryParams = z.object({
+				vetInfosId: z.string(),
+			});
 
-		const queryParams = z.object({
-			vetInfosId: z.string(),
-		});
+			const { vetInfosId } = queryParams.parse(req.query);
 
-		const { vetInfosId } = queryParams.parse(req.query);
+			const body = bodyParams.parse(req.body);
 
-		const body = bodyParams.parse(req.body);
+			const updateUser = await specialtiesPetsController.updateSpecialitiesPet(
+				parseInt(vetInfosId),
+				body.AnimalTypesVetInfos
+			);
 
-		const updateUser = await specialtiesPetsController.updateSpecialitiesPet(
-			parseInt(vetInfosId),
-			body.AnimalTypesVetInfos
-		);
+			res.status(updateUser.statusCode).send(updateUser.message);
+		}
+	);
 
+	fastify.put(
+		'/veterinarian/user/',
+		{ onRequest: authenticate },
+		async (req, res) => {
+			const bodyParams = z.object({
+				VeterinaryEspecialities: z.array(
+					z.object({
+						id: z.number(),
+						vetInfosId: z.number(),
+						specialtiesId: z.number(),
+					})
+				),
+			});
 
-		res.status(updateUser.statusCode).send(updateUser.message);
-	});
+			const queryParams = z.object({
+				vetInfosId: z.string(),
+			});
 
-	fastify.put('/veterinarian/user/:id', { onRequest: authenticate }, async (req, res) => {
+			const { vetInfosId } = queryParams.parse(req.query);
 
-		const bodyParams = z.object({
-			VeterinaryEspecialities: z.array(
-				z.object({
-					id: z.number(),
-					vetInfosId: z.number(),
-					specialtiesId: z.number(),
-				}),
-			),
-		})
+			const body = bodyParams.parse(req.body);
 
-		const queryParams = z.object({
-			vetInfosId: z.string(),
-		});
+			const updateUser = await specialtiesController.updateSpecialities(
+				parseInt(vetInfosId),
+				body.VeterinaryEspecialities
+			);
 
-		const { vetInfosId } = queryParams.parse(req.query);
+			res.status(updateUser.statusCode).send(updateUser.message);
+		}
+	);
 
-		const body = bodyParams.parse(req.body);
+	fastify.delete(
+		'/veterinarian/user/pet/:id',
+		{ onRequest: authenticate },
+		async (req, res) => {
+			const bodyParams = z.object({
+				AnimalTypesVetInfos: z.array(
+					z.object({
+						id: z.number(),
+						vetInfosId: z.number(),
+						animalTypesId: z.number(),
+					})
+				),
+			});
 
-		const updateUser = await specialtiesController.updateSpecialities(
-			parseInt(vetInfosId),
-			body.VeterinaryEspecialities
-		);
+			const queryParams = z.object({
+				vetInfosId: z.string(),
+			});
 
+			const { vetInfosId } = queryParams.parse(req.query);
 
-		res.status(updateUser.statusCode).send(updateUser.message);
-	});
+			const body = bodyParams.parse(req.body);
 
-	fastify.delete('/veterinarian/user/pet/:id', { onRequest: authenticate }, async (req, res) => {
+			const updateUser = await specialtiesPetsController.deleteSpecialitiesPet(
+				parseInt(vetInfosId),
+				body.AnimalTypesVetInfos
+			);
 
-		const bodyParams = z.object({
-			AnimalTypesVetInfos: z.array(
-				z.object({
-					id: z.number(),
-					vetInfosId: z.number(),
-					animalTypesId: z.number(),
-				}),
-			),
-		})
+			res.status(updateUser.statusCode).send(updateUser.message);
+		}
+	);
 
-		const queryParams = z.object({
-			vetInfosId: z.string(),
-		});
+	fastify.delete(
+		'/veterinarian/user/:id',
+		{ onRequest: authenticate },
+		async (req, res) => {
+			const bodyParams = z.object({
+				VeterinaryEspecialities: z.array(
+					z.object({
+						id: z.number(),
+						vetInfosId: z.number(),
+						specialtiesId: z.number(),
+					})
+				),
+			});
 
-		const { vetInfosId } = queryParams.parse(req.query);
+			const queryParams = z.object({
+				vetInfosId: z.string(),
+			});
 
-		const body = bodyParams.parse(req.body);
+			const { vetInfosId } = queryParams.parse(req.query);
 
-		const updateUser = await specialtiesPetsController.deleteSpecialitiesPet(
-			parseInt(vetInfosId),
-			body.AnimalTypesVetInfos
-		);
+			const body = bodyParams.parse(req.body);
 
+			const updateUser = await specialtiesController.deleteSpecialities(
+				parseInt(vetInfosId),
+				body.VeterinaryEspecialities
+			);
 
-		res.status(updateUser.statusCode).send(updateUser.message);
-	});
-
-	fastify.delete('/veterinarian/user/:id', { onRequest: authenticate }, async (req, res) => {
-
-		const bodyParams = z.object({
-			VeterinaryEspecialities: z.array(
-				z.object({
-					id: z.number(),
-					vetInfosId: z.number(),
-					specialtiesId: z.number(),
-				}),
-			),
-		})
-
-		const queryParams = z.object({
-			vetInfosId: z.string(),
-		});
-
-		const { vetInfosId } = queryParams.parse(req.query);
-
-		const body = bodyParams.parse(req.body);
-
-		const updateUser = await specialtiesController.deleteSpecialities(
-			parseInt(vetInfosId),
-			body.VeterinaryEspecialities
-		);
-
-
-		res.status(updateUser.statusCode).send(updateUser.message);
-	});
-
-	fastify.get('/user/specialties/:id', async (req, res) => {
-
-		const queryParams = z.object({
-			vetInfosId: z.string(),
-		});
-
-		const { vetInfosId } = queryParams.parse(req.query);
-
-		const updateUser = await userController.getSpecialtiesUser(parseInt(vetInfosId))
-
-		res.status(updateUser.statusCode).send(updateUser.message);
-
-	});
+			res.status(updateUser.statusCode).send(updateUser.message);
+		}
+	);
 
 	fastify.delete('/user/:id', { onRequest: authenticate }, async (req, res) => {
 		const queryParams = z.object({
@@ -308,5 +302,22 @@ export default async function userRoutes(fastify: FastifyInstance) {
 		const result = await userController.deleteUser(parseInt(userID));
 
 		res.status(result.statusCode).send({ allUsers: result?.message });
+	});
+
+	fastify.get('/user/:id', { onRequest: authenticate }, async (req, res) => {
+		const queryParams = z.object({
+			userID: z.string(),
+		});
+
+		const { userID } = queryParams.parse(req.query);
+
+		if (!userID)
+			res.status(400).send({
+				message: message.MESSAGE_ERROR.REQUIRED_ID,
+			});
+
+		const result = await userController.getUserById(parseInt(userID));
+
+		res.status(result.statusCode).send(result.message);
 	});
 }
