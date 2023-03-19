@@ -1,33 +1,37 @@
 type CreateUserInfosProps = {
 	personName: string;
-	userName: string;
 	cpf: string;
-	rg: string;
-	profilePhoto?: string;
-	profileBannerPhoto?: string;
 	email: string;
 	password: string;
-	isVet: boolean;
-	cep: string;
-	street: string;
-	complement?: string;
-	number: string;
-	neighborhood: string;
-	cityId: number;
-	cityInitials: string;
-	cityName: string;
-	stateId: number;
-	vetInfos?: {
-		occupationArea: string;
-		formation: string;
-		institution: string;
-		crmv: string;
-		animalTypes: { name: string }[];
-		specialities: { name: string }[];
-	};
-	phoneNumber: {
+	cellphoneNumber: string;
+	phoneNumber: string;
+	address: {
+		zipCode: string;
+		neighborhood: string;
+		city: string;
+		state: string;
+		street: string;
 		number: string;
-	}[];
+		complement: string;
+	};
+};
+
+type CreateUserInfosModelProps = {
+	personName: string;
+	cpf: string;
+	email: string;
+	password: string;
+	cellphoneNumber: string;
+	phoneNumber: string;
+	address: {
+		cep: string;
+		neighborhood: string;
+		cityID: number;
+		stateID: number;
+		street: string;
+		number: string;
+		complement: string;
+	};
 };
 
 type UpdateUserInfosProps = {

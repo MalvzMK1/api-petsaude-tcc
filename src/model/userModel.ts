@@ -1,107 +1,139 @@
 import prisma from '../lib/prisma';
 
 export default class UserModel {
-	async createUser(userInfos: CreateUserInfosProps) {
+	async createUser(userInfos: CreateUserInfosModelProps) {
 		try {
-			if (!userInfos.isVet) {
-				return await prisma.user.create({
-					data: {
-						userName: userInfos.userName,
-						personName: userInfos.personName,
-						cpf: userInfos.cpf,
-						rg: userInfos.rg,
-						email: userInfos.email,
-						password: userInfos.password,
-						isVet: userInfos.isVet,
-						profilePhoto: userInfos.profilePhoto,
-						profileBannerPhoto: userInfos.profileBannerPhoto,
-						Address: {
-							create: {
-								cep: userInfos.cep,
-								number: userInfos.number,
-								street: userInfos.street,
-								complement: userInfos.complement,
-								neighborhood: userInfos.neighborhood,
-								city: {
-									connectOrCreate: {
-										where: {
-											id: userInfos.cityId,
-										},
-										create: {
-											name: userInfos.cityName,
-											stateId: userInfos.stateId,
-										},
-									},
+			return await prisma.user.create({
+				data: {
+					personName: userInfos.personName,
+					userName: '',
+					cpf: userInfos.cpf,
+					email: userInfos.email,
+					password: userInfos.password,
+					PhoneNumber: {
+						createMany: {
+							data: [
+								{
+									number: userInfos.cellphoneNumber,
 								},
-							},
-						},
-						PhoneNumber: {
-							create: {
-								number: userInfos.phoneNumber[0].number,
-							},
+								{
+									number: userInfos.phoneNumber,
+								},
+							],
 						},
 					},
-				});
-			} else if (userInfos.vetInfos)
-				return await prisma.user.create({
-					data: {
-						userName: userInfos.userName,
-						personName: userInfos.personName,
-						cpf: userInfos.cpf,
-						rg: userInfos.rg,
-						email: userInfos.email,
-						password: userInfos.password,
-						isVet: userInfos.isVet,
-						profilePhoto: userInfos.profilePhoto,
-						profileBannerPhoto: userInfos.profileBannerPhoto,
-						Address: {
-							create: {
-								cep: userInfos.cep,
-								number: userInfos.number,
-								street: userInfos.street,
-								complement: userInfos.complement,
-								neighborhood: userInfos.neighborhood,
-								city: {
-									connectOrCreate: {
-										where: {
-											id: userInfos.cityId,
-										},
-										create: {
-											name: userInfos.cityName,
-											stateId: userInfos.stateId,
-										},
-									},
-								},
-							},
-						},
-						vetInfos: {
-							create: {
-								crmv: userInfos.vetInfos.crmv,
-								formation: userInfos.vetInfos.formation,
-								occupationArea: userInfos.vetInfos.occupationArea,
-								institution: userInfos.vetInfos.institution,
-								AnimalTypesVetInfos: {
-									create: {
-										animalTypes: {
-											create: {
-												name: userInfos.vetInfos.animalTypes[0].name,
-											},
-										},
-									},
-								},
-								VeterinaryEspecialities: {
-									create: {
-										specialities: {
-											create: {
-												name: userInfos.vetInfos.specialities[0].name,
-											},
-										},
-									},
-								},
-							},
+					Address: {
+						create: {
+							cep: userInfos.address.cep,
+							neighborhood: userInfos.address.neighborhood,
+							number: userInfos.address.number,
+							street: userInfos.address.street,
+							complement: userInfos.address.complement,
+							cityId: userInfos.address.cityID,
 						},
 					},
-				});
+					isVet: false,
+				},
+			});
+			// if (!userInfos.isVet) {
+			// 	return await prisma.user.create({
+			// 		data: {
+			// 			userName: userInfos.userName,
+			// 			personName: userInfos.personName,
+			// 			cpf: userInfos.cpf,
+			// 			rg: userInfos.rg,
+			// 			email: userInfos.email,
+			// 			password: userInfos.password,
+			// 			isVet: userInfos.isVet,
+			// 			profilePhoto: userInfos.profilePhoto,
+			// 			profileBannerPhoto: userInfos.profileBannerPhoto,
+			// 			Address: {
+			// 				create: {
+			// 					cep: userInfos.cep,
+			// 					number: userInfos.number,
+			// 					street: userInfos.street,
+			// 					complement: userInfos.complement,
+			// 					neighborhood: userInfos.neighborhood,
+			// 					city: {
+			// 						connectOrCreate: {
+			// 							where: {
+			// 								id: userInfos.cityId,
+			// 							},
+			// 							create: {
+			// 								name: userInfos.cityName,
+			// 								stateId: userInfos.stateId,
+			// 							},
+			// 						},
+			// 					},
+			// 				},
+			// 			},
+			// 			PhoneNumber: {
+			// 				create: {
+			// 					number: userInfos.phoneNumber[0].number,
+			// 				},
+			// 			},
+			// 		},
+			// 	});
+			// } else if (userInfos.vetInfos)
+			// 	return await prisma.user.create({
+			// 		data: {
+			// 			userName: userInfos.userName,
+			// 			personName: userInfos.personName,
+			// 			cpf: userInfos.cpf,
+			// 			rg: userInfos.rg,
+			// 			email: userInfos.email,
+			// 			password: userInfos.password,
+			// 			isVet: userInfos.isVet,
+			// 			profilePhoto: userInfos.profilePhoto,
+			// 			profileBannerPhoto: userInfos.profileBannerPhoto,
+			// 			Address: {
+			// 				create: {
+			// 					cep: userInfos.cep,
+			// 					number: userInfos.number,
+			// 					street: userInfos.street,
+			// 					complement: userInfos.complement,
+			// 					neighborhood: userInfos.neighborhood,
+			// 					city: {
+			// 						connectOrCreate: {
+			// 							where: {
+			// 								id: userInfos.cityId,
+			// 							},
+			// 							create: {
+			// 								name: userInfos.cityName,
+			// 								stateId: userInfos.stateId,
+			// 							},
+			// 						},
+			// 					},
+			// 				},
+			// 			},
+			// 			vetInfos: {
+			// 				create: {
+			// 					crmv: userInfos.vetInfos.crmv,
+			// 					formation: userInfos.vetInfos.formation,
+			// 					occupationArea: userInfos.vetInfos.occupationArea,
+			// 					institution: userInfos.vetInfos.institution,
+			// 					AnimalTypesVetInfos: {
+			// 						create: {
+			// 							animalTypes: {
+			// 								create: {
+			// 									name: userInfos.vetInfos.animalTypes[0].name,
+			// 								},
+			// 							},
+			// 						},
+			// 					},
+			// 					VeterinaryEspecialities: {
+			// 						create: {
+			// 							specialities: {
+			// 								create: {
+			// 									name: userInfos.vetInfos.specialities[0].name,
+			// 								},
+			// 							},
+			// 						},
+			// 					},
+			// 				},
+			// 			},
+			// 		},
+			// 	});
 			return false;
 		} catch (err) {
 			throw new Error(`${err}`);
@@ -308,5 +340,4 @@ export default class UserModel {
 			throw new Error(`${err}`);
 		}
 	}
-
 }
