@@ -48,9 +48,11 @@ export default async function authRoutes(fastify: FastifyInstance) {
 
 				res.status(foundUser.statusCode).send({ token });
 			}
-			res.status(400).send({ message: 'Incorrect password' });
+			res.status(400).send({ message: 'Incorrect email or password' });
 		}
-		res.status(foundUser.statusCode).send({ message: foundUser.message });
+		res
+			.status(foundUser.statusCode)
+			.send({ message: 'Incorrect email or password' });
 	});
 	fastify.post(
 		'/specialties',

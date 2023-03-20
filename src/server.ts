@@ -24,6 +24,6 @@ fastify.register(petRoutes);
 fastify.register(addressRoutes);
 fastify.register(phoneNumberRoutes);
 
-fastify.listen({ port: 3333 });
+fastify.listen({ port: 8080 });
 
 export default fastify;

@@ -16,52 +16,29 @@ export default async function userRoutes(fastify: FastifyInstance) {
 	fastify.post('/user', async (req, res) => {
 		const bodyParams = z.object({
 			personName: z.string(),
-			userName: z.string(),
 			cpf: z.string(),
-			rg: z.string(),
-			profilePhoto: z.optional(z.string()),
-			profileBannerPhoto: z.optional(z.string()),
 			email: z.string(),
 			password: z.string(),
-			isVet: z.boolean(),
-			cep: z.string(),
-			street: z.string(),
-			number: z.string(),
-			complement: z.optional(z.string()),
-			neighborhood: z.string(),
-			cityId: z.number(),
-			cityInitials: z.string(),
-			cityName: z.string(),
-			stateId: z.number(),
-			vetInfos: z.optional(
-				z.object({
-					occupationArea: z.string(),
-					formation: z.string(),
-					institution: z.string(),
-					crmv: z.string(),
-					animalTypes: z.array(
-						z.object({
-							name: z.string(),
-						})
-					),
-					specialities: z.array(
-						z.object({
-							name: z.string(),
-						})
-					),
-				})
-			),
-			phoneNumber: z.array(
-				z.object({
-					number: z.string(),
-				})
-			),
+			cellphoneNumber: z.string(),
+			phoneNumber: z.string(),
+			address: z.object({
+				zipCode: z.string(),
+				complement: z.string(),
+				street: z.string(),
+				city: z.string(),
+				state: z.string(),
+				neighborhood: z.string(),
+				number: z.string(),
+			}),
 		});
+
 		const rawBody = req.body;
 		if (JSON.stringify(rawBody) === '{}')
 			res.status(400).send(new Messages().MESSAGE_ERROR.EMPTY_BODY);
 
 		const body = bodyParams.parse(req.body);
+		console.log(body);
+
 		const createUser = await userController.createUser(body);
 
 		res.status(createUser.statusCode).send(createUser.message);

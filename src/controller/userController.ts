@@ -1,19 +1,53 @@
 import Message from '../messages/message';
+import { AddressComplements } from '../model/address.model';
 import UserModel from '../model/userModel';
-import ValidateUserInfosProps from "../utils/validateUserInfosProps";
-import {
-	VetInfos,
-} from '@prisma/client';
+import ValidateUserInfosProps from '../utils/validateUserInfosProps';
+import { VetInfos } from '@prisma/client';
 
 const userModel = new UserModel();
 const message = new Message();
 const userValidation = new ValidateUserInfosProps();
+const addressController = new AddressComplements();
 
 class UserController {
 	async createUser(userInfos: CreateUserInfosProps) {
 		try {
-			const createdUser = await userModel.createUser(userInfos);
+			const city = await addressController.getCityByName(
+				userInfos.address.city
+			);
+			const state = await addressController.getStateByName(
+				userInfos.address.state
+			);
 
+			if (city === null)
+				return {
+					statusCode: 400,
+					message: message.MESSAGE_ERROR.CITY_NOT_FOUND,
+				};
+			if (state === null)
+				return {
+					statusCode: 400,
+					message: message.MESSAGE_ERROR.STATE_NOT_FOUND,
+				};
+
+			const userInfosToCreate: CreateUserInfosModelProps = {
+				personName: userInfos.personName,
+				cellphoneNumber: userInfos.cellphoneNumber,
+				phoneNumber: userInfos.phoneNumber,
+				cpf: userInfos.cpf,
+				email: userInfos.email,
+				password: userInfos.password,
+				address: {
+					cep: userInfos.address.zipCode,
+					cityID: city.id,
+					stateID: state.id,
+					complement: userInfos.address.complement,
+					neighborhood: userInfos.address.neighborhood,
+					number: userInfos.address.number,
+					street: userInfos.address.street,
+				},
+			};
+			const createdUser = await userModel.createUser(userInfosToCreate);
 			if (createdUser)
 				return {
 					statusCode: 201,
