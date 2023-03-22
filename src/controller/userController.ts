@@ -66,6 +66,34 @@ class UserController {
 		}
 	}
 
+	async createVetInfos(userId: number, vetInfos: createVeterinary){
+
+		try {
+			
+			const userInfos = await userModel.createVeterinary(userId,vetInfos)
+
+			if(userInfos) {
+				return {
+					statusCode: 200,
+					message: userInfos
+				}
+			} else {
+				return {
+					statusCode: 400,
+					message: message.MESSAGE_ERROR.INTERNAL_ERROR_DB
+				}
+			}
+
+		} catch (err) {
+			console.log(err)
+			return {
+				statusCode: 500,
+				message: message.MESSAGE_ERROR.INTERNAL_ERROR_DB
+			}
+		}
+
+	}
+
 	async getUserById(userID: number) {
 		try {
 			const userInfos = await userModel.findUserById(userID);

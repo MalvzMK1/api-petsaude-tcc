@@ -47,6 +47,8 @@ model VetInfos {
   formation      String
   institution    String
   crmv           String
+  dateFormation  DateTime
+  dateActing     DateTime 
 
   AnimalTypesVetInfos     AnimalTypesVetInfos[]
   User                    User[]

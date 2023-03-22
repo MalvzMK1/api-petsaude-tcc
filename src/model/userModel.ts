@@ -139,6 +139,35 @@ export default class UserModel {
 			throw new Error(`${err}`);
 		}
 	}
+
+	async createVeterinary(userId: number ,vetInfos: createVeterinary){
+
+		try {
+
+			return await prisma.user.update({
+				where: {
+					id: userId
+				},
+				data: {
+					vetInfos:{
+						create:{
+							crmv: vetInfos.crmv, 
+							occupationArea: vetInfos.occupationArea, 
+							formation: vetInfos.formation, 
+							institution: vetInfos.institution,
+							dateActing: vetInfos.dateActing,
+							dateFormation: vetInfos.dateFormation,
+						}
+					}
+				}
+			})
+				
+		} catch (err) {
+			
+		}
+
+	}
+
 	async findAllUsers() {
 		try {
 			return await prisma.user.findMany({
