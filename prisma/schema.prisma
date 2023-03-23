@@ -33,7 +33,7 @@ model User {
   addressId Int     @map("address_id")
   Address   Address @relation(fields: [addressId], references: [id])
 
-  vetInfosId Int?      @map("vet_infos_id")
+  vetInfosId Int?      @map("vet_infos_id") @unique
   vetInfos   VetInfos? @relation(fields: [vetInfosId], references: [id])
 
   @@map("tbl_user")
@@ -42,17 +42,17 @@ model User {
 // ************************** VET INFOS **************************
 
 model VetInfos {
-  id             Int    @id @default(autoincrement())
-  occupationArea String
-  formation      String
-  institution    String
-  crmv           String
-  dateFormation  DateTime
-  dateActing     DateTime 
+  id              Int      @id @default(autoincrement())
+  occupationArea  String
+  formation       String
+  institution     String
+  crmv            String
+  formationDate   DateTime
+  startActingDate DateTime
 
   AnimalTypesVetInfos     AnimalTypesVetInfos[]
-  User                    User[]
-  VeterinaryEspecialities VeterinarySpecialities[]
+	VeterinaryEspecialities VeterinarySpecialities[]
+	User                    User[]
 
   @@map("tbl_vet_infos")
 }
@@ -99,7 +99,7 @@ model AnimalTypes {
 
 model PhoneNumber {
   id     Int    @id @default(autoincrement())
-  number String @unique
+  number String
 
   userId Int  @map("user_id")
   User   User @relation(fields: [userId], references: [id])

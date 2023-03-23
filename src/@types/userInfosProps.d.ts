@@ -53,17 +53,26 @@ type UpdateUserInfosProps = {
 	};
 };
 
-type createVeterinary = {
-
+type createVeterinaryController = {
 	occupationArea: string;
 	formation: string;
 	institution: string;
 	crmv: string;
-	dateActing: string,
-	dateFormation: string,
+	startActingDate: string,
+	formationDate: string,
 	animalTypes?: { id: number; name: string }[];
 	specialities?: { id: number; name: string }[];
+}
 
+type createVeterinaryModel = {
+	occupationArea: string;
+	formation: string;
+	institution: string;
+	crmv: string;
+	startActingDate: Date,
+	formationDate: Date,
+	animalTypes?: { id: number; name: string }[];
+	specialities?: { id: number; name: string }[];
 }
 
 type UpdateVetInfosProps = {

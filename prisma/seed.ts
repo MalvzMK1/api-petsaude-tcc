@@ -112,8 +112,8 @@ async function main() {
 					formation: 'That one',
 					institution: 'Harvard',
 					occupationArea: 'Clinic',
-					dateActing: new Date('2023/01/05'),
-					dateFormation: new Date('2022/01/05'),
+					formationDate: new Date('2023-03-23'),
+					startActingDate: new Date('2023-03-23'),
 					AnimalTypesVetInfos: {
 						create: {
 							animalTypes: {

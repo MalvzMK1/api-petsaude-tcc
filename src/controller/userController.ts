@@ -66,11 +66,18 @@ class UserController {
 		}
 	}
 
-	async createVetInfos(userId: number, vetInfos: createVeterinary){
-
+	async createVetInfos(userId: number, infos: createVeterinaryController){
 		try {
-			
-			const userInfos = await userModel.createVeterinary(userId,vetInfos)
+			const vetInfos: createVeterinaryModel = {
+				crmv: infos.crmv,
+				formation: infos.formation,
+				institution: infos.institution,
+				occupationArea: infos.occupationArea,
+				formationDate: new Date(infos.formationDate),
+				startActingDate: new Date(infos.startActingDate)
+			}
+			await userModel.updateIsVet(userId, true)
+			const userInfos = await userModel.createVeterinary(userId, vetInfos)
 
 			if(userInfos) {
 				return {

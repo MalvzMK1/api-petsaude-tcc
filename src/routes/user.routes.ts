@@ -4,10 +4,11 @@ import specialtiesPetsController from '../controller/specialtiesPetsController';
 import PhoneNumberController from '../controller/phoneNumberController';
 import specialtiesController from '../controller/specialtiesController';
 import authenticate from '../middlewares/authenticate';
-import { z } from 'zod';
+import {object, z} from 'zod';
 import Message from '../messages/message';
 import Messages from '../messages/message';
 import validateEmptyBody from '../utils/validateBody';
+import {start} from "repl";
 
 const message = new Message();
 const phoneNumber = new PhoneNumberController();
@@ -43,33 +44,6 @@ export default async function userRoutes(fastify: FastifyInstance) {
 
 		res.status(createUser.statusCode).send(createUser.message);
 	});
-	fastify.post('/veterinarian/user/:id', async (req, res) => {
-
-		const bodyParams = z.object ({
-			crmv: z.string(), 
-			occupationArea: z.string(), 
-			formation: z.string(), 
-			institution: z.string(),
-			dateActing: z.string(),
-			dateFormation: z.string(),
-		})
-
-		const queryParams = z.object({userId:z.string()})
-
-		const rawBody = req.body;
-		if (JSON.stringify(rawBody) === '{}') 
-			res.status(400).send(new Messages().MESSAGE_ERROR.EMPTY_BODY);
-
-		
-		const body = bodyParams.parse(req.body)
-		const { userId } = queryParams.parse(req.query);
-		const result = await userController.createVetInfos(parseInt(userId), body)
-
-
-		res.status(result.statusCode).send(result.message);
-
-
-	})
 
 	fastify.post(
 		'/user/phone/:id',
