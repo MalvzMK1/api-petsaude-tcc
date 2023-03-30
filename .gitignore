@@ -4,3 +4,4 @@ node_modules
 bin
 .env
 prisma/ERD.svg
+.deployment
