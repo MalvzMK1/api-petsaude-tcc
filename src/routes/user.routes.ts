@@ -142,7 +142,7 @@ export default async function userRoutes(fastify: FastifyInstance) {
 	});
 
 	fastify.put(
-		'/veterinarian/user/pet/:id',
+		'/veterinarian/user/pet',
 		{ onRequest: authenticate },
 		async (req, res) => {
 			const bodyParams = z.object({
@@ -155,16 +155,9 @@ export default async function userRoutes(fastify: FastifyInstance) {
 				),
 			});
 
-			const queryParams = z.object({
-				vetInfosId: z.string(),
-			});
-
-			const { vetInfosId } = queryParams.parse(req.query);
-
 			const body = bodyParams.parse(req.body);
 
 			const updateUser = await specialtiesPetsController.updateSpecialitiesPet(
-				parseInt(vetInfosId),
 				body.AnimalTypesVetInfos
 			);
 
@@ -185,17 +178,9 @@ export default async function userRoutes(fastify: FastifyInstance) {
 					})
 				),
 			});
-
-			const queryParams = z.object({
-				vetInfosId: z.string(),
-			});
-
-			const { vetInfosId } = queryParams.parse(req.query);
-
 			const body = bodyParams.parse(req.body);
 
 			const updateUser = await specialtiesController.updateSpecialities(
-				parseInt(vetInfosId),
 				body.VeterinaryEspecialities
 			);
 
@@ -204,7 +189,7 @@ export default async function userRoutes(fastify: FastifyInstance) {
 	);
 
 	fastify.delete(
-		'/veterinarian/user/pet/:id',
+		'/veterinarian/user/pet',
 		{ onRequest: authenticate },
 		async (req, res) => {
 			const bodyParams = z.object({
@@ -217,16 +202,9 @@ export default async function userRoutes(fastify: FastifyInstance) {
 				),
 			});
 
-			const queryParams = z.object({
-				vetInfosId: z.string(),
-			});
-
-			const { vetInfosId } = queryParams.parse(req.query);
-
 			const body = bodyParams.parse(req.body);
 
 			const updateUser = await specialtiesPetsController.deleteSpecialitiesPet(
-				parseInt(vetInfosId),
 				body.AnimalTypesVetInfos
 			);
 
@@ -235,7 +213,7 @@ export default async function userRoutes(fastify: FastifyInstance) {
 	);
 
 	fastify.delete(
-		'/veterinarian/user/:id',
+		'/veterinarian/user',
 		{ onRequest: authenticate },
 		async (req, res) => {
 			const bodyParams = z.object({
@@ -248,16 +226,10 @@ export default async function userRoutes(fastify: FastifyInstance) {
 				),
 			});
 
-			const queryParams = z.object({
-				vetInfosId: z.string(),
-			});
-
-			const { vetInfosId } = queryParams.parse(req.query);
 
 			const body = bodyParams.parse(req.body);
 
 			const updateUser = await specialtiesController.deleteSpecialities(
-				parseInt(vetInfosId),
 				body.VeterinaryEspecialities
 			);
 

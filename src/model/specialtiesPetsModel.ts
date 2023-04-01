@@ -12,40 +12,67 @@ export default class SpecialtiesPetModel {
 			throw new Error(`${err}`);
 		}
 	}
-	async updatePetSpecialtiesInfos(vetInfosId: number, specialtiesPet: Array<{ id: number, animalTypesId: number, vetInfosId: number }>) {
+	async updatePetSpecialtiesInfos(specialtiesPet: Array<{ id: number, animalTypesId: number, vetInfosId: number }>) {
 
 		try {
 
-			const specialitiesPet = specialtiesPet.map(async (element) => {
-				await prisma.vetInfos.update({
-					where:{
-						id: vetInfosId
-					},
-					data:{
-						AnimalTypesVetInfos:{
-							upsert:{
-								where:{
-									id: element.id,
-								},
-								create:{
-									animalTypesId: element.animalTypesId
-								},
-								update:{
-									animalTypesId: element.animalTypesId
-								},
-							},
+			const specialtiesPets = specialtiesPet.map(async (element) => {
+
+				const sql = `select * from tbl_animal_type_vet_infos where animal_type_id = ${element.animalTypesId} AND vet_infos_id = ${element.vetInfosId}`
+
+				const result = await prisma.$queryRawUnsafe(sql)
+
+				if (result) {
+					
+					await prisma.veterinarySpecialities.update({
+						where: {
+							id: element.id
 						},
-					},
-				});
+						data:{
+							vetInfosId: element.vetInfosId,
+							specialitiesId: element.animalTypesId
+						}
+					})
+
+				} else {
+					await prisma.veterinarySpecialities.create({
+						data:{
+							specialitiesId: element.animalTypesId,
+							vetInfosId: element.vetInfosId
+						}
+					})
+				}
+
+			// const specialitiesPet = specialtiesPet.map(async (element) => {
+			// 	await prisma.vetInfos.update({
+			// 		where:{
+			// 			id: vetInfosId
+			// 		},
+			// 		data:{
+			// 			AnimalTypesVetInfos:{
+			// 				upsert:{
+			// 					where:{
+			// 						id: element.id,
+			// 					},
+			// 					create:{
+			// 						animalTypesId: element.animalTypesId
+			// 					},
+			// 					update:{
+			// 						animalTypesId: element.animalTypesId
+			// 					},
+			// 				},
+			// 			},
+			// 		},
+			// 	});
 			});
 
-			return specialitiesPet
+			return specialtiesPets
 
 		} catch (err) {
 			throw new Error(`${err}`);
 		}
 	} 
-	async DeleteSpecialtiesPet(vetInfosId: number, specialtiesPetID: Array<{ id: number, animalTypesId: number, vetInfosId: number }>) {
+	async DeleteSpecialtiesPet(specialtiesPetID: Array<{ id: number, animalTypesId: number, vetInfosId: number }>) {
  
 		try {
 
@@ -53,7 +80,8 @@ export default class SpecialtiesPetModel {
 				await prisma.animalTypesVetInfos.deleteMany({
 					where: {
 						animalTypesId: element.animalTypesId,
-						vetInfosId: vetInfosId
+						vetInfosId: element.vetInfosId
+						// vetInfosId: vetInfosId
 					},
 				});
 			});
