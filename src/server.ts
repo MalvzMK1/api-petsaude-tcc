@@ -2,7 +2,9 @@ import Fastify from 'fastify';
 import cors from '@fastify/cors';
 import jwt from '@fastify/jwt';
 
-const fastify = Fastify();
+const fastify = Fastify({
+	   logger: true
+});
 
 import userRoutes from './routes/user.routes';
 import authRoutes from './routes/auth.routes';
