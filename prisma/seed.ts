@@ -1,4 +1,5 @@
 import { PrismaClient } from '@prisma/client';
+
 const prisma = new PrismaClient();
 
 async function main() {
@@ -147,11 +148,32 @@ async function main() {
 		},
 	});
 
+	const date = new Date('2023-07-14');
+	const startDate = new Date(date.setHours(13, 0, 0)); // altere a hora conforme necessário
+	const endDate = new Date(date.setHours(14, 0, 0));
+
+	const appointment = await prisma.appointment.create({
+		data: {
+			userId: 1,
+			vetInfosId: 1,
+			date: date,
+			startsAt: startDate,
+			endsAt: endDate,
+			status: 'SCHEDULED',
+			clientName: 'teste',
+			clientEmail: 'teste@gmail.com',
+			veterinaryName: 'veterinary',
+			veterinaryEmail: 'vet@gmail.com',
+			description: '',
+		},
+	});
+
 	console.log({
 		commonUser,
 		veterinary,
 	});
 }
+
 main().catch(async (err) => {
 	console.log(err);
 });
