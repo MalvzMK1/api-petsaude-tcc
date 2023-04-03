@@ -27,10 +27,10 @@ class SpecialtiesController {
 			};
 		}
 	}
-	async updateSpecialities(vetInfosId: number, specialitiesIDs: Array<{ id: number, specialtiesId: number, vetInfosId: number }>) {
+	async updateSpecialities(specialitiesIDs: Array<{ id: number, specialtiesId: number, vetInfosId: number }>) {
 		try {
 
-			const updatedUser = await specialtiesModel.updateSpecialtiesInfos(vetInfosId, specialitiesIDs);
+			const updatedUser = await specialtiesModel.updateSpecialtiesInfos(specialitiesIDs);
 
 			if (updatedUser)
 				return {
@@ -51,10 +51,10 @@ class SpecialtiesController {
 		}
 	}
 
-	async deleteSpecialities(vetInfosId: number, specialitiesIDs: Array<{ id: number, specialtiesId: number, vetInfosId: number }>) {
+	async deleteSpecialities(specialitiesIDs: Array<{ id: number, specialtiesId: number, vetInfosId: number }>) {
 		try {
 
-			const deleteUser = await specialtiesModel.DeleteSpecialtiesInfos(vetInfosId, specialitiesIDs);
+			const deleteUser = await specialtiesModel.DeleteSpecialtiesInfos(specialitiesIDs);
 			if (deleteUser)
 				return {
 					statusCode: 204,

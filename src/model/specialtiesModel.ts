@@ -37,32 +37,75 @@ export default class SpecialtiesModel {
 		}
 	}
 
-	async updateSpecialtiesInfos(vetInfosId: number, specialtiesID: Array<{ id: number, specialtiesId: number, vetInfosId: number }>) {
+	async updateSpecialtiesInfos( specialtiesID: Array<{ id: number, specialtiesId: number, vetInfosId: number }>) {
 
 		try {
 
-
 			const specialties = specialtiesID.map(async (element) => {
-				await prisma.vetInfos.update({
-					where: {
-						id: vetInfosId
-					},
-					data: {
-						VeterinaryEspecialities: {
-							upsert: {
-								where: {
-									id: element.id
-								},
-								create: {
-									specialitiesId: element.specialtiesId
-								},
-								update: {
-									specialitiesId: element.specialtiesId 
-								}
-							}
+
+				const sql = `select * from tbl_veterinary_specialities where specialities_id = ${element.specialtiesId} AND vet_infos_id = ${element.vetInfosId}`
+
+				const result = await prisma.$queryRawUnsafe(sql)
+
+				if (result) {
+
+					await prisma.veterinarySpecialities.update({
+						where: {
+							id: element.id
+						},
+						data:{
+							vetInfosId: element.vetInfosId,
+							specialitiesId: element.specialtiesId
 						}
-					}
-				});
+					})
+
+				} else {
+					await prisma.veterinarySpecialities.create({
+						data:{
+							specialitiesId: element.specialtiesId,
+							vetInfosId: element.vetInfosId
+						}
+					})
+				}
+				// // await prisma.vetInfos.upsert({
+				// // 	where: {
+				// // 		id: vetInfosId
+				// // 	},
+				// // 	update:{
+				// // 		VeterinaryEspecialities:{
+				// // 			update:{
+				// // 				where:{
+
+				// // 				}
+				// // 				data:{
+
+				// // 				}
+				// // 			}
+				// // 		}
+				// // 	}
+				// // 	create:{
+				// // 		VeterinaryEspecialities:{
+				// // 			create:{
+				// // 				specialitiesId: element.specialtiesId
+				// // 			}
+				// // 		}
+				// // 	}
+				// // 	data: {
+				// // 		VeterinaryEspecialities: {
+				// // 			upsert: {
+				// // 				where: {
+				// // 					id: element.id
+				// // 				},
+				// // 				create: {
+				// // 					specialitiesId: element.specialtiesId
+				// // 				},
+				// // 				update: {
+				// // 					specialitiesId: element.specialtiesId 
+				// // 				}
+				// // 			}
+				// // 		}
+				// // 	}
+				// });
 			});
 
 			return specialties
@@ -72,7 +115,7 @@ export default class SpecialtiesModel {
 		}
 	}
 
-	async DeleteSpecialtiesInfos(vetInfosId: number, specialtiesID: Array<{ id: number, specialtiesId: number, vetInfosId: number }>) {
+	async DeleteSpecialtiesInfos( specialtiesID: Array<{ id: number, specialtiesId: number, vetInfosId: number }>) {
 
 		try {
 
@@ -80,7 +123,8 @@ export default class SpecialtiesModel {
 				await prisma.veterinarySpecialities.deleteMany({
 					where: {
 						specialitiesId: element.specialtiesId,
-						vetInfosId: vetInfosId
+						vetInfosId: element.vetInfosId
+						// vetInfosId: vetInfosId
 					},
 				});
 			});

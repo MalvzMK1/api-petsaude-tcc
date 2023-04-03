@@ -26,9 +26,9 @@ class SpecialtiesPetController {
 			};
 		}
 	}
-	async updateSpecialitiesPet(vetInfosId: number, specialitiesPet: Array<{ id: number, animalTypesId: number, vetInfosId: number }>) {
+	async updateSpecialitiesPet(specialitiesPet: Array<{ id: number, animalTypesId: number, vetInfosId: number }>) {
 		try {
-			const updatedUser = await specialtiesPetModel.updatePetSpecialtiesInfos(vetInfosId, specialitiesPet);
+			const updatedUser = await specialtiesPetModel.updatePetSpecialtiesInfos(specialitiesPet);
 			if (updatedUser)
 				return {
 					statusCode: 204,
@@ -47,9 +47,9 @@ class SpecialtiesPetController {
 		}
 	}
 
-	async deleteSpecialitiesPet(vetInfosId: number, specialtiesPetID: Array<{ id: number, animalTypesId: number, vetInfosId: number }>) {
+	async deleteSpecialitiesPet(specialtiesPetID: Array<{ id: number, animalTypesId: number, vetInfosId: number }>) {
 		try {
-			const deleteUser = await specialtiesPetModel.DeleteSpecialtiesPet(vetInfosId, specialtiesPetID);
+			const deleteUser = await specialtiesPetModel.DeleteSpecialtiesPet(specialtiesPetID);
 			if (deleteUser)
 				return {
 					statusCode: 204,
