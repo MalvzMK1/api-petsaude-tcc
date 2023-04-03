@@ -4,11 +4,10 @@ import specialtiesPetsController from '../controller/specialtiesPetsController';
 import PhoneNumberController from '../controller/phoneNumberController';
 import specialtiesController from '../controller/specialtiesController';
 import authenticate from '../middlewares/authenticate';
-import {object, z} from 'zod';
+import { z } from 'zod';
 import Message from '../messages/message';
 import Messages from '../messages/message';
 import validateEmptyBody from '../utils/validateBody';
-import {start} from "repl";
 
 const message = new Message();
 const phoneNumber = new PhoneNumberController();
@@ -21,7 +20,7 @@ export default async function userRoutes(fastify: FastifyInstance) {
 			email: z.string(),
 			password: z.string(),
 			cellphoneNumber: z.string(),
-			phoneNumber: z.string(),
+			phoneNumber: z.string().nullable(),
 			address: z.object({
 				zipCode: z.string(),
 				complement: z.string(),

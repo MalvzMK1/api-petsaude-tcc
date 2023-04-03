@@ -40,14 +40,14 @@ export default class UserModel {
 		}
 	}
 
-	async createVeterinary(userId: number, vetInfos: createVeterinaryModel){
+	async createVeterinary(userId: number, vetInfos: createVeterinaryModel) {
 		try {
 			return await prisma.vetInfos.create({
 				data: {
 					User: {
 						connect: {
-							id: userId
-						}
+							id: userId,
+						},
 					},
 					crmv: vetInfos.crmv,
 					formation: vetInfos.formation,
@@ -55,32 +55,31 @@ export default class UserModel {
 					occupationArea: vetInfos.occupationArea,
 					startActingDate: vetInfos.startActingDate,
 					formationDate: vetInfos.formationDate,
-				}
-			})
-			return await prisma.user.update({
-				where: {
-					id: userId
 				},
-				data: {
-					vetInfos: {
-						create: {
-							crmv: vetInfos.crmv,
-							formation: vetInfos.formation,
-							institution: vetInfos.institution,
-							occupationArea: vetInfos.occupationArea,
-							startActingDate: vetInfos.startActingDate,
-							formationDate: vetInfos.formationDate,
-						}
-					}
-				},
-				include: {
-					vetInfos: true
-				}
-			})
+			});
+			// return await prisma.user.update({
+			// 	where: {
+			// 		id: userId
+			// 	},
+			// 	data: {
+			// 		vetInfos: {
+			// 			create: {
+			// 				crmv: vetInfos.crmv,
+			// 				formation: vetInfos.formation,
+			// 				institution: vetInfos.institution,
+			// 				occupationArea: vetInfos.occupationArea,
+			// 				startActingDate: vetInfos.startActingDate,
+			// 				formationDate: vetInfos.formationDate,
+			// 			}
+			// 		}
+			// 	},
+			// 	include: {
+			// 		vetInfos: true
+			// 	}
+			// })
 		} catch (err) {
-			throw new Error(`${err}`)
+			throw new Error(`${err}`);
 		}
-
 	}
 
 	async findAllUsers() {
@@ -293,14 +292,14 @@ export default class UserModel {
 		try {
 			return await prisma.user.update({
 				where: {
-					id
+					id,
 				},
 				data: {
-					isVet
-				}
-			})
+					isVet,
+				},
+			});
 		} catch (err) {
-			throw new Error(`${err}`)
+			throw new Error(`${err}`);
 		}
 	}
 }

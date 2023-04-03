@@ -18,6 +18,7 @@ class UserController {
 			const state = await addressController.getStateByName(
 				userInfos.address.state
 			);
+			const phoneNumber = userInfos.phoneNumber ? userInfos.phoneNumber : '';
 
 			if (city === null)
 				return {
@@ -33,7 +34,7 @@ class UserController {
 			const userInfosToCreate: CreateUserInfosModelProps = {
 				personName: userInfos.personName,
 				cellphoneNumber: userInfos.cellphoneNumber,
-				phoneNumber: userInfos.phoneNumber,
+				phoneNumber: phoneNumber,
 				cpf: userInfos.cpf,
 				email: userInfos.email,
 				password: userInfos.password,
@@ -66,7 +67,7 @@ class UserController {
 		}
 	}
 
-	async createVetInfos(userId: number, infos: createVeterinaryController){
+	async createVetInfos(userId: number, infos: createVeterinaryController) {
 		try {
 			const vetInfos: createVeterinaryModel = {
 				crmv: infos.crmv,
@@ -74,31 +75,29 @@ class UserController {
 				institution: infos.institution,
 				occupationArea: infos.occupationArea,
 				formationDate: new Date(infos.formationDate),
-				startActingDate: new Date(infos.startActingDate)
-			}
-			await userModel.updateIsVet(userId, true)
-			const userInfos = await userModel.createVeterinary(userId, vetInfos)
+				startActingDate: new Date(infos.startActingDate),
+			};
+			await userModel.updateIsVet(userId, true);
+			const userInfos = await userModel.createVeterinary(userId, vetInfos);
 
-			if(userInfos) {
+			if (userInfos) {
 				return {
 					statusCode: 200,
-					message: userInfos
-				}
+					message: userInfos,
+				};
 			} else {
 				return {
 					statusCode: 400,
-					message: message.MESSAGE_ERROR.INTERNAL_ERROR_DB
-				}
+					message: message.MESSAGE_ERROR.INTERNAL_ERROR_DB,
+				};
 			}
-
 		} catch (err) {
-			console.log(err)
+			console.log(err);
 			return {
 				statusCode: 500,
-				message: message.MESSAGE_ERROR.INTERNAL_ERROR_DB
-			}
+				message: message.MESSAGE_ERROR.INTERNAL_ERROR_DB,
+			};
 		}
-
 	}
 
 	async getUserById(userID: number) {
@@ -145,6 +144,7 @@ class UserController {
 			};
 		}
 	}
+
 	async getAllUsers() {
 		try {
 			const getUsers = await userModel.findAllUsers();
@@ -167,6 +167,7 @@ class UserController {
 			};
 		}
 	}
+
 	async updateUser(userID: number, userInfos: UpdateUserInfosProps) {
 		try {
 			let vetInfosUpdate: VetInfos;
@@ -200,6 +201,7 @@ class UserController {
 			};
 		}
 	}
+
 	async deleteUser(userID: number) {
 		try {
 			const user = await userModel.findUserById(userID);

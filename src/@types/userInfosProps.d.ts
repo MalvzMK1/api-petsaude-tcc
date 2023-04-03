@@ -4,7 +4,7 @@ type CreateUserInfosProps = {
 	email: string;
 	password: string;
 	cellphoneNumber: string;
-	phoneNumber: string;
+	phoneNumber: string | null;
 	address: {
 		zipCode: string;
 		neighborhood: string;
@@ -58,22 +58,22 @@ type createVeterinaryController = {
 	formation: string;
 	institution: string;
 	crmv: string;
-	startActingDate: string,
-	formationDate: string,
+	startActingDate: string;
+	formationDate: string;
 	animalTypes?: { id: number; name: string }[];
 	specialities?: { id: number; name: string }[];
-}
+};
 
 type createVeterinaryModel = {
 	occupationArea: string;
 	formation: string;
 	institution: string;
 	crmv: string;
-	startActingDate: Date,
-	formationDate: Date,
+	startActingDate: Date;
+	formationDate: Date;
 	animalTypes?: { id: number; name: string }[];
 	specialities?: { id: number; name: string }[];
-}
+};
 
 type UpdateVetInfosProps = {
 	occupationArea: string;
