@@ -87,8 +87,8 @@ async function main() {
 			Appointments: {
 				create: {
 					date: new Date(),
-					startsAt: new Date(),
-					endsAt: new Date(),
+					startsAt: new Date('2023-07-03T10:00:00'),
+					endsAt: new Date('2023-07-03T11:00:00'),
 					status: 'WAITING_CONFIRMATION',
 					veterinaryId: 1,
 					description: 'lorem ipsum',
