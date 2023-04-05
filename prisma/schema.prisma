@@ -186,6 +186,12 @@ model PetSize {
 	@@map("tbl_pet_size")
 }
 
+enum PetSizeEnum {
+	BIG
+	MEDIUM
+	SMALL
+}
+
 model PetGender {
 	id       Int    @id @default(autoincrement())
 	initials String
@@ -193,6 +199,11 @@ model PetGender {
 	Pet      Pet[]
 
 	@@map("tbl_pet_gender")
+}
+
+enum PetGenderEnum {
+	M
+	F
 }
 
 model PetSpecie {
