@@ -23,7 +23,7 @@ export default async function userRoutes(fastify: FastifyInstance) {
 			phoneNumber: z.string().nullable(),
 			address: z.object({
 				zipCode: z.string(),
-				complement: z.string(),
+				complement: z.string().nullable(),
 				number: z.string(),
 			}),
 		});

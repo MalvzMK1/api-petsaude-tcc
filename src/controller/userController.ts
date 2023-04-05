@@ -13,6 +13,9 @@ class UserController {
 	async createUser(userInfos: CreateUserInfosProps) {
 		try {
 			const phoneNumber = userInfos.phoneNumber ? userInfos.phoneNumber : '';
+			const complement = userInfos.address.complement
+				? userInfos.address.complement
+				: '';
 			const users = await userModel.findAllUsers();
 
 			if (users) {
@@ -30,7 +33,7 @@ class UserController {
 				password: userInfos.password,
 				address: {
 					zipCode: userInfos.address.zipCode,
-					complement: userInfos.address.complement,
+					complement: complement,
 					number: userInfos.address.number,
 				},
 			};

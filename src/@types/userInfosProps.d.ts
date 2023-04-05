@@ -8,7 +8,7 @@ type CreateUserInfosProps = {
 	address: {
 		zipCode: string;
 		number: string;
-		complement: string;
+		complement: string | null;
 	};
 };
 
