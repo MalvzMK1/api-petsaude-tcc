@@ -24,10 +24,6 @@ export default async function userRoutes(fastify: FastifyInstance) {
 			address: z.object({
 				zipCode: z.string(),
 				complement: z.string(),
-				street: z.string(),
-				city: z.string(),
-				state: z.string(),
-				neighborhood: z.string(),
 				number: z.string(),
 			}),
 		});
@@ -224,7 +220,6 @@ export default async function userRoutes(fastify: FastifyInstance) {
 					})
 				),
 			});
-
 
 			const body = bodyParams.parse(req.body);
 

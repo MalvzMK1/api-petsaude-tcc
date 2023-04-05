@@ -17,11 +17,11 @@ datasource db {
 
 // ************************** COMMON USER **************************
 
-model User {
+model Client {
 	id                 Int           @id @default(autoincrement())
 	personName         String        @map("person_name")
 	userName           String        @map("user_name")
-	cpf                String
+	cpf                String        @unique
 	rg                 String?
 	profilePhoto       String?       @map("profile_photo")
 	profileBannerPhoto String?       @map("profile_banner_photo")
@@ -35,49 +35,76 @@ model User {
 	addressId Int     @map("address_id")
 	Address   Address @relation(fields: [addressId], references: [id])
 
-	vetInfosId Int?      @unique @map("vet_infos_id")
-	vetInfos   VetInfos? @relation(fields: [vetInfosId], references: [id])
-
 	@@map("tbl_user")
+}
+
+model Veterinary {
+	id                 Int      @id @default(autoincrement())
+	personName         String   @map("person_name")
+	userName           String   @map("user_name")
+	cpf                String   @unique
+	rg                 String?
+	profilePhoto       String?  @map("profile_photo")
+	profileBannerPhoto String?  @map("profile_banner_photo")
+	email              String   @unique
+	password           String
+	isVet              Boolean  @map("is_vet")
+	occupationArea     String   @map("occupation_area")
+	formation          String
+	institution        String
+	crmv               String   @unique
+	formationDate      DateTime @map("formation_date")
+	startActingDate    DateTime @map("start_acting_date")
+
+	AnimalTypesVetInfos     AnimalTypesVetInfos[]
+	VeterinaryEspecialities VeterinarySpecialities[]
+	PhoneNumber             PhoneNumber[]
+	Appointments            Appointment[]
+
+	addressId Int     @map("address_id")
+	Address   Address @relation(fields: [addressId], references: [id])
+
+	@@map("tbl_veterinary")
 }
 
 // ************************** VET INFOS **************************
 
-model VetInfos {
-	id              Int      @id @default(autoincrement())
-	occupationArea  String
-	formation       String
-	institution     String
-	crmv            String
-	formationDate   DateTime
-	startActingDate DateTime
-
-	AnimalTypesVetInfos     AnimalTypesVetInfos[]
-	VeterinaryEspecialities VeterinarySpecialities[]
-	User                    User[]
-	Appointments            Appointment[]
-
-	@@map("tbl_vet_infos")
-}
+// model VetInfos {
+//   id                     Int                      @id @default(autoincrement())
+//   Client                   Client?
+//   AnimalTypesVetInfos    AnimalTypesVetInfos[]
+//   VeterinarySpecialities VeterinarySpecialities[]
+//   Appointment            Appointment[]
+//
+//   occupationArea  String
+//   formation       String
+//   institution     String
+//   crmv            String
+//   formationDate   DateTime
+//   startActingDate DateTime
+//
+//   AnimalTypesVetInfos     AnimalTypesVetInfos[]
+//   VeterinaryEspecialities VeterinarySpecialities[]
+//   @@map("tbl_vet_infos")
+// }
 
 model AnimalTypesVetInfos {
 	id Int @id @default(autoincrement())
 
-	vetInfosId Int      @map("vet_infos_id")
-	vet        VetInfos @relation(fields: [vetInfosId], references: [id])
-
 	animalTypesId Int         @map("animal_type_id")
 	animalTypes   AnimalTypes @relation(fields: [animalTypesId], references: [id])
+	veterinaryId  Int?        @map("veterinary_id")
+	Veterinary    Veterinary? @relation(fields: [veterinaryId], references: [id])
 
 	@@map("tbl_animal_type_vet_infos")
 }
 
 model VeterinarySpecialities {
 	id             Int          @id @default(autoincrement())
-	vetInfosId     Int          @map("vet_infos_id")
 	specialitiesId Int          @map("specialities_id")
-	vetInfos       VetInfos     @relation(fields: [vetInfosId], references: [id])
 	specialities   Specialities @relation(fields: [specialitiesId], references: [id])
+	veterinaryId   Int?         @map("veterinary_id")
+	Veterinary     Veterinary?  @relation(fields: [veterinaryId], references: [id])
 
 	@@map("tbl_veterinary_specialities")
 }
@@ -104,8 +131,10 @@ model PhoneNumber {
 	id     Int    @id @default(autoincrement())
 	number String
 
-	userId Int  @map("user_id")
-	User   User @relation(fields: [userId], references: [id])
+	userId       Int         @map("user_id")
+	User         Client      @relation(fields: [userId], references: [id])
+	Veterinary   Veterinary? @relation(fields: [veterinaryId], references: [id])
+	veterinaryId Int?        @map("vetearinary_id")
 
 	@@map("tbl_phone_number")
 }
@@ -113,39 +142,15 @@ model PhoneNumber {
 // ************************** ADDRESS **************************
 
 model Address {
-	id           Int     @id @default(autoincrement())
-	cep          String
-	street       String
-	complement   String?
-	number       String
-	neighborhood String
+	id         Int     @id @default(autoincrement())
+	cep        String
+	complement String?
+	number     String
 
-	cityId Int  @map("city_id")
-	city   City @relation(fields: [cityId], references: [id])
-
-	User User[]
+	User       Client[]
+	Veterinary Veterinary[]
 
 	@@map("tbl_address")
-}
-
-model City {
-	id   Int    @id @default(autoincrement())
-	name String
-
-	stateId Int       @map("state_id")
-	state   State     @relation(fields: [stateId], references: [id])
-	Address Address[]
-
-	@@map("tbl_city")
-}
-
-model State {
-	id       Int    @id @default(autoincrement())
-	name     String
-	initials String
-	City     City[]
-
-	@@map("tbl_state")
 }
 
 // ************************** PET INFOS **************************
@@ -166,8 +171,8 @@ model Pet {
 	petSpecieId Int       @map("pet_specie_id")
 	petSpecie   PetSpecie @relation(fields: [petSpecieId], references: [id])
 
-	ownerId Int  @map("owner_id")
-	Owner   User @relation(fields: [ownerId], references: [id])
+	ownerId Int    @map("owner_id")
+	Owner   Client @relation(fields: [ownerId], references: [id])
 
 	@@map("tbl_pet")
 }
@@ -199,22 +204,17 @@ model PetSpecie {
 }
 
 model Appointment {
-	id              Int      @id @default(autoincrement())
-	clientName      String   @map("client_name")
-	clientEmail     String   @map("client_email")
-	veterinaryName  String   @map("veterinary_name")
-	veterinaryEmail String   @map("veterinary_email")
-	description     String
-	status          Status
-	date            DateTime @db.Date
-	startsAt        DateTime @map("starts_at") @db.Time()
-	endsAt          DateTime @map("ends_at") @db.Time()
+	id          Int      @id @default(autoincrement())
+	description String
+	status      Status
+	date        DateTime @db.Date
+	startsAt    DateTime @map("starts_at") @db.Time()
+	endsAt      DateTime @map("ends_at") @db.Time()
 
-	userId Int?  @map("user_id")
-	User   User? @relation(fields: [userId], references: [id])
-
-	vetInfosId Int?      @map("vet_infos_id")
-	VetInfos   VetInfos? @relation(fields: [vetInfosId], references: [id])
+	clientId     Int?        @map("client_id")
+	Client       Client?     @relation(fields: [clientId], references: [id])
+	veterinaryId Int?        @map("veterinary_id")
+	Veterinary   Veterinary? @relation(fields: [veterinaryId], references: [id])
 
 	@@map("tbl_appointment")
 }

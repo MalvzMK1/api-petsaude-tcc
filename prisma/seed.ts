@@ -53,19 +53,6 @@ async function main() {
 				create: {
 					cep: '00000-000',
 					number: '000',
-					street: 'Wall Street',
-					neighborhood: 'Unionhood',
-					city: {
-						create: {
-							name: "City ov God's Fire",
-							state: {
-								create: {
-									initials: 'GS',
-									name: 'God State',
-								},
-							},
-						},
-					},
 				},
 			},
 			Pet: {
@@ -135,38 +122,30 @@ async function main() {
 				create: {
 					cep: '00000-000',
 					number: '000',
-					street: 'Ground Street',
-					neighborhood: 'Happyhood',
-					city: {
-						create: {
-							name: 'Ice City',
-							stateId: 1,
-						},
-					},
 				},
 			},
 		},
 	});
 
-	const date = new Date('2023-07-14');
-	const startDate = new Date(date.setHours(13, 0, 0)); // altere a hora conforme necessário
-	const endDate = new Date(date.setHours(14, 0, 0));
+	// const date = new Date('2023-07-14');
+	// const startDate = new Date(date.setHours(13, 0, 0)); // altere a hora conforme necessário
+	// const endDate = new Date(date.setHours(14, 0, 0));
 
-	const appointment = await prisma.appointment.create({
-		data: {
-			userId: 1,
-			vetInfosId: 1,
-			date: date,
-			startsAt: startDate,
-			endsAt: endDate,
-			status: 'SCHEDULED',
-			clientName: 'teste',
-			clientEmail: 'teste@gmail.com',
-			veterinaryName: 'veterinary',
-			veterinaryEmail: 'vet@gmail.com',
-			description: '',
-		},
-	});
+	// const appointment = await prisma.appointment.create({
+	// 	data: {
+	// 		userId: 1,
+	// 		vetInfosId: 1,
+	// 		date: date,
+	// 		startsAt: startDate,
+	// 		endsAt: endDate,
+	// 		status: 'SCHEDULED',
+	// 		clientName: 'teste',
+	// 		clientEmail: 'teste@gmail.com',
+	// 		veterinaryName: 'veterinary',
+	// 		veterinaryEmail: 'vet@gmail.com',
+	// 		description: '',
+	// 	},
+	// });
 
 	console.log({
 		commonUser,

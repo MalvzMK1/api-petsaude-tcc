@@ -12,24 +12,14 @@ const addressController = new AddressComplements();
 class UserController {
 	async createUser(userInfos: CreateUserInfosProps) {
 		try {
-			const city = await addressController.getCityByName(
-				userInfos.address.city
-			);
-			const state = await addressController.getStateByName(
-				userInfos.address.state
-			);
 			const phoneNumber = userInfos.phoneNumber ? userInfos.phoneNumber : '';
+			const users = await userModel.findAllUsers();
 
-			if (city === null)
-				return {
-					statusCode: 400,
-					message: message.MESSAGE_ERROR.CITY_NOT_FOUND,
-				};
-			if (state === null)
-				return {
-					statusCode: 400,
-					message: message.MESSAGE_ERROR.STATE_NOT_FOUND,
-				};
+			if (users) {
+				const usersWithSameEmail = users.filter((user) => {
+					return user.email === userInfos.email;
+				});
+			}
 
 			const userInfosToCreate: CreateUserInfosModelProps = {
 				personName: userInfos.personName,
@@ -39,13 +29,9 @@ class UserController {
 				email: userInfos.email,
 				password: userInfos.password,
 				address: {
-					cep: userInfos.address.zipCode,
-					cityID: city.id,
-					stateID: state.id,
+					zipCode: userInfos.address.zipCode,
 					complement: userInfos.address.complement,
-					neighborhood: userInfos.address.neighborhood,
 					number: userInfos.address.number,
-					street: userInfos.address.street,
 				},
 			};
 			const createdUser = await userModel.createUser(userInfosToCreate);

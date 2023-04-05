@@ -7,10 +7,6 @@ type CreateUserInfosProps = {
 	phoneNumber: string | null;
 	address: {
 		zipCode: string;
-		neighborhood: string;
-		city: string;
-		state: string;
-		street: string;
 		number: string;
 		complement: string;
 	};
@@ -24,11 +20,7 @@ type CreateUserInfosModelProps = {
 	cellphoneNumber: string;
 	phoneNumber: string;
 	address: {
-		cep: string;
-		neighborhood: string;
-		cityID: number;
-		stateID: number;
-		street: string;
+		zipCode: string;
 		number: string;
 		complement: string;
 	};

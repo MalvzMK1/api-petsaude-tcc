@@ -24,12 +24,9 @@ export default class UserModel {
 					},
 					Address: {
 						create: {
-							cep: userInfos.address.cep,
-							neighborhood: userInfos.address.neighborhood,
+							cep: userInfos.address.zipCode,
 							number: userInfos.address.number,
-							street: userInfos.address.street,
 							complement: userInfos.address.complement,
-							cityId: userInfos.address.cityID,
 						},
 					},
 					isVet: false,
@@ -94,15 +91,7 @@ export default class UserModel {
 						},
 					},
 					PhoneNumber: true,
-					Address: {
-						include: {
-							city: {
-								include: {
-									state: true,
-								},
-							},
-						},
-					},
+					Address: true,
 					vetInfos: {
 						include: {
 							VeterinaryEspecialities: {
@@ -139,15 +128,7 @@ export default class UserModel {
 						},
 					},
 					PhoneNumber: true,
-					Address: {
-						include: {
-							city: {
-								include: {
-									state: true,
-								},
-							},
-						},
-					},
+					Address: true,
 					vetInfos: {
 						include: {
 							VeterinaryEspecialities: {
