@@ -36,7 +36,7 @@ export default async function userRoutes(fastify: FastifyInstance) {
 		res.status(createUser.statusCode).send({ response: createUser.message });
 	});
 
-	fastify.get('/user', { onRequest: authenticate }, async (req, res) => {
+	fastify.get('/user', async (req, res) => {
 		const queryParams = z.object({
 			userID: z.string(),
 		});
