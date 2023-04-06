@@ -68,3 +68,27 @@ type UpdateSpecialities = {
 	id: number;
 	name: string;
 };
+
+type VeterinaryApiResponse = {
+	personName: string;
+	userName: string;
+	cpf: string;
+	rg: string;
+	cellphoneNumber: string;
+	phoneNumber: string;
+	address: {
+		id: number;
+		zipCode: string;
+		number: string;
+		complement: string;
+	};
+	professionalInfos: {
+		occupationArea: string;
+		formation: string;
+		formationDate: string;
+		institution: string;
+		startActingDate: string;
+		specialities: string[];
+		specializedAnimals: string[];
+	};
+};

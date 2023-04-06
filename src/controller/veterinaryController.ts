@@ -7,6 +7,65 @@ const veterinaryModel = new VeterinaryModel();
 const messages = new Message();
 
 class VeterinaryController {
+	async getAllVeterinarys(filters: {
+		name: string | null | undefined;
+		speciality: string | null | undefined;
+		animal: string | null | undefined;
+	}) {
+		try {
+			const allVeterinarys = await veterinaryModel.getAllVeterinarys();
+			if (allVeterinarys) {
+				let response = allVeterinarys;
+
+				if (filters.name) {
+					const name = filters.name;
+					response = response.filter((veterinary) => {
+						if (veterinary.personName.includes(name)) return veterinary;
+					});
+				}
+				if (filters.speciality) {
+					const speciality = filters.speciality;
+					response = response.filter((veterinary) => {
+						veterinary.VeterinaryEspecialities.forEach((speciality) => {
+							if (speciality.specialitiesId === 1) return veterinary;
+						});
+					});
+				}
+				if (filters.animal) {
+					const animal = filters.animal;
+					response = response.filter((veterinary) => {
+						veterinary.AnimalTypesVetInfos.forEach((animalType) => {
+							if (animalType.animalTypesId === 1) return veterinary;
+						});
+					});
+				}
+
+				return {
+					statusCode: 200,
+					veterinarys: response,
+				};
+			}
+			return {
+				statusCode: 404,
+				message: messages.MESSAGE_ERROR.NOT_FOUND_DB,
+			};
+		} catch (err) {
+			if (err instanceof Error)
+				return {
+					statusCode: 500,
+					message: {
+						error: err.message,
+					},
+				};
+			return {
+				statusCode: 500,
+				message: {
+					error: messages.MESSAGE_ERROR.INTERNAL_ERROR_DB,
+				},
+			};
+		}
+	}
+
 	async createVeterinary(infos: createVeterinaryController) {
 		try {
 			// TODO: VALIDAR O EMAIL EM USO

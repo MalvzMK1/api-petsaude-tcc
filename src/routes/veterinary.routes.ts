@@ -9,6 +9,27 @@ import specialtiesPetsController from '../controller/specialtiesPetsController';
 import veterinaryController from '../controller/veterinaryController';
 
 export default async function veterinaryRoutes(fastify: FastifyInstance) {
+	fastify.get('/veterinary', async (request, reply) => {
+		const queryParams = z.object({
+			name: z.optional(z.string()),
+			speciality: z.optional(z.string()),
+			animal: z.optional(z.string()),
+		});
+
+		const { name, speciality, animal } = queryParams.parse(request.query);
+		console.log(name, speciality, animal);
+		const response = await veterinaryController.getAllVeterinarys({
+			name,
+			speciality,
+			animal,
+		});
+
+		if (response.veterinarys)
+			reply
+				.status(response.statusCode)
+				.send({ response: response.veterinarys });
+		else reply.status(response.statusCode).send({ response: response.message });
+	});
 	fastify.post('/veterinary', async (req, res) => {
 		const bodyParams = z.object({
 			personName: z.string(),
