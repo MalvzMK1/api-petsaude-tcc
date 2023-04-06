@@ -1,17 +1,11 @@
 type AddressUpdateControllerProps = {
-	cep: string;
-	street: string;
-	complement: string;
+	zipCode: string;
 	number: string;
-	neighborhood: string;
-	city: string;
+	complement: string | null | undefined;
 };
 
 type AddressUpdateModelProps = {
-	cep: string;
-	street: string;
-	complement: string;
+	zipCode: string;
 	number: string;
-	neighborhood: string;
-	cityID: number;
+	complement: string | null | undefined;
 };
