@@ -29,60 +29,6 @@ export default class UserModel {
 		}
 	}
 
-	async createVeterinary(userId: number, veterinary: createVeterinaryModel) {
-		try {
-			return await prisma.veterinary.create({
-				data: {
-					personName: veterinary.personName,
-					userName: '',
-					cpf: veterinary.cpf,
-					email: veterinary.email,
-					password: veterinary.password,
-					rg: '',
-					profilePhoto: '',
-					profileBannerPhoto: '',
-					phoneNumber: veterinary.phoneNumber,
-					cellphoneNumber: veterinary.cellphoneNumber,
-					Address: {
-						create: {
-							cep: veterinary.address.zipCode,
-							number: veterinary.address.number,
-							complement: veterinary.address.complement,
-						},
-					},
-					crmv: veterinary.crmv,
-					formation: veterinary.formation,
-					institution: veterinary.institution,
-					occupationArea: veterinary.occupationArea,
-					startActingDate: veterinary.startActingDate,
-					formationDate: veterinary.formationDate,
-				},
-			});
-			// return await prisma.user.update({
-			// 	where: {
-			// 		id: userId
-			// 	},
-			// 	data: {
-			// 		vetInfos: {
-			// 			create: {
-			// 				crmv: vetInfos.crmv,
-			// 				formation: vetInfos.formation,
-			// 				institution: vetInfos.institution,
-			// 				occupationArea: vetInfos.occupationArea,
-			// 				startActingDate: vetInfos.startActingDate,
-			// 				formationDate: vetInfos.formationDate,
-			// 			}
-			// 		}
-			// 	},
-			// 	include: {
-			// 		vetInfos: true
-			// 	}
-			// })
-		} catch (err) {
-			throw new Error(`${err}`);
-		}
-	}
-
 	async findAllUsers() {
 		try {
 			return await prisma.client.findMany({
@@ -170,24 +116,6 @@ export default class UserModel {
 			return !!(userPetDelete &&
 				userDelete);
 
-		} catch (err) {
-			throw new Error(`${err}`);
-		}
-	}
-
-	async updateVetInfos(vetInfosID: number, vetInfos: UpdateVetInfosProps) {
-		try {
-			return await prisma.veterinary.update({
-				where: {
-					id: vetInfosID,
-				},
-				data: {
-					crmv: vetInfos.crmv,
-					formation: vetInfos.formation,
-					institution: vetInfos.institution,
-					occupationArea: vetInfos.occupationArea,
-				},
-			});
 		} catch (err) {
 			throw new Error(`${err}`);
 		}
