@@ -82,8 +82,8 @@ export default async function petRoutes(fastify: FastifyInstance) {
 			birthDate: z.string(),
 			photo: z.string(),
 			microship: z.boolean(),
-			size: z.string(),
-			gender: z.string(),
+			size: z.nativeEnum(PetSizeEnum),
+			gender: z.nativeEnum(PetGenderEnum),
 			specie: z.string(),
 			ownerID: z.number(),
 		});
