@@ -2,6 +2,7 @@ import { FastifyInstance } from 'fastify';
 import authenticate from '../middlewares/authenticate';
 import { z } from 'zod';
 import PetController from '../controller/petController';
+import {PetInfosControllerProps} from "../@types/petInfosProps";
 
 const petController = new PetController();
 

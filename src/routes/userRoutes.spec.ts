@@ -1,6 +1,6 @@
 import {expect, expectTypeOf, it} from "vitest";
 import prisma from "../lib/prisma";
-import { User } from "@prisma/client";
+import { Client } from "@prisma/client";
 import test from "node:test";
 
 it('should not be a date', function () {

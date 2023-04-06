@@ -1,13 +1,9 @@
 import Message from '../messages/message';
-import { AddressComplements } from '../model/address.model';
 import UserModel from '../model/userModel';
 import ValidateUserInfosProps from '../utils/validateUserInfosProps';
-import { VetInfos } from '@prisma/client';
 
 const userModel = new UserModel();
 const message = new Message();
-const userValidation = new ValidateUserInfosProps();
-const addressController = new AddressComplements();
 
 class UserController {
 	async createUser(userInfos: CreateUserInfosProps) {
@@ -47,39 +43,6 @@ class UserController {
 				statusCode: 400,
 				message: message.MESSAGE_ERROR.REQUIRED_FIELDS,
 			};
-		} catch (err) {
-			console.log(err);
-			return {
-				statusCode: 500,
-				message: message.MESSAGE_ERROR.INTERNAL_ERROR_DB,
-			};
-		}
-	}
-
-	async createVetInfos(userId: number, infos: createVeterinaryController) {
-		try {
-			const vetInfos: createVeterinaryModel = {
-				crmv: infos.crmv,
-				formation: infos.formation,
-				institution: infos.institution,
-				occupationArea: infos.occupationArea,
-				formationDate: new Date(infos.formationDate),
-				startActingDate: new Date(infos.startActingDate),
-			};
-			await userModel.updateIsVet(userId, true);
-			const userInfos = await userModel.createVeterinary(userId, vetInfos);
-
-			if (userInfos) {
-				return {
-					statusCode: 200,
-					message: userInfos,
-				};
-			} else {
-				return {
-					statusCode: 400,
-					message: message.MESSAGE_ERROR.INTERNAL_ERROR_DB,
-				};
-			}
 		} catch (err) {
 			console.log(err);
 			return {
@@ -159,19 +122,6 @@ class UserController {
 
 	async updateUser(userID: number, userInfos: UpdateUserInfosProps) {
 		try {
-			let vetInfosUpdate: VetInfos;
-
-			if (userInfos.isVet && userInfos.vetInfosId && userInfos.vetInfos) {
-				vetInfosUpdate = await userModel.updateVetInfos(
-					userInfos.vetInfosId,
-					userInfos.vetInfos
-				);
-				if (!vetInfosUpdate)
-					return {
-						statusCode: 400,
-						message: message.MESSAGE_ERROR.INTERNAL_ERROR_DB,
-					};
-			}
 			const updatedUser = await userModel.updateUser(userID, userInfos);
 			if (updatedUser)
 				return {

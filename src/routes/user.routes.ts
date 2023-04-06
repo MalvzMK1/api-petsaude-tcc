@@ -1,7 +1,6 @@
 import { FastifyInstance } from 'fastify';
 import userController from '../controller/userController';
 import specialtiesPetsController from '../controller/specialtiesPetsController';
-import PhoneNumberController from '../controller/phoneNumberController';
 import specialtiesController from '../controller/specialtiesController';
 import authenticate from '../middlewares/authenticate';
 import { z } from 'zod';
@@ -10,7 +9,6 @@ import Messages from '../messages/message';
 import validateEmptyBody from '../utils/validateBody';
 
 const message = new Message();
-const phoneNumber = new PhoneNumberController();
 
 export default async function userRoutes(fastify: FastifyInstance) {
 	fastify.post('/user', async (req, res) => {
@@ -39,32 +37,6 @@ export default async function userRoutes(fastify: FastifyInstance) {
 
 		res.status(createUser.statusCode).send(createUser.message);
 	});
-
-	fastify.post(
-		'/user/phone/:id',
-		{ onRequest: authenticate },
-		async (req, res) => {
-			const bodyParams = z.object({
-				number: z.string(),
-			});
-
-			const queryParams = z.object({
-				userID: z.string(),
-			});
-
-			const { userID } = queryParams.parse(req.query);
-			const { number } = bodyParams.parse(req.body);
-
-			if (!userID) res.status(400).send({ message: 'Required ID' });
-
-			const userInfos = await phoneNumber.createPhoneNumber(
-				parseInt(userID),
-				number
-			);
-
-			res.status(userInfos.statusCode).send({ user: userInfos?.message });
-		}
-	);
 
 	fastify.get('/user', { onRequest: authenticate }, async (req, res) => {
 		const queryParams = z.object({

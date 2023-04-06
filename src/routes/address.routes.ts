@@ -13,7 +13,7 @@ export default async function addressRoutes(fastify: FastifyInstance) {
 		{ onRequest: authenticate },
 		async (request, reply) => {
 			const bodyParams = z.object({
-				cep: z.string(),
+				zipCode: z.string(),
 				street: z.string(),
 				complement: z.string(),
 				number: z.string(),

@@ -12,24 +12,24 @@ export default class SpecialtiesPetModel {
 			throw new Error(`${err}`);
 		}
 	}
-	async updatePetSpecialtiesInfos(specialtiesPet: Array<{ id: number, animalTypesId: number, vetInfosId: number }>) {
+	async updatePetSpecialtiesInfos(specialtiesPet: Array<{ id: number, animalTypesId: number, veterinaryId: number }>) {
 
 		try {
 
 			const specialtiesPets = specialtiesPet.map(async (element) => {
 
-				const sql = `select * from tbl_animal_type_vet_infos where animal_type_id = ${element.animalTypesId} AND vet_infos_id = ${element.vetInfosId}`
+				const sql = `select * from tbl_animal_type_vet_infos where animal_type_id = ${element.animalTypesId} AND vet_infos_id = ${element.veterinaryId}`
 
 				const result = await prisma.$queryRawUnsafe(sql)
 
 				if (result) {
-					
+
 					await prisma.veterinarySpecialities.update({
 						where: {
 							id: element.id
 						},
 						data:{
-							vetInfosId: element.vetInfosId,
+							veterinaryId: element.veterinaryId,
 							specialitiesId: element.animalTypesId
 						}
 					})
@@ -38,7 +38,7 @@ export default class SpecialtiesPetModel {
 					await prisma.veterinarySpecialities.create({
 						data:{
 							specialitiesId: element.animalTypesId,
-							vetInfosId: element.vetInfosId
+							veterinaryId: element.veterinaryId
 						}
 					})
 				}
@@ -71,22 +71,19 @@ export default class SpecialtiesPetModel {
 		} catch (err) {
 			throw new Error(`${err}`);
 		}
-	} 
-	async DeleteSpecialtiesPet(specialtiesPetID: Array<{ id: number, animalTypesId: number, vetInfosId: number }>) {
- 
+	}
+	async DeleteSpecialtiesPet(specialtiesPetID: Array<{ id: number, animalTypesId: number, veterinaryId: number }>) {
+
 		try {
 
-			const specialties = specialtiesPetID.map(async (element) => {
+			return specialtiesPetID.map(async (element) => {
 				await prisma.animalTypesVetInfos.deleteMany({
 					where: {
 						animalTypesId: element.animalTypesId,
-						vetInfosId: element.vetInfosId
-						// vetInfosId: vetInfosId
+						veterinaryId: element.veterinaryId
 					},
 				});
-			});
-
-			return specialties
+			})
 
 		} catch (err) {
 			throw new Error(`${err}`);

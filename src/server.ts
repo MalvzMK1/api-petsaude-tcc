@@ -10,8 +10,7 @@ import userRoutes from './routes/user.routes';
 import authRoutes from './routes/auth.routes';
 import petRoutes from './routes/pet.routes';
 import addressRoutes from './routes/address.routes';
-import phoneNumberRoutes from './routes/phone.routes';
-import vetInfosRoutes from './routes/vetInfos.routes';
+import veterinaryRoutes from './routes/veterinary.routes';
 
 fastify.register(cors, {
 	origin: true,
@@ -25,8 +24,7 @@ fastify.register(userRoutes);
 fastify.register(authRoutes);
 fastify.register(petRoutes);
 fastify.register(addressRoutes);
-fastify.register(phoneNumberRoutes);
-fastify.register(vetInfosRoutes);
+fastify.register(veterinaryRoutes);
 
 const port = process.env.PORT || 8080;
 
