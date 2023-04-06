@@ -1,9 +1,12 @@
 import Messages from '../messages/message';
-import { PetComplements } from '../model/petModel';
 import Pet from '../model/petModel';
+import {
+	CreatePetInfosModelProps,
+	PetInfosControllerProps,
+} from '../@types/petInfosProps';
+import { PetSpecie } from '@prisma/client';
 
 const messages = new Messages();
-const petComplementsModel = new PetComplements();
 const petModel = new Pet();
 
 export default class PetController {
@@ -27,6 +30,7 @@ export default class PetController {
 			};
 		}
 	}
+
 	async getAllPets(userID: number) {
 		try {
 			const pets = await petModel.findAllPets(userID);
@@ -42,32 +46,12 @@ export default class PetController {
 			};
 		}
 	}
-	async createPet(pet: PetInfosControllerProps) {
-		const petInfos = pet;
 
-		const petGender = await petComplementsModel.getGender(petInfos.gender);
-		const petSize = await petComplementsModel.getSize(petInfos.size);
-		const petSpecie = await petComplementsModel.getSpecie(petInfos.specie);
+	async createPet(pet: PetInfosControllerProps) {
 		let birthDate: Date;
 
-		if (petGender === null)
-			return {
-				statusCode: 404,
-				message: messages.MESSAGE_ERROR.NO_PET_GENDER_FOUND,
-			};
-		if (petSize === null)
-			return {
-				statusCode: 404,
-				message: messages.MESSAGE_ERROR.NO_PET_SIZE_FOUND,
-			};
-		if (petSpecie === null)
-			return {
-				statusCode: 404,
-				message: messages.MESSAGE_ERROR.NO_PET_SPECIE_FOUND,
-			};
-
 		try {
-			const splittedDate = petInfos.birthDate.split('-');
+			const splittedDate = pet.birthDate.split('-');
 			birthDate = new Date(
 				parseInt(splittedDate[0]),
 				parseInt(splittedDate[1]),
@@ -81,17 +65,26 @@ export default class PetController {
 				message: messages.MESSAGE_ERROR.INCORRECT_DATE_TYPE,
 			};
 		}
-		const petInfosJSON: CreatePetInfosModelProps = {
-			name: petInfos.name,
-			birthDate: birthDate,
-			microship: petInfos.microship,
-			photo: petInfos.photo,
-			genderId: petGender.id,
-			sizeId: petSize.id,
-			specieId: petSpecie.id,
-			ownerId: petInfos.ownerID,
-		};
+		const findOrCreateSpecieResponse = await petModel.findOrCreateSpecie(
+			pet.specie
+		);
+		let specie: PetSpecie;
+
+		if (Array.isArray(findOrCreateSpecieResponse))
+			specie = findOrCreateSpecieResponse[0];
+		else specie = findOrCreateSpecieResponse;
+
 		try {
+			const petInfosJSON: CreatePetInfosModelProps = {
+				name: pet.name,
+				birthDate: birthDate,
+				microship: pet.microship,
+				photo: pet.photo,
+				gender: pet.gender,
+				size: pet.size,
+				specieId: specie.id,
+				ownerId: pet.ownerID,
+			};
 			const createdPet = await petModel.createNewPet(petInfosJSON);
 			return {
 				statusCode: 201,
@@ -99,12 +92,15 @@ export default class PetController {
 				pet: createdPet,
 			};
 		} catch (err) {
-			return {
-				statusCode: 500,
-				message: messages.MESSAGE_ERROR.INTERNAL_ERROR_DB,
-			};
+			if (err instanceof Error)
+				return {
+					statusCode: 500,
+					message: err.message,
+				};
+			return messages.MESSAGE_ERROR.INTERNAL_ERROR_DB;
 		}
 	}
+
 	async deletePet(petID: number) {
 		try {
 			const deletedPet = await petModel.deletePet(petID);
@@ -125,6 +121,7 @@ export default class PetController {
 			};
 		}
 	}
+
 	async updatePet(petID: number, pet: PetInfosControllerProps) {
 		try {
 			const petGender = await petComplementsModel.getGender(pet.gender);

@@ -1,5 +1,8 @@
 import prisma from '../lib/prisma';
-import {CreatePetInfosModelProps, UpdatePetInfosModelProps} from "../@types/petInfosProps";
+import {
+	CreatePetInfosModelProps,
+	UpdatePetInfosModelProps,
+} from '../@types/petInfosProps';
 
 export default class Pet {
 	async findPet(petID: number) {
@@ -19,11 +22,11 @@ export default class Pet {
 			throw new Error(`${err}`);
 		}
 	}
+
 	async findAllPets(userID: number) {
 		try {
 			const pets = await prisma.pet.findMany({
 				where: {
-					// @ts-ignore
 					ownerId: userID,
 				},
 			});
@@ -35,8 +38,11 @@ export default class Pet {
 			throw new Error(`${err}`);
 		}
 	}
+
 	async createNewPet(pet: CreatePetInfosModelProps) {
 		try {
+			if (pet.specieId) {
+			}
 			return await prisma.pet.create({
 				data: {
 					name: pet.name,
@@ -54,6 +60,7 @@ export default class Pet {
 			throw new Error(`${err}`);
 		}
 	}
+
 	async deletePet(petID: number) {
 		try {
 			return prisma.pet.delete({
@@ -69,6 +76,7 @@ export default class Pet {
 			throw new Error(`${err}`);
 		}
 	}
+
 	async updatePet(petID: number, petInfos: UpdatePetInfosModelProps) {
 		try {
 			const updatedPet = await prisma.pet.update({
@@ -89,6 +97,25 @@ export default class Pet {
 			return null;
 		} catch (err) {
 			console.log(err);
+			throw new Error(`${err}`);
+		}
+	}
+
+	async findOrCreateSpecie(specie: string) {
+		try {
+			const petSpecie = await prisma.petSpecie.findMany({
+				where: {
+					name: specie,
+				},
+			});
+			if (petSpecie.length < 1)
+				return await prisma.petSpecie.create({
+					data: {
+						name: specie,
+					},
+				});
+			else return petSpecie;
+		} catch (err) {
 			throw new Error(`${err}`);
 		}
 	}

@@ -51,9 +51,9 @@ type postPhoneUser = {
 };
 
 type jwtSignUser = {
+	id: number;
 	userName: string;
 	email: string;
 	profilePhoto: string;
 	profileBannerPhoto: string;
-	isVet: boolean;
 };
