@@ -3,6 +3,7 @@ import Pet from '../model/petModel';
 import {
 	CreatePetInfosModelProps,
 	PetInfosControllerProps,
+	UpdatePetInfosModelProps,
 } from '../@types/petInfosProps';
 import { PetSpecie } from '@prisma/client';
 
@@ -124,26 +125,6 @@ export default class PetController {
 
 	async updatePet(petID: number, pet: PetInfosControllerProps) {
 		try {
-			const petGender = await petComplementsModel.getGender(pet.gender);
-			const petSize = await petComplementsModel.getSize(pet.size);
-			const petSpecie = await petComplementsModel.getSpecie(pet.specie);
-
-			if (petGender === null)
-				return {
-					statusCode: 404,
-					message: messages.MESSAGE_ERROR.NO_PET_GENDER_FOUND,
-				};
-			if (petSize === null)
-				return {
-					statusCode: 404,
-					message: messages.MESSAGE_ERROR.NO_PET_SIZE_FOUND,
-				};
-			if (petSpecie === null)
-				return {
-					statusCode: 404,
-					message: messages.MESSAGE_ERROR.NO_PET_SPECIE_FOUND,
-				};
-
 			const splittedDate = pet.birthDate.split('-');
 			const petBirthDate = new Date(
 				parseInt(splittedDate[0]),
@@ -151,10 +132,19 @@ export default class PetController {
 				parseInt(splittedDate[2])
 			);
 
+			const findOrCreateSpecieResponse = await petModel.findOrCreateSpecie(
+				pet.specie
+			);
+			let specie: PetSpecie;
+
+			if (Array.isArray(findOrCreateSpecieResponse))
+				specie = findOrCreateSpecieResponse[0];
+			else specie = findOrCreateSpecieResponse;
+
 			const petInfos: UpdatePetInfosModelProps = {
-				genderId: petGender.id,
-				specieId: petSpecie.id,
-				sizeId: petSize.id,
+				gender: pet.gender,
+				size: pet.size,
+				specieId: specie.id,
 
 				microship: pet.microship,
 				name: pet.name,
