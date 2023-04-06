@@ -17,7 +17,6 @@
   "description": "",
   "devDependencies": {
     "@mermaid-js/mermaid-cli": "^9.3.0",
-    "@types/fastify-cors": "^2.1.0",
     "@types/node": "^18.11.18",
     "@typescript-eslint/eslint-plugin": "^5.49.0",
     "@typescript-eslint/parser": "^5.49.0",
