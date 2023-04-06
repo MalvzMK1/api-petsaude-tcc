@@ -1,7 +1,5 @@
 import { FastifyInstance } from 'fastify';
 import userController from '../controller/userController';
-import specialtiesPetsController from '../controller/specialtiesPetsController';
-import specialtiesController from '../controller/specialtiesController';
 import authenticate from '../middlewares/authenticate';
 import { z } from 'zod';
 import Message from '../messages/message';
@@ -35,7 +33,7 @@ export default async function userRoutes(fastify: FastifyInstance) {
 
 		const createUser = await userController.createUser(body);
 
-		res.status(createUser.statusCode).send(createUser.message);
+		res.status(createUser.statusCode).send({ response: createUser.message });
 	});
 
 	fastify.get('/user', { onRequest: authenticate }, async (req, res) => {
@@ -108,102 +106,7 @@ export default async function userRoutes(fastify: FastifyInstance) {
 		reply.status(updateUser.statusCode).send(updateUser.message);
 	});
 
-	fastify.put(
-		'/veterinarian/user/pet',
-		{ onRequest: authenticate },
-		async (req, res) => {
-			const bodyParams = z.object({
-				AnimalTypesVetInfos: z.array(
-					z.object({
-						id: z.number(),
-						vetInfosId: z.number(),
-						animalTypesId: z.number(),
-					})
-				),
-			});
-
-			const body = bodyParams.parse(req.body);
-
-			const updateUser = await specialtiesPetsController.updateSpecialitiesPet(
-				body.AnimalTypesVetInfos
-			);
-
-			res.status(updateUser.statusCode).send(updateUser.message);
-		}
-	);
-
-	fastify.put(
-		'/veterinarian/user/',
-		{ onRequest: authenticate },
-		async (req, res) => {
-			const bodyParams = z.object({
-				VeterinaryEspecialities: z.array(
-					z.object({
-						id: z.number(),
-						vetInfosId: z.number(),
-						specialtiesId: z.number(),
-					})
-				),
-			});
-			const body = bodyParams.parse(req.body);
-
-			const updateUser = await specialtiesController.updateSpecialities(
-				body.VeterinaryEspecialities
-			);
-
-			res.status(updateUser.statusCode).send(updateUser.message);
-		}
-	);
-
-	fastify.delete(
-		'/veterinarian/user/pet',
-		{ onRequest: authenticate },
-		async (req, res) => {
-			const bodyParams = z.object({
-				AnimalTypesVetInfos: z.array(
-					z.object({
-						id: z.number(),
-						vetInfosId: z.number(),
-						animalTypesId: z.number(),
-					})
-				),
-			});
-
-			const body = bodyParams.parse(req.body);
-
-			const updateUser = await specialtiesPetsController.deleteSpecialitiesPet(
-				body.AnimalTypesVetInfos
-			);
-
-			res.status(updateUser.statusCode).send(updateUser.message);
-		}
-	);
-
-	fastify.delete(
-		'/veterinarian/user',
-		{ onRequest: authenticate },
-		async (req, res) => {
-			const bodyParams = z.object({
-				VeterinaryEspecialities: z.array(
-					z.object({
-						id: z.number(),
-						vetInfosId: z.number(),
-						specialtiesId: z.number(),
-					})
-				),
-			});
-
-			const body = bodyParams.parse(req.body);
-
-			const updateUser = await specialtiesController.deleteSpecialities(
-				body.VeterinaryEspecialities
-			);
-
-			res.status(updateUser.statusCode).send(updateUser.message);
-		}
-	);
-
-	fastify.delete('/user/:id', { onRequest: authenticate }, async (req, res) => {
+	fastify.delete('/user', { onRequest: authenticate }, async (req, res) => {
 		const queryParams = z.object({
 			userID: z.string(),
 		});

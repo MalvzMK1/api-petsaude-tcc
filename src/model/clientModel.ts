@@ -1,7 +1,7 @@
 import prisma from '../lib/prisma';
 
-export default class UserModel {
-	async createUser(userInfos: CreateUserInfosModelProps) {
+export default class ClientModel {
+	async createClient(userInfos: CreateUserInfosModelProps) {
 		try {
 			return await prisma.client.create({
 				data: {
@@ -29,13 +29,13 @@ export default class UserModel {
 		}
 	}
 
-	async findAllUsers() {
+	async findAllClients() {
 		try {
 			return await prisma.client.findMany({
 				include: {
 					Pet: {
 						include: {
-							petSpecie: true
+							petSpecie: true,
 						},
 					},
 					Address: true,
@@ -46,7 +46,7 @@ export default class UserModel {
 		}
 	}
 
-	async findUserById(userID: number) {
+	async findClientById(userID: number) {
 		try {
 			return await prisma.client.findUnique({
 				where: {
@@ -66,7 +66,7 @@ export default class UserModel {
 		}
 	}
 
-	async findUserByEmail(userEmail: string) {
+	async findClientByEmail(userEmail: string) {
 		try {
 			return await prisma.client.findMany({
 				where: {
@@ -78,7 +78,7 @@ export default class UserModel {
 		}
 	}
 
-	async updateUser(userID: number, userInfos: UpdateUserInfosProps) {
+	async updateClient(userID: number, userInfos: UpdateUserInfosProps) {
 		try {
 			return await prisma.client.update({
 				where: {
@@ -99,7 +99,7 @@ export default class UserModel {
 		}
 	}
 
-	async deleteUser(userID: number) {
+	async deleteClient(userID: number) {
 		try {
 			const userPetDelete = await prisma.pet.deleteMany({
 				where: {
@@ -113,9 +113,7 @@ export default class UserModel {
 				},
 			});
 
-			return !!(userPetDelete &&
-				userDelete);
-
+			return !!(userPetDelete && userDelete);
 		} catch (err) {
 			throw new Error(`${err}`);
 		}

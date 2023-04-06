@@ -1,8 +1,7 @@
 import Message from '../messages/message';
-import UserModel from '../model/userModel';
-import ValidateUserInfosProps from '../utils/validateUserInfosProps';
+import ClientModel from '../model/clientModel';
 
-const userModel = new UserModel();
+const userModel = new ClientModel();
 const message = new Message();
 
 class UserController {
@@ -12,12 +11,29 @@ class UserController {
 			const complement = userInfos.address.complement
 				? userInfos.address.complement
 				: '';
-			const users = await userModel.findAllUsers();
+			const users = await userModel.findAllClients();
 
 			if (users) {
 				const usersWithSameEmail = users.filter((user) => {
 					return user.email === userInfos.email;
 				});
+				if (usersWithSameEmail.length > 0)
+					return {
+						statusCode: 400,
+						message: {
+							error: 'E-mail já está em uso',
+						},
+					};
+				const usersWithSameCpf = users.filter((user) => {
+					return user.cpf === userInfos.cpf;
+				});
+				if (usersWithSameCpf.length > 0)
+					return {
+						statusCode: 400,
+						message: {
+							error: 'O CPF já está em uso',
+						},
+					};
 			}
 
 			const userInfosToCreate: CreateUserInfosModelProps = {
@@ -33,7 +49,7 @@ class UserController {
 					number: userInfos.address.number,
 				},
 			};
-			const createdUser = await userModel.createUser(userInfosToCreate);
+			const createdUser = await userModel.createClient(userInfosToCreate);
 			if (createdUser)
 				return {
 					statusCode: 201,
@@ -54,7 +70,7 @@ class UserController {
 
 	async getUserById(userID: number) {
 		try {
-			const userInfos = await userModel.findUserById(userID);
+			const userInfos = await userModel.findClientById(userID);
 
 			if (!userInfos) {
 				return {
@@ -78,7 +94,7 @@ class UserController {
 
 	async getUserByEmail(userEmail: string) {
 		try {
-			const userInfos = await userModel.findUserByEmail(userEmail);
+			const userInfos = await userModel.findClientByEmail(userEmail);
 
 			if (userInfos.length > 0)
 				return {
@@ -99,7 +115,7 @@ class UserController {
 
 	async getAllUsers() {
 		try {
-			const getUsers = await userModel.findAllUsers();
+			const getUsers = await userModel.findAllClients();
 
 			if (!getUsers) {
 				return {
@@ -122,7 +138,7 @@ class UserController {
 
 	async updateUser(userID: number, userInfos: UpdateUserInfosProps) {
 		try {
-			const updatedUser = await userModel.updateUser(userID, userInfos);
+			const updatedUser = await userModel.updateClient(userID, userInfos);
 			if (updatedUser)
 				return {
 					statusCode: 204,
@@ -143,9 +159,9 @@ class UserController {
 
 	async deleteUser(userID: number) {
 		try {
-			const user = await userModel.findUserById(userID);
+			const user = await userModel.findClientById(userID);
 			if (user) {
-				const userDelete = await userModel.deleteUser(userID);
+				const userDelete = await userModel.deleteClient(userID);
 				if (!userDelete) {
 					return {
 						statusCode: 500,
