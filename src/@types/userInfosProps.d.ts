@@ -57,6 +57,17 @@ type createVeterinaryController = {
 };
 
 type createVeterinaryModel = {
+	personName: string;
+	cpf: string;
+	email: string;
+	password: string;
+	cellphoneNumber: string;
+	phoneNumber: string | null;
+	address: {
+		zipCode: string;
+		number: string;
+		complement: string | null;
+	};
 	occupationArea: string;
 	formation: string;
 	institution: string;

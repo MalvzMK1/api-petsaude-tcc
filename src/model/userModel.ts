@@ -3,25 +3,18 @@ import prisma from '../lib/prisma';
 export default class UserModel {
 	async createUser(userInfos: CreateUserInfosModelProps) {
 		try {
-			return await prisma.user.create({
+			return await prisma.client.create({
 				data: {
 					personName: userInfos.personName,
 					userName: '',
 					cpf: userInfos.cpf,
 					email: userInfos.email,
 					password: userInfos.password,
-					PhoneNumber: {
-						createMany: {
-							data: [
-								{
-									number: userInfos.cellphoneNumber,
-								},
-								{
-									number: userInfos.phoneNumber,
-								},
-							],
-						},
-					},
+					rg: '',
+					profilePhoto: '',
+					profileBannerPhoto: '',
+					phoneNumber: userInfos.phoneNumber,
+					cellphoneNumber: userInfos.cellphoneNumber,
 					Address: {
 						create: {
 							cep: userInfos.address.zipCode,
@@ -29,7 +22,6 @@ export default class UserModel {
 							complement: userInfos.address.complement,
 						},
 					},
-					isVet: false,
 				},
 			});
 		} catch (err) {
@@ -37,21 +29,33 @@ export default class UserModel {
 		}
 	}
 
-	async createVeterinary(userId: number, vetInfos: createVeterinaryModel) {
+	async createVeterinary(userId: number, veterinary: createVeterinaryModel) {
 		try {
-			return await prisma.vetInfos.create({
+			return await prisma.veterinary.create({
 				data: {
-					User: {
-						connect: {
-							id: userId,
+					personName: veterinary.personName,
+					userName: '',
+					cpf: veterinary.cpf,
+					email: veterinary.email,
+					password: veterinary.password,
+					rg: '',
+					profilePhoto: '',
+					profileBannerPhoto: '',
+					phoneNumber: veterinary.phoneNumber,
+					cellphoneNumber: veterinary.cellphoneNumber,
+					Address: {
+						create: {
+							cep: veterinary.address.zipCode,
+							number: veterinary.address.number,
+							complement: veterinary.address.complement,
 						},
 					},
-					crmv: vetInfos.crmv,
-					formation: vetInfos.formation,
-					institution: vetInfos.institution,
-					occupationArea: vetInfos.occupationArea,
-					startActingDate: vetInfos.startActingDate,
-					formationDate: vetInfos.formationDate,
+					crmv: veterinary.crmv,
+					formation: veterinary.formation,
+					institution: veterinary.institution,
+					occupationArea: veterinary.occupationArea,
+					startActingDate: veterinary.startActingDate,
+					formationDate: veterinary.formationDate,
 				},
 			});
 			// return await prisma.user.update({
@@ -81,31 +85,14 @@ export default class UserModel {
 
 	async findAllUsers() {
 		try {
-			return await prisma.user.findMany({
+			return await prisma.client.findMany({
 				include: {
 					Pet: {
 						include: {
-							petGender: true,
-							petSize: true,
-							petSpecie: true,
+							petSpecie: true
 						},
 					},
-					PhoneNumber: true,
 					Address: true,
-					vetInfos: {
-						include: {
-							VeterinaryEspecialities: {
-								include: {
-									specialities: true,
-								},
-							},
-							AnimalTypesVetInfos: {
-								include: {
-									animalTypes: true,
-								},
-							},
-						},
-					},
 				},
 			});
 		} catch (err) {
@@ -115,34 +102,17 @@ export default class UserModel {
 
 	async findUserById(userID: number) {
 		try {
-			return await prisma.user.findUnique({
+			return await prisma.client.findUnique({
 				where: {
 					id: userID,
 				},
 				include: {
 					Pet: {
 						include: {
-							petGender: true,
-							petSize: true,
 							petSpecie: true,
 						},
 					},
-					PhoneNumber: true,
 					Address: true,
-					vetInfos: {
-						include: {
-							VeterinaryEspecialities: {
-								include: {
-									specialities: true,
-								},
-							},
-							AnimalTypesVetInfos: {
-								include: {
-									animalTypes: true,
-								},
-							},
-						},
-					},
 				},
 			});
 		} catch (err) {
@@ -152,7 +122,7 @@ export default class UserModel {
 
 	async findUserByEmail(userEmail: string) {
 		try {
-			return await prisma.user.findMany({
+			return await prisma.client.findMany({
 				where: {
 					email: userEmail,
 				},
@@ -164,7 +134,7 @@ export default class UserModel {
 
 	async updateUser(userID: number, userInfos: UpdateUserInfosProps) {
 		try {
-			return await prisma.user.update({
+			return await prisma.client.update({
 				where: {
 					id: userID,
 				},
@@ -176,7 +146,6 @@ export default class UserModel {
 					profilePhoto: userInfos.profilePhoto,
 					profileBannerPhoto: userInfos.profileBannerPhoto,
 					email: userInfos.email,
-					isVet: userInfos.isVet,
 				},
 			});
 		} catch (err) {
@@ -186,66 +155,21 @@ export default class UserModel {
 
 	async deleteUser(userID: number) {
 		try {
-			const userPhoneNumberDelete = await prisma.phoneNumber.deleteMany({
-				where: {
-					userId: userID,
-				},
-			});
 			const userPetDelete = await prisma.pet.deleteMany({
 				where: {
 					id: userID,
 				},
 			});
-			const animalTypesVetInfosDelete =
-				await prisma.animalTypesVetInfos.deleteMany({
-					where: {
-						vet: {
-							User: {
-								every: {
-									id: userID,
-								},
-							},
-						},
-					},
-				});
-			const veterinarySpecialitiesDelete =
-				await prisma.veterinarySpecialities.deleteMany({
-					where: {
-						vetInfos: {
-							User: {
-								every: {
-									id: userID,
-								},
-							},
-						},
-					},
-				});
-			const userVetInfos = await prisma.vetInfos.deleteMany({
-				where: {
-					User: {
-						every: {
-							id: userID,
-						},
-					},
-				},
-			});
-			const userDelete = await prisma.user.deleteMany({
+			const userDelete = await prisma.client.deleteMany({
 				where: {
 					id: userID,
 					Address: {},
 				},
 			});
 
-			if (
-				userPhoneNumberDelete &&
-				userPetDelete &&
-				animalTypesVetInfosDelete &&
-				veterinarySpecialitiesDelete &&
-				userVetInfos &&
-				userDelete
-			)
-				return true;
-			return false;
+			return !!(userPetDelete &&
+				userDelete);
+
 		} catch (err) {
 			throw new Error(`${err}`);
 		}
@@ -253,7 +177,7 @@ export default class UserModel {
 
 	async updateVetInfos(vetInfosID: number, vetInfos: UpdateVetInfosProps) {
 		try {
-			return await prisma.vetInfos.update({
+			return await prisma.veterinary.update({
 				where: {
 					id: vetInfosID,
 				},
@@ -262,21 +186,6 @@ export default class UserModel {
 					formation: vetInfos.formation,
 					institution: vetInfos.institution,
 					occupationArea: vetInfos.occupationArea,
-				},
-			});
-		} catch (err) {
-			throw new Error(`${err}`);
-		}
-	}
-
-	async updateIsVet(id: number, isVet: boolean) {
-		try {
-			return await prisma.user.update({
-				where: {
-					id,
-				},
-				data: {
-					isVet,
 				},
 			});
 		} catch (err) {
