@@ -1,7 +1,7 @@
-import prisma from "../lib/prisma";
+import prisma from '../lib/prisma';
 
 export default class VeterinaryModel {
-	async createVeterinary(userId: number, veterinary: createVeterinaryModel) {
+	async createVeterinary(veterinary: createVeterinaryModel) {
 		try {
 			return await prisma.veterinary.create({
 				data: {
@@ -35,7 +35,18 @@ export default class VeterinaryModel {
 		}
 	}
 
-	async updateVeterinaryPersonalInfos(veterinaryID: number, veterinary: UpdateVeterinaryProps) {
+	async getAllVeterinarys() {
+		try {
+			return await prisma.veterinary.findMany();
+		} catch (err) {
+			return err;
+		}
+	}
+
+	async updateVeterinaryPersonalInfos(
+		veterinaryID: number,
+		veterinary: UpdateVeterinaryProps
+	) {
 		try {
 			return await prisma.veterinary.update({
 				where: {
@@ -52,6 +63,18 @@ export default class VeterinaryModel {
 			});
 		} catch (err) {
 			throw new Error(`${err}`);
+		}
+	}
+
+	async findVeterinarysByCrmv(crmv: string) {
+		try {
+			return await prisma.veterinary.findMany({
+				where: {
+					crmv: crmv,
+				},
+			});
+		} catch (err) {
+			if (err instanceof Error) throw new Error(`${err.message}`);
 		}
 	}
 }

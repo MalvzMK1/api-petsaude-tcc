@@ -29,7 +29,6 @@ export default async function userRoutes(fastify: FastifyInstance) {
 			res.status(400).send(new Messages().MESSAGE_ERROR.EMPTY_BODY);
 
 		const body = bodyParams.parse(req.body);
-		console.log(body);
 
 		const createUser = await userController.createUser(body);
 
@@ -56,55 +55,50 @@ export default async function userRoutes(fastify: FastifyInstance) {
 		reply.status(allUsers.statusCode).send(allUsers.message);
 	});
 
-	fastify.put('/user', { onRequest: authenticate }, async (request, reply) => {
-		const bodyParams = z.object({
-			personName: z.string(),
-			userName: z.string(),
-			cpf: z.string(),
-			rg: z.string(),
-			profilePhoto: z.optional(z.string()),
-			profileBannerPhoto: z.optional(z.string()),
-			email: z.string(),
-			isVet: z.boolean(),
-			addressId: z.number(),
-			vetInfosId: z.optional(z.number()),
-			vetInfos: z.optional(
-				z.object({
-					occupationArea: z.string(),
-					formation: z.string(),
-					institution: z.string(),
-					crmv: z.string(),
-				})
-			),
-		});
+	fastify.put(
+		'/user/personal-infos',
+		{ onRequest: authenticate },
+		async (request, reply) => {
+			const bodyParams = z.object({
+				personName: z.string(),
+				cpf: z.string(),
+				rg: z.string(),
+				phoneNumber: z.string(),
+				cellphoneNumber: z.string(),
+				bio: z.string(),
+			});
 
-		const queryParams = z.object({
-			userID: z.string(),
-		});
+			const queryParams = z.object({
+				userID: z.string(),
+			});
 
-		const rawBody = bodyParams.parse(request.body);
+			const rawBody = bodyParams.parse(request.body);
 
-		if (!validateEmptyBody(rawBody)) {
-			reply
-				.status(400)
-				.send({ message: new Messages().MESSAGE_ERROR.EMPTY_BODY });
+			if (!validateEmptyBody(rawBody)) {
+				reply
+					.status(400)
+					.send({ message: new Messages().MESSAGE_ERROR.EMPTY_BODY });
+			}
+			try {
+				bodyParams.parse(request.body);
+			} catch (error) {
+				console.log(error);
+				reply
+					.status(422)
+					.send({ message: message.MESSAGE_ERROR.TYPES_DOESNT_MATCH });
+			}
+
+			const body: UpdateUserInfosProps = bodyParams.parse(request.body);
+			const { userID } = queryParams.parse(request.query);
+
+			const updateUser = await userController.updateUser(
+				parseInt(userID),
+				body
+			);
+
+			reply.status(updateUser.statusCode).send(updateUser.message);
 		}
-		try {
-			bodyParams.parse(request.body);
-		} catch (error) {
-			console.log(error);
-			reply
-				.status(400)
-				.send({ message: message.MESSAGE_ERROR.TYPES_DOESNT_MATCH });
-		}
-
-		const body: UpdateUserInfosProps = bodyParams.parse(request.body);
-		const { userID } = queryParams.parse(request.query);
-
-		const updateUser = await userController.updateUser(parseInt(userID), body);
-
-		reply.status(updateUser.statusCode).send(updateUser.message);
-	});
+	);
 
 	fastify.delete('/user', { onRequest: authenticate }, async (req, res) => {
 		const queryParams = z.object({

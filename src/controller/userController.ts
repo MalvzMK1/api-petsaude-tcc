@@ -4,7 +4,7 @@ import ClientModel from '../model/clientModel';
 const userModel = new ClientModel();
 const message = new Message();
 
-class UserController {
+class ClientController {
 	async createUser(userInfos: CreateUserInfosProps) {
 		try {
 			const phoneNumber = userInfos.phoneNumber ? userInfos.phoneNumber : '';
@@ -188,4 +188,4 @@ class UserController {
 	}
 }
 
-export default new UserController();
+export default new ClientController();

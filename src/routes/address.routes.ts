@@ -14,11 +14,8 @@ export default async function addressRoutes(fastify: FastifyInstance) {
 		async (request, reply) => {
 			const bodyParams = z.object({
 				zipCode: z.string(),
-				street: z.string(),
 				complement: z.string(),
 				number: z.string(),
-				neighborhood: z.string(),
-				city: z.string(),
 			});
 			const queryParams = z.object({
 				addressID: z.string(),

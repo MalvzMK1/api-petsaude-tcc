@@ -6,10 +6,22 @@ import SpecialtiesController from '../controller/specialtiesController';
 import specialtiesController from '../controller/specialtiesController';
 import SpecialtiesPetController from '../controller/specialtiesPetsController';
 import specialtiesPetsController from '../controller/specialtiesPetsController';
+import veterinaryController from '../controller/veterinaryController';
 
 export default async function veterinaryRoutes(fastify: FastifyInstance) {
-	fastify.post('/veterinarian/user', async (req, res) => {
+	fastify.post('/veterinary', async (req, res) => {
 		const bodyParams = z.object({
+			personName: z.string(),
+			cpf: z.string(),
+			email: z.string(),
+			password: z.string(),
+			cellphoneNumber: z.string(),
+			phoneNumber: z.string().nullable(),
+			address: z.object({
+				zipCode: z.string(),
+				complement: z.string().nullable(),
+				number: z.string(),
+			}),
 			crmv: z.string(),
 			occupationArea: z.string(),
 			formation: z.string(),
@@ -17,9 +29,6 @@ export default async function veterinaryRoutes(fastify: FastifyInstance) {
 			startActingDate: z.string(),
 			formationDate: z.string(),
 		});
-
-		const queryParams = z.object({ userId: z.string() });
-
 		const rawBody = req.body;
 		if (JSON.stringify(rawBody) === '{}')
 			res.status(400).send(new Messages().MESSAGE_ERROR.EMPTY_BODY);
@@ -37,10 +46,9 @@ export default async function veterinaryRoutes(fastify: FastifyInstance) {
 				.status(400)
 				.send({ message: 'Wrong date format, expected YYYY-MM-DD' });
 
-		const { userId } = queryParams.parse(req.query);
-		// const result = await userController.createUser(parseInt(userId), body)
+		const result = await veterinaryController.createVeterinary(body);
 
-		// res.status(result.statusCode).send(result.message);
+		res.status(result.statusCode).send({ response: result.message });
 	});
 	fastify.post(
 		'/specialties',

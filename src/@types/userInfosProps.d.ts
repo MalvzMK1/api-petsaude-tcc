@@ -28,21 +28,11 @@ type CreateUserInfosModelProps = {
 
 type UpdateUserInfosProps = {
 	personName: string;
-	userName: string;
 	cpf: string;
 	rg: string;
-	profilePhoto?: string;
-	profileBannerPhoto?: string;
-	email: string;
-	isVet: boolean;
-	addressId: number;
-	vetInfosId?: number;
-	vetInfos?: {
-		occupationArea: string;
-		formation: string;
-		institution: string;
-		crmv: string;
-	};
+	cellphoneNumber: string;
+	phoneNumber: string;
+	bio: string;
 };
 
 type postPhoneUser = {

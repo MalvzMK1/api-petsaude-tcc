@@ -86,12 +86,10 @@ export default class ClientModel {
 				},
 				data: {
 					personName: userInfos.personName,
-					userName: userInfos.userName,
 					cpf: userInfos.cpf,
 					rg: userInfos.rg,
-					profilePhoto: userInfos.profilePhoto,
-					profileBannerPhoto: userInfos.profileBannerPhoto,
-					email: userInfos.email,
+					phoneNumber: userInfos.phoneNumber,
+					cellphoneNumber: userInfos.cellphoneNumber,
 				},
 			});
 		} catch (err) {
