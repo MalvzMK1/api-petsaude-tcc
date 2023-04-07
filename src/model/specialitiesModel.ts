@@ -19,6 +19,18 @@ export default class SpecialitiesModel {
 		}
 	}
 
+	async findSpecialityById(id: number) {
+		try {
+			return await prisma.specialities.findUnique({
+				where: {
+					id: id
+				}
+			})
+		} catch (err) {
+			throw new Error(`${err}`)
+		}
+	}
+
 	async updateSpecialtiesInfos(
 		specialtiesID: Array<{
 			id: number;

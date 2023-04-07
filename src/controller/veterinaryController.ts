@@ -1,6 +1,7 @@
 import Message from '../messages/message';
 import VeterinaryModel from '../model/veterinaryModel';
 import ClientModel from '../model/clientModel';
+import specialtiesController from "./specialtiesController";
 
 const clientModel = new ClientModel();
 const veterinaryModel = new VeterinaryModel();
@@ -26,9 +27,13 @@ class VeterinaryController {
 				if (filters.speciality) {
 					const speciality = filters.speciality.toLowerCase();
 					response = response.filter((veterinary) => {
-						veterinary.VeterinaryEspecialities.forEach((speciality) => {
-							if (speciality.specialitiesId === 1) return veterinary;
-						});
+						return veterinary.VeterinaryEspecialities.map(async (veterinarySpeciality) => {
+							const specialityResponse = await specialtiesController.getSpecialityById(veterinarySpeciality.specialitiesId)
+							if (specialityResponse && specialityResponse.name.toLowerCase() === speciality) {
+								console.log(veterinary)
+								return veterinary
+							}
+						})
 					});
 				}
 				if (filters.animal) {

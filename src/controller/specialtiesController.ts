@@ -40,6 +40,16 @@ class SpecialtiesController {
 			};
 		}
 	}
+	async getSpecialityById(id: number) {
+		try {
+			const response = await specialitiesModel.findSpecialityById(id)
+			if (response)
+				return response
+			return null
+		} catch (err) {
+			throw new Error(`${err}`)
+		}
+	}
 }
 
 export default new SpecialtiesController();
