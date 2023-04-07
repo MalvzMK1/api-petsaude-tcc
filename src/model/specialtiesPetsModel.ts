@@ -1,12 +1,17 @@
 import prisma from '../lib/prisma';
 
 export default class SpecialtiesPetModel {
-	async createPetSpecialties(specialtiesPets: string) {
+	async getAllSpecialities() {
 		try {
-			return await prisma.animalTypes.create({
-				data: {
-					name: specialtiesPets,
-				},
+			return await prisma.animalTypes.findMany()
+		} catch (err) {
+			throw new Error(`${err}`)
+		}
+	}
+	async createPetSpecialties(specialtiesPets: { name: string }[]) {
+		try {
+			return await prisma.animalTypes.createMany({
+				data: specialtiesPets,
 			});
 		} catch (err) {
 			throw new Error(`${err}`);

@@ -40,9 +40,21 @@ export default class VeterinaryModel {
 			const allVeterinary = await prisma.veterinary.findMany({
 				include: {
 					Address: true,
-					VeterinaryEspecialities: true,
-					AnimalTypesVetInfos: true,
-					Appointments: true,
+					VeterinaryEspecialities: {
+						include: {
+							specialities: true
+						}
+					},
+					AnimalTypesVetInfos: {
+						include: {
+							animalTypes: true
+						}
+					},
+					Appointments: {
+						include: {
+							Client: true
+						}
+					},
 				},
 			});
 			if (allVeterinary.length > 0) return allVeterinary;

@@ -1,34 +1,19 @@
 import prisma from '../lib/prisma';
 
-export default class SpecialtiesModel {
-	async createSpecialties(specialties: string) {
+export default class SpecialitiesModel {
+	async createSpecialties(specialties: {name: string}[]) {
 		try {
-			return await prisma.specialities.create({
-				data: {
-					name: specialties,
-				},
+			return await prisma.specialities.createMany({
+				data: specialties,
 			});
 		} catch (err) {
 			throw new Error(`${err}`);
 		}
 	}
 
-	async getSpecialities(vetInfosId: number) {
+	async findAllSpecialities() {
 		try {
-			const specialties = await prisma.veterinary.findUnique({
-				where: {
-					id: vetInfosId,
-				},
-				include: {
-					VeterinaryEspecialities: {
-						include: {
-							specialities: true,
-						},
-					},
-				},
-			});
-
-			return specialties?.VeterinaryEspecialities;
+			return await prisma.specialities.findMany();
 		} catch (err) {
 			throw new Error(`${err}`);
 		}
@@ -84,7 +69,6 @@ export default class SpecialtiesModel {
 					where: {
 						specialitiesId: element.specialtiesId,
 						veterinaryId: element.veterinaryId,
-						// vetInfosId: vetInfosId
 					},
 				});
 			});

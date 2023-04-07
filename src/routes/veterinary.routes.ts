@@ -11,15 +11,14 @@ import veterinaryController from '../controller/veterinaryController';
 export default async function veterinaryRoutes(fastify: FastifyInstance) {
 	fastify.get('/veterinary', async (request, reply) => {
 		const queryParams = z.object({
-			name: z.optional(z.string()),
+			userName: z.optional(z.string()),
 			speciality: z.optional(z.string()),
 			animal: z.optional(z.string()),
 		});
 
-		const { name, speciality, animal } = queryParams.parse(request.query);
-		console.log(name, speciality, animal);
+		const { userName, speciality, animal } = queryParams.parse(request.query);
 		const response = await veterinaryController.getAllVeterinarys({
-			name,
+			userName,
 			speciality,
 			animal,
 		});
@@ -71,56 +70,8 @@ export default async function veterinaryRoutes(fastify: FastifyInstance) {
 
 		res.status(result.statusCode).send({ response: result.message });
 	});
-	fastify.post(
-		'/specialties',
-		{ onRequest: [authenticate] },
-		async (req, res) => {
-			const bodyParams = z.object({
-				name: z.string(),
-			});
-
-			const body = bodyParams.parse(req.body);
-
-			const headerContentType = req.headers['content-type'];
-
-			if (headerContentType == 'application/json') {
-				if (JSON.stringify(body) != '{}') {
-					const foundSpecialties =
-						await SpecialtiesController.createSpecialties(body.name);
-					res
-						.status(foundSpecialties.statusCode)
-						.send({ message: foundSpecialties.message });
-				} else res.status(404).send('the body cannot be empty');
-			} else
-				res.status(415).send('The request header has no valid content-type!');
-		}
-	);
-	fastify.post(
-		'/pet/specialties',
-		{ onRequest: [authenticate] },
-		async (req, res) => {
-			const bodyParams = z.object({
-				name: z.string(),
-			});
-
-			const body = bodyParams.parse(req.body);
-
-			const headerContentType = req.headers['content-type'];
-
-			if (headerContentType == 'application/json') {
-				if (JSON.stringify(body) != '{}') {
-					const foundSpecialties =
-						await SpecialtiesPetController.createPetSpecialties(body.name);
-					res
-						.status(foundSpecialties.statusCode)
-						.send({ message: foundSpecialties.message });
-				} else res.status(404).send('the body cannot be empty');
-			} else
-				res.status(415).send('The request header has no valid content-type!');
-		}
-	);
 	fastify.put(
-		'/veterinarian/user/pet',
+		'/veterinarian/attended-animals',
 		{ onRequest: authenticate },
 		async (req, res) => {
 			const bodyParams = z.object({
@@ -158,11 +109,14 @@ export default async function veterinaryRoutes(fastify: FastifyInstance) {
 			});
 			const body = bodyParams.parse(req.body);
 
-			const updateUser = await specialtiesController.updateSpecialities(
-				body.VeterinaryEspecialities
-			);
+			// const updateUser = await specialtiesController.updateSpecialities(
+			// 	body.VeterinaryEspecialities
+			// );
 
-			res.status(updateUser.statusCode).send(updateUser.message);
+			// res.status(updateUser.statusCode).send(updateUser.message);
+			res.status(500).send({response: {
+					message: 'Feature in progress'
+				}});
 		}
 	);
 
@@ -206,11 +160,14 @@ export default async function veterinaryRoutes(fastify: FastifyInstance) {
 
 			const body = bodyParams.parse(req.body);
 
-			const updateUser = await specialtiesController.deleteSpecialities(
-				body.VeterinaryEspecialities
-			);
+			// const updateUser = await specialtiesController.deleteSpecialities(
+			// 	body.VeterinaryEspecialities
+			// );
 
-			res.status(updateUser.statusCode).send(updateUser.message);
+			// res.status(updateUser.statusCode).send(updateUser.message);
+			res.status(500).send({response: {
+					message: 'Feature in progress'
+				}});
 		}
 	);
 }

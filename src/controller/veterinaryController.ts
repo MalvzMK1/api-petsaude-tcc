@@ -8,7 +8,7 @@ const messages = new Message();
 
 class VeterinaryController {
 	async getAllVeterinarys(filters: {
-		name: string | null | undefined;
+		userName: string | null | undefined;
 		speciality: string | null | undefined;
 		animal: string | null | undefined;
 	}) {
@@ -17,14 +17,14 @@ class VeterinaryController {
 			if (allVeterinarys) {
 				let response = allVeterinarys;
 
-				if (filters.name) {
-					const name = filters.name;
+				if (filters.userName) {
+					const name = filters.userName.toLowerCase();
 					response = response.filter((veterinary) => {
-						if (veterinary.personName.includes(name)) return veterinary;
+						if (veterinary.userName.toLowerCase().includes(name)) return veterinary;
 					});
 				}
 				if (filters.speciality) {
-					const speciality = filters.speciality;
+					const speciality = filters.speciality.toLowerCase();
 					response = response.filter((veterinary) => {
 						veterinary.VeterinaryEspecialities.forEach((speciality) => {
 							if (speciality.specialitiesId === 1) return veterinary;
@@ -32,7 +32,7 @@ class VeterinaryController {
 					});
 				}
 				if (filters.animal) {
-					const animal = filters.animal;
+					const animal = filters.animal.toLowerCase();
 					response = response.filter((veterinary) => {
 						veterinary.AnimalTypesVetInfos.forEach((animalType) => {
 							if (animalType.animalTypesId === 1) return veterinary;
