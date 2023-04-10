@@ -4,15 +4,37 @@ import SpecialitiesModel from '../model/specialitiesModel';
 const specialitiesModel = new SpecialitiesModel();
 const message = new Message();
 
+function removeDuplicates(
+	array: Array<{ name: string }>
+): Array<{ name: string }> {
+	const unique: Array<{ name: string }> = [];
+	array.forEach((element) => {
+		console.log(!unique.includes(element));
+		if (!unique.includes(element)) unique.push(element);
+	});
+	console.log('depois', unique);
+}
+
 class SpecialtiesController {
-	async createSpecialties(specialities: {name: string}[]) {
+	async createSpecialties(specialities: { name: string }[]) {
 		try {
-			const existentSpecialities = await specialitiesModel.findAllSpecialities();
+			const specialitiesArray: { name: string }[] =
+				removeDuplicates(specialities);
+			const existentSpecialities =
+				await specialitiesModel.findAllSpecialities();
 			const nonExistentSpecialities = specialities.filter((speciality) => {
 				return !existentSpecialities.find((existentSpeciality) => {
-					return existentSpeciality.name.toLowerCase() === speciality.name.toLowerCase();
+					return (
+						existentSpeciality.name.toLowerCase() ===
+						speciality.name.toLowerCase()
+					);
 				});
 			});
+
+			return {
+				statusCode: 200,
+				message: { nonDuplicated: specialitiesArray },
+			};
 
 			if (nonExistentSpecialities.length > 0) {
 				const createSpecialties = await specialitiesModel.createSpecialties(
@@ -30,8 +52,8 @@ class SpecialtiesController {
 			}
 			return {
 				statusCode: 400,
-				message: 'As especialidades já existem no banco de dados'
-			}
+				message: 'As especialidades já existem no banco de dados',
+			};
 		} catch (err) {
 			console.log(err);
 			return {
@@ -40,14 +62,14 @@ class SpecialtiesController {
 			};
 		}
 	}
+
 	async getSpecialityById(id: number) {
 		try {
-			const response = await specialitiesModel.findSpecialityById(id)
-			if (response)
-				return response
-			return null
+			const response = await specialitiesModel.findSpecialityById(id);
+			if (response) return response;
+			return null;
 		} catch (err) {
-			throw new Error(`${err}`)
+			throw new Error(`${err}`);
 		}
 	}
 }
