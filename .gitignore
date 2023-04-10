@@ -1,6 +1,8 @@
 .vscode
 .idea
 node_modules
+bin
 dist
 .env
 prisma/ERD.svg
+.deployment

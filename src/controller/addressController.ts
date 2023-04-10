@@ -1,9 +1,8 @@
 import Messages from '../messages/message';
-import Address, { AddressComplements } from '../model/address.model';
+import Address from '../model/address.model';
 
 const messages = new Messages();
 const addressModel = new Address();
-const addressComplementsModel = new AddressComplements();
 
 export default class AddressController {
 	async updateAddress(
@@ -18,21 +17,10 @@ export default class AddressController {
 				};
 			// TODO: VALIDATE ADDRESS PROPS
 
-			const city = await addressComplementsModel.getCityByName(address.city);
-
-			if (!city)
-				return {
-					statusCode: 404,
-					message: messages.MESSAGE_ERROR.CITY_NOT_FOUND,
-				};
-
 			const addressInfos: AddressUpdateModelProps = {
-				cep: address.cep,
+				zipCode: address.zipCode,
 				complement: address.complement,
-				neighborhood: address.neighborhood,
 				number: address.number,
-				street: address.street,
-				cityID: city.id,
 			};
 
 			const updatedAddress = await addressModel.updateAddress(

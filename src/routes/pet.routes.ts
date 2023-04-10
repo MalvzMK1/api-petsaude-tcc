@@ -2,6 +2,8 @@ import { FastifyInstance } from 'fastify';
 import authenticate from '../middlewares/authenticate';
 import { z } from 'zod';
 import PetController from '../controller/petController';
+import { PetInfosControllerProps } from '../@types/petInfosProps';
+import { PetGenderEnum, PetSizeEnum } from '@prisma/client';
 
 const petController = new PetController();
 
@@ -38,8 +40,8 @@ export default async function petRoutes(fastify: FastifyInstance) {
 			birthDate: z.string(),
 			photo: z.string(),
 			microship: z.boolean(),
-			size: z.string(),
-			gender: z.string(),
+			size: z.nativeEnum(PetSizeEnum),
+			gender: z.nativeEnum(PetGenderEnum),
 			specie: z.string(),
 		});
 		const queryParams = z.object({
@@ -80,8 +82,8 @@ export default async function petRoutes(fastify: FastifyInstance) {
 			birthDate: z.string(),
 			photo: z.string(),
 			microship: z.boolean(),
-			size: z.string(),
-			gender: z.string(),
+			size: z.nativeEnum(PetSizeEnum),
+			gender: z.nativeEnum(PetGenderEnum),
 			specie: z.string(),
 			ownerID: z.number(),
 		});

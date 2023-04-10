@@ -1,53 +1,55 @@
 import Message from '../messages/message';
-import { AddressComplements } from '../model/address.model';
-import UserModel from '../model/userModel';
-import ValidateUserInfosProps from '../utils/validateUserInfosProps';
-import { VetInfos } from '@prisma/client';
+import ClientModel from '../model/clientModel';
 
-const userModel = new UserModel();
+const userModel = new ClientModel();
 const message = new Message();
-const userValidation = new ValidateUserInfosProps();
-const addressController = new AddressComplements();
 
-class UserController {
+class ClientController {
 	async createUser(userInfos: CreateUserInfosProps) {
 		try {
-			const city = await addressController.getCityByName(
-				userInfos.address.city
-			);
-			const state = await addressController.getStateByName(
-				userInfos.address.state
-			);
+			const phoneNumber = userInfos.phoneNumber ? userInfos.phoneNumber : '';
+			const complement = userInfos.address.complement
+				? userInfos.address.complement
+				: '';
+			const users = await userModel.findAllClients();
 
-			if (city === null)
-				return {
-					statusCode: 400,
-					message: message.MESSAGE_ERROR.CITY_NOT_FOUND,
-				};
-			if (state === null)
-				return {
-					statusCode: 400,
-					message: message.MESSAGE_ERROR.STATE_NOT_FOUND,
-				};
+			if (users) {
+				const usersWithSameEmail = users.filter((user) => {
+					return user.email === userInfos.email;
+				});
+				if (usersWithSameEmail.length > 0)
+					return {
+						statusCode: 400,
+						message: {
+							error: 'E-mail já está em uso',
+						},
+					};
+				const usersWithSameCpf = users.filter((user) => {
+					return user.cpf === userInfos.cpf;
+				});
+				if (usersWithSameCpf.length > 0)
+					return {
+						statusCode: 400,
+						message: {
+							error: 'O CPF já está em uso',
+						},
+					};
+			}
 
 			const userInfosToCreate: CreateUserInfosModelProps = {
 				personName: userInfos.personName,
 				cellphoneNumber: userInfos.cellphoneNumber,
-				phoneNumber: userInfos.phoneNumber,
+				phoneNumber: phoneNumber,
 				cpf: userInfos.cpf,
 				email: userInfos.email,
 				password: userInfos.password,
 				address: {
-					cep: userInfos.address.zipCode,
-					cityID: city.id,
-					stateID: state.id,
-					complement: userInfos.address.complement,
-					neighborhood: userInfos.address.neighborhood,
+					zipCode: userInfos.address.zipCode,
+					complement: complement,
 					number: userInfos.address.number,
-					street: userInfos.address.street,
 				},
 			};
-			const createdUser = await userModel.createUser(userInfosToCreate);
+			const createdUser = await userModel.createClient(userInfosToCreate);
 			if (createdUser)
 				return {
 					statusCode: 201,
@@ -68,7 +70,7 @@ class UserController {
 
 	async getUserById(userID: number) {
 		try {
-			const userInfos = await userModel.findUserById(userID);
+			const userInfos = await userModel.findClientById(userID);
 
 			if (!userInfos) {
 				return {
@@ -92,7 +94,7 @@ class UserController {
 
 	async getUserByEmail(userEmail: string) {
 		try {
-			const userInfos = await userModel.findUserByEmail(userEmail);
+			const userInfos = await userModel.findClientByEmail(userEmail);
 
 			if (userInfos.length > 0)
 				return {
@@ -110,9 +112,10 @@ class UserController {
 			};
 		}
 	}
+
 	async getAllUsers() {
 		try {
-			const getUsers = await userModel.findAllUsers();
+			const getUsers = await userModel.findAllClients();
 
 			if (!getUsers) {
 				return {
@@ -132,22 +135,10 @@ class UserController {
 			};
 		}
 	}
+
 	async updateUser(userID: number, userInfos: UpdateUserInfosProps) {
 		try {
-			let vetInfosUpdate: VetInfos;
-
-			if (userInfos.isVet && userInfos.vetInfosId && userInfos.vetInfos) {
-				vetInfosUpdate = await userModel.updateVetInfos(
-					userInfos.vetInfosId,
-					userInfos.vetInfos
-				);
-				if (!vetInfosUpdate)
-					return {
-						statusCode: 400,
-						message: message.MESSAGE_ERROR.INTERNAL_ERROR_DB,
-					};
-			}
-			const updatedUser = await userModel.updateUser(userID, userInfos);
+			const updatedUser = await userModel.updateClient(userID, userInfos);
 			if (updatedUser)
 				return {
 					statusCode: 204,
@@ -165,11 +156,12 @@ class UserController {
 			};
 		}
 	}
+
 	async deleteUser(userID: number) {
 		try {
-			const user = await userModel.findUserById(userID);
+			const user = await userModel.findClientById(userID);
 			if (user) {
-				const userDelete = await userModel.deleteUser(userID);
+				const userDelete = await userModel.deleteClient(userID);
 				if (!userDelete) {
 					return {
 						statusCode: 500,
@@ -196,4 +188,4 @@ class UserController {
 	}
 }
 
-export default new UserController();
+export default new ClientController();

@@ -1,5 +1,8 @@
-import { PetGender, PetSize, PetSpecie } from '@prisma/client';
 import prisma from '../lib/prisma';
+import {
+	CreatePetInfosModelProps,
+	UpdatePetInfosModelProps,
+} from '../@types/petInfosProps';
 
 export default class Pet {
 	async findPet(petID: number) {
@@ -9,8 +12,6 @@ export default class Pet {
 					id: petID,
 				},
 				include: {
-					petSize: true,
-					petGender: true,
 					petSpecie: true,
 				},
 			});
@@ -21,11 +22,11 @@ export default class Pet {
 			throw new Error(`${err}`);
 		}
 	}
+
 	async findAllPets(userID: number) {
 		try {
 			const pets = await prisma.pet.findMany({
 				where: {
-					// @ts-ignore
 					ownerId: userID,
 				},
 			});
@@ -37,27 +38,29 @@ export default class Pet {
 			throw new Error(`${err}`);
 		}
 	}
+
 	async createNewPet(pet: CreatePetInfosModelProps) {
 		try {
-			const createdPet = await prisma.pet.create({
+			if (pet.specieId) {
+			}
+			return await prisma.pet.create({
 				data: {
 					name: pet.name,
 					birthDate: pet.birthDate,
 					microship: pet.microship,
-					// @ts-ignore
 					ownerId: pet.ownerId,
-					petGenderId: pet.genderId,
-					petSizeId: pet.sizeId,
+					petGender: pet.gender,
+					petSize: pet.size,
 					petSpecieId: pet.specieId,
 					photo: pet.photo,
 				},
 			});
-			return createdPet;
 		} catch (err) {
 			console.log(err);
 			throw new Error(`${err}`);
 		}
 	}
+
 	async deletePet(petID: number) {
 		try {
 			return prisma.pet.delete({
@@ -65,8 +68,6 @@ export default class Pet {
 					id: petID,
 				},
 				include: {
-					petSize: true,
-					petGender: true,
 					petSpecie: true,
 				},
 			});
@@ -75,6 +76,7 @@ export default class Pet {
 			throw new Error(`${err}`);
 		}
 	}
+
 	async updatePet(petID: number, petInfos: UpdatePetInfosModelProps) {
 		try {
 			const updatedPet = await prisma.pet.update({
@@ -85,8 +87,8 @@ export default class Pet {
 					name: petInfos.name,
 					birthDate: petInfos.birthDate,
 					microship: petInfos.microship,
-					petGenderId: petInfos.genderId,
-					petSizeId: petInfos.sizeId,
+					petGender: petInfos.gender,
+					petSize: petInfos.size,
 					petSpecieId: petInfos.specieId,
 					photo: petInfos.photo,
 				},
@@ -98,34 +100,23 @@ export default class Pet {
 			throw new Error(`${err}`);
 		}
 	}
-}
 
-export class PetComplements {
-	async getSpecie(specie: string): Promise<PetSpecie | null> {
-		const foundSpecie = await prisma.petSpecie.findMany({
-			where: {
-				name: specie,
-			},
-		});
-		if (foundSpecie.length > 0) return foundSpecie[0];
-		return null;
-	}
-	async getGender(gender: string): Promise<PetGender | null> {
-		const foundGender = await prisma.petGender.findMany({
-			where: {
-				name: gender,
-			},
-		});
-		if (foundGender.length > 0) return foundGender[0];
-		return null;
-	}
-	async getSize(size: string): Promise<PetSize | null> {
-		const foundSize = await prisma.petSize.findMany({
-			where: {
-				name: size,
-			},
-		});
-		if (foundSize.length > 0) return foundSize[0];
-		return null;
+	async findOrCreateSpecie(specie: string) {
+		try {
+			const petSpecie = await prisma.petSpecie.findMany({
+				where: {
+					name: specie,
+				},
+			});
+			if (petSpecie.length < 1)
+				return await prisma.petSpecie.create({
+					data: {
+						name: specie,
+					},
+				});
+			else return petSpecie;
+		} catch (err) {
+			throw new Error(`${err}`);
+		}
 	}
 }

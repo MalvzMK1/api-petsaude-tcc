@@ -4,15 +4,11 @@ type CreateUserInfosProps = {
 	email: string;
 	password: string;
 	cellphoneNumber: string;
-	phoneNumber: string;
+	phoneNumber: string | null;
 	address: {
 		zipCode: string;
-		neighborhood: string;
-		city: string;
-		state: string;
-		street: string;
 		number: string;
-		complement: string;
+		complement: string | null;
 	};
 };
 
@@ -24,11 +20,7 @@ type CreateUserInfosModelProps = {
 	cellphoneNumber: string;
 	phoneNumber: string;
 	address: {
-		cep: string;
-		neighborhood: string;
-		cityID: number;
-		stateID: number;
-		street: string;
+		zipCode: string;
 		number: string;
 		complement: string;
 	};
@@ -36,35 +28,11 @@ type CreateUserInfosModelProps = {
 
 type UpdateUserInfosProps = {
 	personName: string;
-	userName: string;
 	cpf: string;
 	rg: string;
-	profilePhoto?: string;
-	profileBannerPhoto?: string;
-	email: string;
-	isVet: boolean;
-	addressId: number;
-	vetInfosId?: number;
-	vetInfos?: {
-		occupationArea: string;
-		formation: string;
-		institution: string;
-		crmv: string;
-	};
-};
-
-type UpdateVetInfosProps = {
-	occupationArea: string;
-	formation: string;
-	institution: string;
-	crmv: string;
-	animalTypes?: { id: number; name: string }[];
-	specialities?: { id: number; name: string }[];
-};
-
-type UpdateSpecialities = {
-	id: number;
-	name: string;
+	cellphoneNumber: string;
+	phoneNumber: string;
+	bio: string;
 };
 
 type postPhoneUser = {
@@ -73,9 +41,9 @@ type postPhoneUser = {
 };
 
 type jwtSignUser = {
+	id: number;
 	userName: string;
 	email: string;
 	profilePhoto: string;
 	profileBannerPhoto: string;
-	isVet: boolean;
 };
