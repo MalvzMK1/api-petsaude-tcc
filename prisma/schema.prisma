@@ -32,7 +32,7 @@ model Client {
 	Pet                Pet[]
 	Appointments       Appointment[]
 
-	addressId Int     @map("address_id")
+	addressId Int     @unique @map("address_id")
 	Address   Address @relation(fields: [addressId], references: [id])
 
 	@@map("tbl_user")
@@ -61,7 +61,7 @@ model Veterinary {
 	VeterinaryEspecialities VeterinarySpecialities[]
 	Appointments            Appointment[]
 
-	addressId Int     @map("address_id")
+	addressId Int     @unique @map("address_id")
 	Address   Address @relation(fields: [addressId], references: [id])
 
 	@@map("tbl_veterinary")
