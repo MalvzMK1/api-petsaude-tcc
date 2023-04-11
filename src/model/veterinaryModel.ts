@@ -42,18 +42,18 @@ export default class VeterinaryModel {
 					Address: true,
 					VeterinaryEspecialities: {
 						include: {
-							specialities: true
-						}
+							specialities: true,
+						},
 					},
 					AnimalTypesVetInfos: {
 						include: {
-							animalTypes: true
-						}
+							animalTypes: true,
+						},
 					},
 					Appointments: {
 						include: {
-							Client: true
-						}
+							Client: true,
+						},
 					},
 				},
 			});
@@ -92,6 +92,18 @@ export default class VeterinaryModel {
 			return await prisma.veterinary.findMany({
 				where: {
 					crmv: crmv,
+				},
+			});
+		} catch (err) {
+			if (err instanceof Error) throw new Error(`${err.message}`);
+		}
+	}
+
+	async findVeterinarysByEmail(email: string) {
+		try {
+			return await prisma.veterinary.findUnique({
+				where: {
+					email: email,
 				},
 			});
 		} catch (err) {

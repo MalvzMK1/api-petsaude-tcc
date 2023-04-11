@@ -1,7 +1,7 @@
 import Message from '../messages/message';
 import VeterinaryModel from '../model/veterinaryModel';
 import ClientModel from '../model/clientModel';
-import specialtiesController from "./specialtiesController";
+import specialtiesController from './specialtiesController';
 
 const clientModel = new ClientModel();
 const veterinaryModel = new VeterinaryModel();
@@ -21,19 +21,28 @@ class VeterinaryController {
 				if (filters.userName) {
 					const name = filters.userName.toLowerCase();
 					response = response.filter((veterinary) => {
-						if (veterinary.userName.toLowerCase().includes(name)) return veterinary;
+						if (veterinary.userName.toLowerCase().includes(name))
+							return veterinary;
 					});
 				}
 				if (filters.speciality) {
 					const speciality = filters.speciality.toLowerCase();
 					response = response.filter((veterinary) => {
-						return veterinary.VeterinaryEspecialities.map(async (veterinarySpeciality) => {
-							const specialityResponse = await specialtiesController.getSpecialityById(veterinarySpeciality.specialitiesId)
-							if (specialityResponse && specialityResponse.name.toLowerCase() === speciality) {
-								console.log(veterinary)
-								return veterinary
+						return veterinary.VeterinaryEspecialities.map(
+							async (veterinarySpeciality) => {
+								const specialityResponse =
+									await specialtiesController.getSpecialityById(
+										veterinarySpeciality.specialitiesId
+									);
+								if (
+									specialityResponse &&
+									specialityResponse.name.toLowerCase() === speciality
+								) {
+									console.log(veterinary);
+									return veterinary;
+								}
 							}
-						})
+						);
 					});
 				}
 				if (filters.animal) {
@@ -67,6 +76,38 @@ class VeterinaryController {
 				message: {
 					error: messages.MESSAGE_ERROR.INTERNAL_ERROR_DB,
 				},
+			};
+		}
+	}
+
+	async getVeterinaryByEmail(email: string) {
+		try {
+			if ((email = ''))
+				return {
+					statusCode: 400,
+					message: messages.MESSAGE_ERROR.REQUIRED_FIELDS,
+				};
+			const foundVeterinary = await veterinaryModel.findVeterinarysByEmail(
+				email
+			);
+			if (foundVeterinary)
+				return {
+					statusCode: 200,
+					veterinary: foundVeterinary,
+				};
+			return {
+				statusCode: 404,
+				message: messages.MESSAGE_ERROR.NOT_FOUND_DB,
+			};
+		} catch (err) {
+			if (err instanceof Error)
+				return {
+					statusCode: 500,
+					message: JSON.parse(err.message),
+				};
+			return {
+				statusCode: 500,
+				message: message.MESSAGE_ERROR.INTERNAL_ERROR_DB,
 			};
 		}
 	}
