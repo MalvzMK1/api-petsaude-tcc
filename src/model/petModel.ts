@@ -1,8 +1,4 @@
 import prisma from '../lib/prisma';
-import {
-	CreatePetInfosModelProps,
-	UpdatePetInfosModelProps,
-} from '../@types/petInfosProps';
 
 export default class Pet {
 	async findPet(petID: number) {
