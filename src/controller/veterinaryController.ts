@@ -2,6 +2,7 @@ import Message from '../messages/message';
 import VeterinaryModel from '../model/veterinaryModel';
 import ClientModel from '../model/clientModel';
 import specialtiesController from './specialtiesController';
+import validateSameEmailBetweenClientsAndVeterinarians from '../utils/validateSameEmailBetweenClientsAndVeterinarians';
 
 const clientModel = new ClientModel();
 const veterinaryModel = new VeterinaryModel();
@@ -114,7 +115,6 @@ class VeterinaryController {
 
 	async createVeterinary(infos: createVeterinaryController) {
 		try {
-			// TODO: VALIDAR O EMAIL EM USO
 			const veterinarysWithSameCrmv =
 				await veterinaryModel.findVeterinarysByCrmv(infos.crmv);
 			if (veterinarysWithSameCrmv && veterinarysWithSameCrmv.length > 0)
@@ -123,6 +123,15 @@ class VeterinaryController {
 					message: {
 						error: 'CRMV já está em uso',
 					},
+				};
+
+			const usersWithSameEmail =
+				await validateSameEmailBetweenClientsAndVeterinarians(infos.email);
+
+			if (usersWithSameEmail !== undefined && usersWithSameEmail.length > 0)
+				return {
+					statusCode: 400,
+					message: 'E-mail já está em uso',
 				};
 
 			const veterinary: createVeterinaryModel = {

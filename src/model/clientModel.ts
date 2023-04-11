@@ -10,7 +10,6 @@ export default class ClientModel {
 					cpf: userInfos.cpf,
 					email: userInfos.email,
 					password: userInfos.password,
-					rg: '',
 					profilePhoto: '',
 					profileBannerPhoto: '',
 					phoneNumber: userInfos.phoneNumber,
@@ -25,6 +24,8 @@ export default class ClientModel {
 				},
 			});
 		} catch (err) {
+			console.log(err);
+
 			throw new Error(`${err}`);
 		}
 	}

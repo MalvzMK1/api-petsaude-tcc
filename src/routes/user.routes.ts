@@ -9,30 +9,41 @@ import validateEmptyBody from '../utils/validateBody';
 const message = new Message();
 
 export default async function userRoutes(fastify: FastifyInstance) {
-	fastify.post('/user', async (req, res) => {
-		const bodyParams = z.object({
-			personName: z.string(),
-			cpf: z.string(),
-			email: z.string(),
-			password: z.string(),
-			cellphoneNumber: z.string(),
-			phoneNumber: z.string().nullable(),
-			address: z.object({
-				zipCode: z.string(),
-				complement: z.string().nullable(),
-				number: z.string(),
-			}),
-		});
+	fastify.post('/user', async (request, reply) => {
+		try {
+			const bodyParams = z.object({
+				personName: z.string(),
+				cpf: z.string(),
+				email: z.string(),
+				password: z.string(),
+				cellphoneNumber: z.string(),
+				phoneNumber: z.string().nullable(),
+				address: z.object({
+					zipCode: z.string(),
+					complement: z.string().nullable(),
+					number: z.string(),
+				}),
+			});
 
-		const rawBody = req.body;
-		if (JSON.stringify(rawBody) === '{}')
-			res.status(400).send(new Messages().MESSAGE_ERROR.EMPTY_BODY);
+			console.log(request.body);
 
-		const body = bodyParams.parse(req.body);
+			const rawBody = request.body;
+			if (JSON.stringify(rawBody) === '{}')
+				reply.status(400).send(new Messages().MESSAGE_ERROR.EMPTY_BODY);
 
-		const createUser = await userController.createUser(body);
+			const body = bodyParams.parse(request.body);
 
-		res.status(createUser.statusCode).send({ response: createUser.message });
+			console.log(body);
+			const createUser = await userController.createUser(body);
+
+			reply
+				.status(createUser.statusCode)
+				.send({ response: createUser.message });
+		} catch (err) {
+			if (err instanceof Error)
+				reply.status(400).send({ response: JSON.parse(err.message) });
+			reply.status(400).send({ response: 'Unknown error' });
+		}
 	});
 
 	fastify.get('/user', async (req, res) => {
