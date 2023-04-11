@@ -65,7 +65,15 @@ class SpecialtiesController {
 			if (response) return response;
 			return null;
 		} catch (err) {
-			throw new Error(`${err}`);
+			if (err instanceof Error)
+				return {
+					statusCode: 500,
+					message: JSON.parse(err.message),
+				};
+			return {
+				statusCode: 500,
+				message: message.MESSAGE_ERROR.INTERNAL_ERROR_DB,
+			};
 		}
 	}
 }

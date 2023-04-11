@@ -1,13 +1,8 @@
 import Messages from '../messages/message';
 import Pet from '../model/petModel';
-import {
-	CreatePetInfosModelProps,
-	PetInfosControllerProps,
-	UpdatePetInfosModelProps,
-} from '../@types/petInfosProps';
 import { PetSpecie } from '@prisma/client';
 
-const messages = new Messages();
+const message = new Messages();
 const petModel = new Pet();
 
 export default class PetController {
@@ -21,13 +16,17 @@ export default class PetController {
 				};
 			return {
 				statusCode: 404,
-				message: messages.MESSAGE_ERROR.NOT_FOUND_DB,
+				message: message.MESSAGE_ERROR.NOT_FOUND_DB,
 			};
 		} catch (err) {
-			console.log(err);
+			if (err instanceof Error)
+				return {
+					statusCode: 500,
+					message: JSON.parse(err.message),
+				};
 			return {
 				statusCode: 500,
-				message: messages.MESSAGE_ERROR.INTERNAL_ERROR_DB,
+				message: message.MESSAGE_ERROR.INTERNAL_ERROR_DB,
 			};
 		}
 	}
@@ -38,12 +37,17 @@ export default class PetController {
 			if (pets) return { statusCode: 200, pets };
 			return {
 				statusCode: 404,
-				message: messages.MESSAGE_ERROR.NOT_FOUND_DB,
+				message: message.MESSAGE_ERROR.NOT_FOUND_DB,
 			};
 		} catch (err) {
+			if (err instanceof Error)
+				return {
+					statusCode: 500,
+					message: JSON.parse(err.message),
+				};
 			return {
 				statusCode: 500,
-				message: messages.MESSAGE_ERROR.INTERNAL_ERROR_DB,
+				message: message.MESSAGE_ERROR.INTERNAL_ERROR_DB,
 			};
 		}
 	}
@@ -63,7 +67,7 @@ export default class PetController {
 			console.log(err);
 			return {
 				statusCode: 400,
-				message: messages.MESSAGE_ERROR.INCORRECT_DATE_TYPE,
+				message: message.MESSAGE_ERROR.INCORRECT_DATE_TYPE,
 			};
 		}
 		const findOrCreateSpecieResponse = await petModel.findOrCreateSpecie(
@@ -89,16 +93,19 @@ export default class PetController {
 			const createdPet = await petModel.createNewPet(petInfosJSON);
 			return {
 				statusCode: 201,
-				message: messages.MESSAGE_SUCESS.INSERT_ITEM,
+				message: message.MESSAGE_SUCESS.INSERT_ITEM,
 				pet: createdPet,
 			};
 		} catch (err) {
 			if (err instanceof Error)
 				return {
 					statusCode: 500,
-					message: err.message,
+					message: JSON.parse(err.message),
 				};
-			return messages.MESSAGE_ERROR.INTERNAL_ERROR_DB;
+			return {
+				statusCode: 500,
+				message: message.MESSAGE_ERROR.INTERNAL_ERROR_DB,
+			};
 		}
 	}
 
@@ -108,17 +115,21 @@ export default class PetController {
 			if (deletedPet)
 				return {
 					statusCode: 200,
-					message: messages.MESSAGE_SUCESS.DELETE_ITEM,
+					message: message.MESSAGE_SUCESS.DELETE_ITEM,
 				};
 			return {
 				statusCode: 400,
-				message: messages.MESSAGE_ERROR.INTERNAL_ERROR_DB,
+				message: message.MESSAGE_ERROR.INTERNAL_ERROR_DB,
 			};
 		} catch (err) {
-			console.log(err);
+			if (err instanceof Error)
+				return {
+					statusCode: 500,
+					message: JSON.parse(err.message),
+				};
 			return {
 				statusCode: 500,
-				message: `${err}`,
+				message: message.MESSAGE_ERROR.INTERNAL_ERROR_DB,
 			};
 		}
 	}
@@ -158,18 +169,22 @@ export default class PetController {
 			if (updatedPet)
 				return {
 					statusCode: 200,
-					message: messages.MESSAGE_SUCESS.UPDATE_ITEM,
+					message: message.MESSAGE_SUCESS.UPDATE_ITEM,
 					pet: updatedPet,
 				};
 			return {
 				statusCode: 400,
-				message: messages.MESSAGE_ERROR.COULDNT_UPDATE_ITEM,
+				message: message.MESSAGE_ERROR.COULDNT_UPDATE_ITEM,
 			};
 		} catch (err) {
-			console.log(err);
+			if (err instanceof Error)
+				return {
+					statusCode: 500,
+					message: JSON.parse(err.message),
+				};
 			return {
 				statusCode: 500,
-				message: `${err}`,
+				message: message.MESSAGE_ERROR.INTERNAL_ERROR_DB,
 			};
 		}
 	}

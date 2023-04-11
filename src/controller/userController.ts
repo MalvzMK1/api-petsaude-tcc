@@ -60,7 +60,11 @@ class ClientController {
 				message: message.MESSAGE_ERROR.REQUIRED_FIELDS,
 			};
 		} catch (err) {
-			console.log(err);
+			if (err instanceof Error)
+				return {
+					statusCode: 500,
+					message: JSON.parse(err.message),
+				};
 			return {
 				statusCode: 500,
 				message: message.MESSAGE_ERROR.INTERNAL_ERROR_DB,
@@ -84,7 +88,11 @@ class ClientController {
 				message: userInfos,
 			};
 		} catch (err) {
-			console.log(err);
+			if (err instanceof Error)
+				return {
+					statusCode: 500,
+					message: JSON.parse(err.message),
+				};
 			return {
 				statusCode: 500,
 				message: message.MESSAGE_ERROR.INTERNAL_ERROR_DB,
@@ -106,9 +114,14 @@ class ClientController {
 				message: message.MESSAGE_ERROR.NOT_FOUND_DB,
 			};
 		} catch (err) {
+			if (err instanceof Error)
+				return {
+					statusCode: 500,
+					message: JSON.parse(err.message),
+				};
 			return {
 				statusCode: 500,
-				message: `${err}`,
+				message: message.MESSAGE_ERROR.INTERNAL_ERROR_DB,
 			};
 		}
 	}
@@ -128,7 +141,11 @@ class ClientController {
 					message: getUsers,
 				};
 		} catch (err) {
-			console.log(err);
+			if (err instanceof Error)
+				return {
+					statusCode: 500,
+					message: JSON.parse(err.message),
+				};
 			return {
 				statusCode: 500,
 				message: message.MESSAGE_ERROR.INTERNAL_ERROR_DB,
@@ -149,7 +166,11 @@ class ClientController {
 				message: message.MESSAGE_ERROR.INTERNAL_ERROR_DB,
 			};
 		} catch (err) {
-			console.log(err);
+			if (err instanceof Error)
+				return {
+					statusCode: 500,
+					message: JSON.parse(err.message),
+				};
 			return {
 				statusCode: 500,
 				message: message.MESSAGE_ERROR.INTERNAL_ERROR_DB,
@@ -179,7 +200,11 @@ class ClientController {
 				message: message.MESSAGE_ERROR.NOT_FOUND_DB,
 			};
 		} catch (err) {
-			console.log(err);
+			if (err instanceof Error)
+				return {
+					statusCode: 500,
+					message: JSON.parse(err.message),
+				};
 			return {
 				statusCode: 500,
 				message: message.MESSAGE_ERROR.INTERNAL_ERROR_DB,

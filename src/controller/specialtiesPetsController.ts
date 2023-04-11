@@ -78,7 +78,11 @@ class SpecialtiesPetController {
 				message: message.MESSAGE_ERROR.INTERNAL_ERROR_DB,
 			};
 		} catch (err) {
-			console.log(err);
+			if (err instanceof Error)
+				return {
+					statusCode: 500,
+					message: JSON.parse(err.message),
+				};
 			return {
 				statusCode: 500,
 				message: message.MESSAGE_ERROR.INTERNAL_ERROR_DB,
@@ -107,7 +111,11 @@ class SpecialtiesPetController {
 				message: message.MESSAGE_ERROR.INTERNAL_ERROR_DB,
 			};
 		} catch (err) {
-			console.log(err);
+			if (err instanceof Error)
+				return {
+					statusCode: 500,
+					message: JSON.parse(err.message),
+				};
 			return {
 				statusCode: 500,
 				message: message.MESSAGE_ERROR.INTERNAL_ERROR_DB,
