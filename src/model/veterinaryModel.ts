@@ -101,6 +101,15 @@ export default class VeterinaryModel {
 
 	async findVeterinarysByEmail(email: string) {
 		try {
+			// prisma.veterinary
+			// 	.findUnique({
+			// 		where: {
+			// 			email: 'dedeco@gmail.com',
+			// 		},
+			// 	})
+			// 	.then((response) => console.log(response));
+			console.log(email);
+
 			return await prisma.veterinary.findUnique({
 				where: {
 					email: email,

@@ -82,7 +82,7 @@ class VeterinaryController {
 
 	async getVeterinaryByEmail(email: string) {
 		try {
-			if ((email = ''))
+			if (email === '')
 				return {
 					statusCode: 400,
 					message: messages.MESSAGE_ERROR.REQUIRED_FIELDS,
@@ -107,7 +107,7 @@ class VeterinaryController {
 				};
 			return {
 				statusCode: 500,
-				message: message.MESSAGE_ERROR.INTERNAL_ERROR_DB,
+				message: new Message().MESSAGE_ERROR.INTERNAL_ERROR_DB,
 			};
 		}
 	}
