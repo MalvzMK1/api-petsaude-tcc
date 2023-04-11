@@ -46,4 +46,5 @@ type jwtSignUser = {
 	email: string;
 	profilePhoto: string;
 	profileBannerPhoto: string;
+	isVet: boolean;
 };
