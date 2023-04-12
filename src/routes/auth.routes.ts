@@ -3,6 +3,7 @@ import { z } from 'zod';
 import authenticate from '../middlewares/authenticate';
 import userController from '../controller/userController';
 import veterinaryController from '../controller/veterinaryController';
+import { Client, Veterinary } from '@prisma/client';
 
 export default async function authRoutes(fastify: FastifyInstance) {
 	fastify.get('/auth', { onRequest: [authenticate] }, (req) => {
@@ -23,7 +24,7 @@ export default async function authRoutes(fastify: FastifyInstance) {
 		const foundVeterinary = await veterinaryController.getVeterinaryByEmail(
 			body.email
 		);
-		let user;
+		let user: Client | Veterinary | undefined;
 
 		if (foundClient.user) {
 			user = foundClient.user;

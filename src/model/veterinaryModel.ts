@@ -10,7 +10,6 @@ export default class VeterinaryModel {
 					cpf: veterinary.cpf,
 					email: veterinary.email,
 					password: veterinary.password,
-					rg: '',
 					profilePhoto: '',
 					profileBannerPhoto: '',
 					phoneNumber: veterinary.phoneNumber,
@@ -31,13 +30,13 @@ export default class VeterinaryModel {
 				},
 			});
 		} catch (err) {
-			throw new Error(`${err}`);
+			throw new Error(`${err.message}`);
 		}
 	}
 
 	async getAllVeterinarys() {
 		try {
-			const allVeterinary = await prisma.veterinary.findMany({
+			return await prisma.veterinary.findMany({
 				include: {
 					Address: true,
 					VeterinaryEspecialities: {
@@ -50,17 +49,11 @@ export default class VeterinaryModel {
 							animalTypes: true,
 						},
 					},
-					Appointments: {
-						include: {
-							Client: true,
-						},
-					},
+					Appointments: true,
 				},
 			});
-			if (allVeterinary.length > 0) return allVeterinary;
-			return false;
 		} catch (err) {
-			if (err instanceof Error) throw new Error(`${err}`);
+			throw new Error(`${err.message}`);
 		}
 	}
 

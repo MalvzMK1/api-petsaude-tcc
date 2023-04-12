@@ -57,11 +57,12 @@ class SpecialtiesPetController {
 			};
 		}
 	}
+
 	async updateSpecialitiesPet(
 		specialitiesPet: Array<{
 			id: number;
 			animalTypesId: number;
-			vetInfosId: number;
+			veterinaryId: number;
 		}>
 	) {
 		try {
@@ -94,7 +95,7 @@ class SpecialtiesPetController {
 		specialtiesPetID: Array<{
 			id: number;
 			animalTypesId: number;
-			vetInfosId: number;
+			veterinaryId: number;
 		}>
 	) {
 		try {

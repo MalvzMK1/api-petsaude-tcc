@@ -1,10 +1,7 @@
 import Message from '../messages/message';
 import VeterinaryModel from '../model/veterinaryModel';
-import ClientModel from '../model/clientModel';
-import specialtiesController from './specialtiesController';
 import validateSameEmailBetweenClientsAndVeterinarians from '../utils/validateSameEmailBetweenClientsAndVeterinarians';
 
-const clientModel = new ClientModel();
 const veterinaryModel = new VeterinaryModel();
 const messages = new Message();
 
@@ -29,22 +26,27 @@ class VeterinaryController {
 				if (filters.speciality) {
 					const speciality = filters.speciality.toLowerCase();
 					response = response.filter((veterinary) => {
-						return veterinary.VeterinaryEspecialities.map(
-							async (veterinarySpeciality) => {
-								const specialityResponse =
-									await specialtiesController.getSpecialityById(
-										veterinarySpeciality.specialitiesId
-									);
-								if (
-									specialityResponse &&
-									specialityResponse.name.toLowerCase() === speciality
-								) {
-									console.log(veterinary);
-									return veterinary;
-								}
-							}
+						veterinary.VeterinaryEspecialities.filter(
+							(veterinarySpecialities) => {}
 						);
 					});
+					// response = response.filter((veterinary) => {
+					// 	return veterinary.VeterinaryEspecialities.map(
+					// 		async (veterinarySpeciality) => {
+					// 			const specialityResponse =
+					// 				await specialtiesController.getSpecialityById(
+					// 					veterinarySpeciality.specialitiesId
+					// 				);
+					// 			if (
+					// 				specialityResponse &&
+					// 				specialityResponse.name.toLowerCase() === speciality
+					// 			) {
+					// 				console.log(veterinary);
+					// 				return veterinary;
+					// 			}
+					// 		}
+					// 	);
+					// });
 				}
 				if (filters.animal) {
 					const animal = filters.animal.toLowerCase();
