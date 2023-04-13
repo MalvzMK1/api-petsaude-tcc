@@ -2,9 +2,6 @@ import { FastifyInstance } from 'fastify';
 import { z } from 'zod';
 import Messages from '../messages/message';
 import authenticate from '../middlewares/authenticate';
-import SpecialtiesController from '../controller/specialtiesController';
-import specialtiesController from '../controller/specialtiesController';
-import SpecialtiesPetController from '../controller/specialtiesPetsController';
 import specialtiesPetsController from '../controller/specialtiesPetsController';
 import veterinaryController from '../controller/veterinaryController';
 
@@ -216,8 +213,8 @@ export default async function veterinaryRoutes(fastify: FastifyInstance) {
 			// res.status(updateUser.statusCode).send(updateUser.message);
 			res.status(500).send({
 				response: {
-					message: 'Feature in progress'
-				}
+					message: 'Feature in progress',
+				},
 			});
 		}
 	);
@@ -269,8 +266,8 @@ export default async function veterinaryRoutes(fastify: FastifyInstance) {
 			// res.status(updateUser.statusCode).send(updateUser.message);
 			res.status(500).send({
 				response: {
-					message: 'Feature in progress'
-				}
+					message: 'Feature in progress',
+				},
 			});
 		}
 	);

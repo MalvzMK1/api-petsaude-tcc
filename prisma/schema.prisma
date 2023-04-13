@@ -168,7 +168,7 @@ model PetSpecie {
 model Appointment {
   id          Int      @id @default(autoincrement())
   description String
-  status      Status
+  status      Status   @default(WAITING_CONFIRMATION)
   date        DateTime @db.Date
   startsAt    DateTime @map("starts_at") @db.Time()
   endsAt      DateTime @map("ends_at") @db.Time()

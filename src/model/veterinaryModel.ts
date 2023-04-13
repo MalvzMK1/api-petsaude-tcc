@@ -57,7 +57,26 @@ export default class VeterinaryModel {
 		}
 	}
 
+<<<<<<< HEAD
 	async updateVeterinaryPersonalInfos(id: number, body: UpdateVeterinaryPersonalInfos) {
+=======
+	async findVeterinaryById(id: number) {
+		try {
+			return await prisma.veterinary.findUnique({
+				where: {
+					id
+				}
+			})
+		} catch (err) {
+			if (err instanceof Error) throw new Error(`${err.message}`)
+		}
+	}
+
+	async updateVeterinaryPersonalInfos(
+		veterinaryID: number,
+		veterinary: UpdateVeterinaryProps
+	) {
+>>>>>>> 628860d9cfc0c58f6d7e03a146aa1907dfa626ce
 		try {
 			return await prisma.veterinary.update({
 				where: {
