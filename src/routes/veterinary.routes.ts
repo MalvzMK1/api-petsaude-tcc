@@ -41,50 +41,50 @@ export default async function veterinaryRoutes(fastify: FastifyInstance) {
 		else reply.status(response.statusCode).send({ response: response.message });
 	});
 
-	fastify.post('/veterinary', async (req, res) => {
-		const bodyParams = z.object({
-			personName: z.string(),
-			cpf: z.string(),
-			email: z.string(),
-			password: z.string(),
-			cellphoneNumber: z.string(),
-			phoneNumber: z.string().nullable(),
-			address: z.object({
-				zipCode: z.string(),
-				complement: z.string().nullable(),
-				number: z.string(),
-			}),
-			crmv: z.string(),
-			occupationArea: z.string(),
-			formation: z.string(),
-			institution: z.string(),
-			startActingDate: z.string(),
-			formationDate: z.string(),
+	fastify.post('/veterinary',
+		async (req, res) => {
+			const bodyParams = z.object({
+				personName: z.string(),
+				cpf: z.string(),
+				email: z.string(),
+				password: z.string(),
+				cellphoneNumber: z.string(),
+				phoneNumber: z.string().nullable(),
+				address: z.object({
+					zipCode: z.string(),
+					complement: z.string().nullable(),
+					number: z.string(),
+				}),
+				crmv: z.string(),
+				occupationArea: z.string(),
+				formation: z.string(),
+				institution: z.string(),
+				startActingDate: z.string(),
+				formationDate: z.string(),
+			});
+			const rawBody = req.body;
+			if (JSON.stringify(rawBody) === '{}')
+				res.status(400).send(new Messages().MESSAGE_ERROR.EMPTY_BODY);
+
+			const body = bodyParams.parse(req.body);
+
+			const formationDate = new Date(body.formationDate);
+			const startActingDate = new Date(body.startActingDate);
+
+			if (
+				formationDate.toString() === 'Invalid Date' ||
+				startActingDate.toString() === 'Invalid Date'
+			)
+				res
+					.status(400)
+					.send({ message: 'Wrong date format, expected YYYY-MM-DD' });
+
+			const result = await veterinaryController.createVeterinary(body);
+
+			res.status(result.statusCode).send({ response: result.message });
 		});
-		const rawBody = req.body;
-		if (JSON.stringify(rawBody) === '{}')
-			res.status(400).send(new Messages().MESSAGE_ERROR.EMPTY_BODY);
 
-		const body = bodyParams.parse(req.body);
-
-		const formationDate = new Date(body.formationDate);
-		const startActingDate = new Date(body.startActingDate);
-
-		if (
-			formationDate.toString() === 'Invalid Date' ||
-			startActingDate.toString() === 'Invalid Date'
-		)
-			res
-				.status(400)
-				.send({ message: 'Wrong date format, expected YYYY-MM-DD' });
-
-		const result = await veterinaryController.createVeterinary(body);
-
-		res.status(result.statusCode).send({ response: result.message });
-	});
-
-	fastify.put(
-		'/veterinary/professional/:id',
+	fastify.put('/veterinary/professional/:id',
 		{ onRequest: authenticate },
 		async (req, res) => {
 
@@ -121,20 +121,12 @@ export default async function veterinaryRoutes(fastify: FastifyInstance) {
 
 		});
 
-	fastify.put(
-		'/veterinary/personal/:id',
+	fastify.put('/veterinary/personal/:id',
 		{ onRequest: authenticate },
 		async (req, res) => {
 
 			try {
 				const bodyParams = z.object({
-					// personName: string;
-					// cpf: string;
-					// email: string;
-					// password: string;
-					// cellphoneNumber: string;
-					// rg: string;
-					// phoneNumber: string | null;
 					personName: z.string(),
 					cpf: z.string(),
 					email: z.string(),
@@ -167,8 +159,7 @@ export default async function veterinaryRoutes(fastify: FastifyInstance) {
 
 		});
 
-	fastify.put(
-		'/veterinarian/attended-animals',
+	fastify.put('/veterinarian/attended-animals',
 		{ onRequest: authenticate },
 		async (req, res) => {
 			const bodyParams = z.object({
@@ -188,11 +179,9 @@ export default async function veterinaryRoutes(fastify: FastifyInstance) {
 			);
 
 			res.status(updateUser.statusCode).send(updateUser.message);
-		}
-	);
+		});
 
-	fastify.put(
-		'/veterinarian/user/',
+	fastify.put('/veterinarian/user/',
 		{ onRequest: authenticate },
 		async (req, res) => {
 			const bodyParams = z.object({
@@ -216,11 +205,32 @@ export default async function veterinaryRoutes(fastify: FastifyInstance) {
 					message: 'Feature in progress',
 				},
 			});
-		}
-	);
+		});
 
-	fastify.delete(
-		'/veterinarian/user/pet',
+	fastify.delete('/veterinary/:id',
+		{ onRequest: authenticate },
+		async (req, res) => {
+			try {
+
+				const queryParams = z.object({ id: z.string() })
+
+				const { id } = queryParams.parse(req.params)
+
+				if (!id)
+					res.status(400).send({message: new Messages().MESSAGE_ERROR.REQUIRED_ID});
+				else{
+					const response = await veterinaryController.deleteVeterinary(parseInt(id))
+					res.status(response.statusCode).send(response.message)
+				}
+
+			} catch (err) {
+				if (err instanceof Error)
+					res.status(400).send({ response: JSON.parse(err.message) });
+				res.status(400).send({ response: 'Unknown error' });
+			}
+		});
+
+	fastify.delete('/veterinarian/user/pet',
 		{ onRequest: authenticate },
 		async (req, res) => {
 			const bodyParams = z.object({
@@ -240,11 +250,9 @@ export default async function veterinaryRoutes(fastify: FastifyInstance) {
 			);
 
 			res.status(updateUser.statusCode).send(updateUser.message);
-		}
-	);
+		});
 
-	fastify.delete(
-		'/veterinarian/user',
+	fastify.delete('/veterinarian/user',
 		{ onRequest: authenticate },
 		async (req, res) => {
 			const bodyParams = z.object({
@@ -269,6 +277,5 @@ export default async function veterinaryRoutes(fastify: FastifyInstance) {
 					message: 'Feature in progress',
 				},
 			});
-		}
-	);
+		});
 }

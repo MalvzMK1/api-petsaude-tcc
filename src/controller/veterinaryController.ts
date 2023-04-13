@@ -182,15 +182,11 @@ class VeterinaryController {
 
 			const response = await veterinaryModel.updateVeterinaryProfessionalInfos(id, body)
 
-			if (response) {
-
+			if (response)
 				return { message: response, statusCode: 200 }
-
-			} else {
-
+			else 
 				return { statusCode: 404, message: new Message().MESSAGE_ERROR.NOT_FOUND_DB }
-
-			}
+			
 
 		} catch (err) {
 			if (err instanceof Error)
@@ -205,20 +201,41 @@ class VeterinaryController {
 				};
 		}
 	}
+
 	async updateVeterinaryPersonalInfos(id: number, body: UpdateVeterinaryPersonalInfos) {
 		try {
 
 			const response = await veterinaryModel.updateVeterinaryPersonalInfos(id, body)
 
-			if (response) {
-
+			if (response) 
 				return { message: response, statusCode: 200 }
-
-			} else {
-
+			else
 				return { statusCode: 404, message: new Message().MESSAGE_ERROR.NOT_FOUND_DB }
+			
 
-			}
+		} catch (err) {
+			if (err instanceof Error)
+				return {
+					statusCode: 500,
+					message: JSON.parse(err.message),
+				};
+			else
+				return {
+					statusCode: 500,
+					message: new Message().MESSAGE_ERROR.INTERNAL_ERROR_DB,
+				};
+		}
+	}
+
+	async deleteVeterinary(id: number) {
+		try {
+
+			const response = await veterinaryModel.deleteVeterinary(id)
+
+			if (response)
+				return { message: messages.MESSAGE_SUCESS.DELETE_ITEM, statusCode: 200 }
+			else
+				return { statusCode: 404, message: new Message().MESSAGE_ERROR.NOT_FOUND_DB }
 
 		} catch (err) {
 			if (err instanceof Error)

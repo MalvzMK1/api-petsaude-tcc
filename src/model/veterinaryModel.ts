@@ -57,9 +57,6 @@ export default class VeterinaryModel {
 		}
 	}
 
-<<<<<<< HEAD
-	async updateVeterinaryPersonalInfos(id: number, body: UpdateVeterinaryPersonalInfos) {
-=======
 	async findVeterinaryById(id: number) {
 		try {
 			return await prisma.veterinary.findUnique({
@@ -73,10 +70,9 @@ export default class VeterinaryModel {
 	}
 
 	async updateVeterinaryPersonalInfos(
-		veterinaryID: number,
-		veterinary: UpdateVeterinaryProps
+		id: number,
+		body: UpdateVeterinaryPersonalInfos
 	) {
->>>>>>> 628860d9cfc0c58f6d7e03a146aa1907dfa626ce
 		try {
 			return await prisma.veterinary.update({
 				where: {
@@ -149,6 +145,18 @@ export default class VeterinaryModel {
 					email: email,
 				},
 			});
+		} catch (err) {
+			if (err instanceof Error) throw new Error(`${err.message}`);
+		}
+	}
+
+	async deleteVeterinary(id: number) {
+		try {
+			return await prisma.veterinary.delete({
+				where:{
+					id: id
+				}
+			})
 		} catch (err) {
 			if (err instanceof Error) throw new Error(`${err.message}`);
 		}
