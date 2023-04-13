@@ -1,5 +1,5 @@
 import Messages from '../messages/message';
-import Address from '../model/address.model';
+import Address from '../model/addressModel';
 
 const messages = new Messages();
 const addressModel = new Address();
