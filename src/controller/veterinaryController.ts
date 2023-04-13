@@ -6,6 +6,7 @@ const veterinaryModel = new VeterinaryModel();
 const messages = new Message();
 
 class VeterinaryController {
+
 	async getAllVeterinarys(filters: {
 		userName: string | null | undefined;
 		speciality: string | null | undefined;
@@ -27,7 +28,7 @@ class VeterinaryController {
 					const speciality = filters.speciality.toLowerCase();
 					response = response.filter((veterinary) => {
 						veterinary.VeterinaryEspecialities.filter(
-							(veterinarySpecialities) => {}
+							(veterinarySpecialities) => { }
 						);
 					});
 					// response = response.filter((veterinary) => {
@@ -173,6 +174,63 @@ class VeterinaryController {
 				statusCode: 500,
 				message: messages.MESSAGE_ERROR.INTERNAL_ERROR_DB,
 			};
+		}
+	}
+
+	async updateVeterinaryProfessionalInfos(id: number, body: UpdateVeterinaryProfessionalInfos) {
+		try {
+
+			const response = await veterinaryModel.updateVeterinaryProfessionalInfos(id, body)
+
+			if (response) {
+
+				return { message: response, statusCode: 200 }
+
+			} else {
+
+				return { statusCode: 404, message: new Message().MESSAGE_ERROR.NOT_FOUND_DB }
+
+			}
+
+		} catch (err) {
+			if (err instanceof Error)
+				return {
+					statusCode: 500,
+					message: JSON.parse(err.message),
+				};
+			else
+				return {
+					statusCode: 500,
+					message: new Message().MESSAGE_ERROR.INTERNAL_ERROR_DB,
+				};
+		}
+	}
+	async updateVeterinaryPersonalInfos(id: number, body: UpdateVeterinaryPersonalInfos) {
+		try {
+
+			const response = await veterinaryModel.updateVeterinaryPersonalInfos(id, body)
+
+			if (response) {
+
+				return { message: response, statusCode: 200 }
+
+			} else {
+
+				return { statusCode: 404, message: new Message().MESSAGE_ERROR.NOT_FOUND_DB }
+
+			}
+
+		} catch (err) {
+			if (err instanceof Error)
+				return {
+					statusCode: 500,
+					message: JSON.parse(err.message),
+				};
+			else
+				return {
+					statusCode: 500,
+					message: new Message().MESSAGE_ERROR.INTERNAL_ERROR_DB,
+				};
 		}
 	}
 }

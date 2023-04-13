@@ -8,7 +8,21 @@ import SpecialtiesPetController from '../controller/specialtiesPetsController';
 import specialtiesPetsController from '../controller/specialtiesPetsController';
 import veterinaryController from '../controller/veterinaryController';
 
+
 export default async function veterinaryRoutes(fastify: FastifyInstance) {
+
+	fastify.get('/veterinary/:email', async (req, reply) => {
+
+		const queryParams = z.object({ email: z.string() });
+
+		const { email } = queryParams.parse(req.params)
+
+		const response = await veterinaryController.getVeterinaryByEmail(email)
+
+		reply.status(response.statusCode).send({ response: response.veterinary })
+
+	})
+
 	fastify.get('/veterinary', async (request, reply) => {
 		const queryParams = z.object({
 			userName: z.optional(z.string()),
@@ -29,6 +43,7 @@ export default async function veterinaryRoutes(fastify: FastifyInstance) {
 				.send({ response: response.veterinarys });
 		else reply.status(response.statusCode).send({ response: response.message });
 	});
+
 	fastify.post('/veterinary', async (req, res) => {
 		const bodyParams = z.object({
 			personName: z.string(),
@@ -70,6 +85,91 @@ export default async function veterinaryRoutes(fastify: FastifyInstance) {
 
 		res.status(result.statusCode).send({ response: result.message });
 	});
+
+	fastify.put(
+		'/veterinary/professional/:id',
+		{ onRequest: authenticate },
+		async (req, res) => {
+
+			try {
+				const bodyParams = z.object({
+					occupationArea: z.string(),
+					formation: z.string(),
+					institution: z.string(),
+					crmv: z.string(),
+					startActingDate: z.string(),
+					formationDate: z.string(),
+				})
+
+				const queryParams = z.object({ id: z.string() });
+
+				const body = bodyParams.parse(req.body);
+				const { id } = queryParams.parse(req.params);
+
+				if (id != null && id != undefined) {
+
+					const updateVeterinary = await veterinaryController.updateVeterinaryProfessionalInfos(parseInt(id), body)
+
+					res.status(200).send(updateVeterinary.message)
+
+				} else
+					res.status(400).send(new Messages().MESSAGE_ERROR.REQUIRED_ID)
+
+
+			} catch (err) {
+				if (err instanceof Error)
+					res.status(400).send({ response: JSON.parse(err.message) });
+				res.status(400).send({ response: 'Unknown error' });
+			}
+
+		});
+
+	fastify.put(
+		'/veterinary/personal/:id',
+		{ onRequest: authenticate },
+		async (req, res) => {
+
+			try {
+				const bodyParams = z.object({
+					// personName: string;
+					// cpf: string;
+					// email: string;
+					// password: string;
+					// cellphoneNumber: string;
+					// rg: string;
+					// phoneNumber: string | null;
+					personName: z.string(),
+					cpf: z.string(),
+					email: z.string(),
+					password: z.string(),
+					cellphoneNumber: z.string(),
+					rg: z.string(),
+					phoneNumber: z.string()
+				})
+
+				const queryParams = z.object({ id: z.string() });
+
+				const body = bodyParams.parse(req.body);
+				const { id } = queryParams.parse(req.params);
+
+				if (id != null && id != undefined) {
+
+					const updateVeterinary = await veterinaryController.updateVeterinaryPersonalInfos(parseInt(id), body)
+
+					res.status(200).send(updateVeterinary.message)
+
+				} else
+					res.status(400).send(new Messages().MESSAGE_ERROR.REQUIRED_ID)
+
+
+			} catch (err) {
+				if (err instanceof Error)
+					res.status(400).send({ response: JSON.parse(err.message) });
+				res.status(400).send({ response: 'Unknown error' });
+			}
+
+		});
+
 	fastify.put(
 		'/veterinarian/attended-animals',
 		{ onRequest: authenticate },
@@ -78,7 +178,7 @@ export default async function veterinaryRoutes(fastify: FastifyInstance) {
 				AnimalTypesVetInfos: z.array(
 					z.object({
 						id: z.number(),
-						vetInfosId: z.number(),
+						veterinaryId: z.number(),
 						animalTypesId: z.number(),
 					})
 				),
@@ -114,9 +214,11 @@ export default async function veterinaryRoutes(fastify: FastifyInstance) {
 			// );
 
 			// res.status(updateUser.statusCode).send(updateUser.message);
-			res.status(500).send({response: {
+			res.status(500).send({
+				response: {
 					message: 'Feature in progress'
-				}});
+				}
+			});
 		}
 	);
 
@@ -128,7 +230,7 @@ export default async function veterinaryRoutes(fastify: FastifyInstance) {
 				AnimalTypesVetInfos: z.array(
 					z.object({
 						id: z.number(),
-						vetInfosId: z.number(),
+						veterinaryId: z.number(),
 						animalTypesId: z.number(),
 					})
 				),
@@ -165,9 +267,11 @@ export default async function veterinaryRoutes(fastify: FastifyInstance) {
 			// );
 
 			// res.status(updateUser.statusCode).send(updateUser.message);
-			res.status(500).send({response: {
+			res.status(500).send({
+				response: {
 					message: 'Feature in progress'
-				}});
+				}
+			});
 		}
 	);
 }
