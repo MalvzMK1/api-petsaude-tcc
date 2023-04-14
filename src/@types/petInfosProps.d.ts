@@ -31,13 +31,17 @@ type UpdatePetInfosModelProps = {
 	ownerId: number;
 };
 
-declare enum EnumPetSize {
-	SMALL = 'SMALL',
-	MEDIUM = 'MEDIUM',
-	BIG = 'BIG',
+enum EnumPetSize {
+	BIG = "BIG",
+	MEDIUM = "MEDIUM",
+	SMALL = "SMALL",
 }
 
-declare enum EnumPetGender {
+type PetSize = keyof typeof EnumPetSize
+
+enum EnumPetGender {
 	FEMALE = 'F',
 	MALE = 'M',
 }
+
+type PetGender = keyof typeof EnumPetGender

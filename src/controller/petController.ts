@@ -1,6 +1,6 @@
 import Messages from '../messages/message';
 import Pet from '../model/petModel';
-import { PetSpecie } from '@prisma/client';
+import {PetSpecie} from '@prisma/client';
 
 const message = new Messages();
 const petModel = new Pet();
@@ -34,7 +34,7 @@ export default class PetController {
 	async getAllPets(userID: number) {
 		try {
 			const pets = await petModel.findAllPets(userID);
-			if (pets) return { statusCode: 200, pets };
+			if (pets) return {statusCode: 200, pets};
 			return {
 				statusCode: 404,
 				message: message.MESSAGE_ERROR.NOT_FOUND_DB,

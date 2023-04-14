@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client';
+import {PrismaClient} from '@prisma/client';
 
 const prisma = new PrismaClient();
 
@@ -18,8 +18,8 @@ async function main() {
 				'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS-8k6DfaHAPvcDZfwfslGElUzDsMJkYqKN253N6TF7JEC9yv4EZBNwsWr_TJSt31owGQ&usqp=CAU',
 			Address: {
 				create: {
-					cep: '00000-000',
-					number: '000',
+					cep: '04012-909',
+					number: '500',
 				},
 			},
 			crmv: '1111',
@@ -64,8 +64,8 @@ async function main() {
 				'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS-8k6DfaHAPvcDZfwfslGElUzDsMJkYqKN253N6TF7JEC9yv4EZBNwsWr_TJSt31owGQ&usqp=CAU',
 			Address: {
 				create: {
-					cep: '00000-000',
-					number: '000',
+					cep: '06600-025',
+					number: '905',
 				},
 			},
 			Pet: {
@@ -89,7 +89,6 @@ async function main() {
 					date: new Date(),
 					startsAt: new Date('2023-07-03T10:00:00'),
 					endsAt: new Date('2023-07-03T11:00:00'),
-					status: 'WAITING_CONFIRMATION',
 					veterinaryId: 1,
 					description: 'lorem ipsum',
 				},

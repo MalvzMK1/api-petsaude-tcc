@@ -2,6 +2,8 @@ import ClientModel from "../model/clientModel";
 import VeterinaryModel from "../model/veterinaryModel";
 import appointmentModel from "../model/appointmentModel";
 import {parse} from "date-fns";
+import transformDateTimeStringIntoDate from "../utils/transformDateTimeStringIntoDate";
+import {Appointment} from "@prisma/client";
 
 const timeZone = 'America/Sao_Paulo'
 
@@ -20,32 +22,47 @@ class AppointmentController {
 					message: 'Formato de data incorreto, espera-se um formato dd-MM-yyyy'
 				}
 
+
 			if (parse(infos.startsAt, 'dd-MM-yyyy HH:mm:ss', new Date()).toString().toLowerCase() === 'invalid date')
 				return {
 					statusCode: 400,
-					message: 'Formato de data incorreto, espera-se um formato dd-MM-yyyy HH:mm:ss'
+					message: {
+						error: {
+							title: 'Formato de data incorreto',
+							fix: 'Espera-se um formato dd-MM-yyyy HH:mm:ss',
+							path: 'startsAt'
+						}
+					}
 				}
 
 			if (parse(infos.endsAt, 'dd-MM-yyyy HH:mm:ss', new Date()).toString().toLowerCase() === 'invalid date')
 				return {
 					statusCode: 400,
-					message: 'Formato de data incorreto, espera-se um formato dd-MM-yyyy HH:mm:ss'
+					message: {
+						error: {
+							title: 'Formato de data incorreto',
+							fix: 'Espera-se um formato dd-MM-yyyy HH:mm:ss',
+							path: 'endsAt'
+						}
+					}
 				}
 
 			const appointmentStartsAt = transformDateTimeStringIntoDate(infos.startsAt)
+			const appointmentEndsAt = transformDateTimeStringIntoDate(infos.endsAt)
 
-			return {statusCode: 400, message: appointmentStartsAt}
+			// return {statusCode: 400, message: appointmentDate}
 
-			const appointmentInfos: Appointment = {
+			if (appointmentStartsAt < new Date() || appointmentDate < new Date() || appointmentEndsAt < new Date())
+				return {statusCode: 400, message: 'A data não pode ser anterior à atual'}
+
+			const appointmentInfos: AppointmentInfos = {
 				date: appointmentDate,
 				startsAt: appointmentStartsAt,
-				endsAt: new Date(),
+				endsAt: appointmentEndsAt,
 				veterinaryId: infos.veterinaryId,
 				clientId: infos.clientId,
-				description: infos.description
+				description: infos.description,
 			}
-
-			console.log(appointmentInfos)
 
 			const createdAppointment = await appointmentModel.createAppointment(appointmentInfos)
 			if (createdAppointment) return {
@@ -57,6 +74,42 @@ class AppointmentController {
 		} catch (err) {
 			if (err instanceof Error) return {statusCode: 500, message: {error: JSON.parse(err.message)}}
 			return {statusCode: 500, message: {error: `Unknown error \n ${err}`}}
+		}
+	}
+
+	async getAllAppointments(): Promise<{ statusCode: number, message: string | Appointment[] | Error }> {
+		try {
+			const allAppointments = await appointmentModel.getAllAppointments()
+			if (allAppointments.length > 0)
+				return {statusCode: 200, message: allAppointments}
+			return {statusCode: 404, message: 'Nenhuma consulta foi achada no banco de dados'}
+		} catch (err) {
+			if (err instanceof Error) return {statusCode: 500, message: err}
+			return {statusCode: 500, message: `Unkown error \n ${err}`}
+		}
+	}
+
+	async getAppointmentById(id: number): Promise<{ statusCode: number, message: string | Appointment | Error }> {
+		try {
+			const appointment = await appointmentModel.findAppointmentById(id)
+			if (appointment)
+				return {statusCode: 200, message: appointment}
+			return {statusCode: 404, message: 'Nenhuma conculsta foi achada no banco de dados'}
+		} catch (err) {
+			if (err instanceof Error) return {statusCode: 500, message: err}
+			return {statusCode: 500, message: `Unkown error \n ${err}`}
+		}
+	}
+
+	async deleteAppointment(id: number): Promise<{ statusCode: number, message: string | Appointment | Error }> {
+		try {
+			const deletedAppointment = await appointmentModel.deleteAppointment(id)
+			if (deletedAppointment)
+				return {statusCode: 200, message: deletedAppointment}
+			return {statusCode: 404, message: 'Não foi possível realizar a exclusão'}
+		} catch (err) {
+			if (err instanceof Error) return {statusCode: 500, message: err}
+			return {statusCode: 500, message: `Unkown error \n ${err}`}
 		}
 	}
 }
@@ -79,13 +132,6 @@ async function validateIfVeterinaryExists(veterinaryId: number): Promise<boolean
 	} catch (err) {
 		return false
 	}
-}
-
-function transformDateTimeStringIntoDate(dateTime: string): Date {
-	const [date, time] = dateTime.split(' ')
-	const [day, month, year] = date.split('-').map(Number)
-	const [hours, minutes, seconds] = time.split(':').map(Number)
-	return new Date(Date.UTC(year, month - 1, day, hours, minutes, seconds))
 }
 
 export default new AppointmentController()

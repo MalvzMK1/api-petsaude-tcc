@@ -1,13 +1,13 @@
-import { FastifyInstance } from 'fastify';
-import { z } from 'zod';
+import {FastifyInstance} from 'fastify';
+import {z} from 'zod';
 import authenticate from '../middlewares/authenticate';
 import userController from '../controller/userController';
 import veterinaryController from '../controller/veterinaryController';
-import { Client, Veterinary } from '@prisma/client';
+import {Client, Veterinary} from '@prisma/client';
 
 export default async function authRoutes(fastify: FastifyInstance) {
-	fastify.get('/auth', { onRequest: [authenticate] }, (req) => {
-		return { user: req.user };
+	fastify.get('/auth', {onRequest: [authenticate]}, (req) => {
+		return {user: req.user};
 	});
 
 	fastify.post('/signup', async (request, reply) => {
@@ -35,7 +35,7 @@ export default async function authRoutes(fastify: FastifyInstance) {
 
 		if (user) {
 			if (body.password === user.password) {
-				const payload: jwtSignUser = {
+				const payload: JwtSignUser = {
 					id: user.id,
 					email: user.email,
 					isVet: user.isVet,
@@ -52,16 +52,16 @@ export default async function authRoutes(fastify: FastifyInstance) {
 						expiresIn: '7 days',
 					}
 				);
-				reply.status(200).send({ token });
+				reply.status(200).send({token});
 			}
-			reply.status(404).send({ message: 'Incorrect email or password' });
+			reply.status(404).send({message: 'Incorrect email or password'});
 		}
-		reply.status(404).send({ message: 'not found db' });
+		reply.status(404).send({message: 'not found db'});
 
 		if (body.password === user?.password)
 			if (foundClient.user) {
 				if (body.password === foundClient.user.password) {
-					const user: jwtSignUser = {
+					const user: JwtSignUser = {
 						id: foundClient.user.id,
 						email: foundClient.user.email,
 						userName: foundClient.user.userName,
@@ -86,12 +86,12 @@ export default async function authRoutes(fastify: FastifyInstance) {
 							expiresIn: '7days',
 						}
 					);
-					reply.status(foundClient.statusCode).send({ token });
+					reply.status(foundClient.statusCode).send({token});
 				}
 
 				if (foundVeterinary.veterinary) {
 					if (body.password === foundVeterinary.veterinary.password) {
-						const user: jwtSignUser = {
+						const user: JwtSignUser = {
 							id: foundVeterinary.veterinary.id,
 							email: foundVeterinary.veterinary.email,
 							userName: foundVeterinary.veterinary.userName,
@@ -116,14 +116,14 @@ export default async function authRoutes(fastify: FastifyInstance) {
 								expiresIn: '7days',
 							}
 						);
-						reply.status(foundClient.statusCode).send({ token });
+						reply.status(foundClient.statusCode).send({token});
 					}
 
-					reply.status(400).send({ message: 'Incorrect email or password' });
+					reply.status(400).send({message: 'Incorrect email or password'});
 				}
 				reply
 					.status(foundClient.statusCode)
-					.send({ message: 'Incorrect email or password' });
+					.send({message: 'Incorrect email or password'});
 			}
 	});
 }

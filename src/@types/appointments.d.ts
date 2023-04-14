@@ -1,4 +1,4 @@
-type Appointment = {
+type AppointmentInfos = {
 	description: string;
 	clientId: number;
 	veterinaryId: number;
