@@ -30,7 +30,7 @@ export default class VeterinaryModel {
 				},
 			});
 		} catch (err) {
-			throw new Error(`${err.message}`);
+			throw new Error(`${err}`);
 		}
 	}
 
@@ -53,7 +53,7 @@ export default class VeterinaryModel {
 				},
 			});
 		} catch (err) {
-			throw new Error(`${err.message}`);
+			throw new Error(`${err}`);
 		}
 	}
 
@@ -70,25 +70,50 @@ export default class VeterinaryModel {
 	}
 
 	async updateVeterinaryPersonalInfos(
-		veterinaryID: number,
-		veterinary: UpdateVeterinaryProps
+		id: number,
+		body: UpdateVeterinaryPersonalInfos
 	) {
 		try {
 			return await prisma.veterinary.update({
 				where: {
-					id: veterinaryID,
+					id: id,
 				},
 				data: {
-					personName: veterinary.personName,
-					rg: veterinary.rg,
-					phoneNumber: veterinary.phoneNumber,
-					cellphoneNumber: veterinary.cellphoneNumber,
-					// TODO: BIO FOR USER TABLE
-					// bio: veterinary.bio,
+					personName: body.personName,
+					cpf: body.cpf,
+					email: body.email,
+					password: body.password,
+					cellphoneNumber: body.cellphoneNumber,
+					rg: body.rg,
+					phoneNumber: body.phoneNumber,
 				},
 			});
 		} catch (err) {
 			throw new Error(`${err}`);
+		}
+	}
+	
+	async updateVeterinaryProfessionalInfos(id:number, body: UpdateVeterinaryProfessionalInfos) {
+		try {
+			
+			return await prisma.veterinary.update({
+				where:{
+					id: id
+				},
+				data:{
+					occupationArea: body.occupationArea,
+					formation: body.formation,
+					institution: body.institution,
+					crmv: body.crmv,
+					startActingDate: body.startActingDate,
+					formationDate: body.formationDate,
+				}
+			})
+
+		} catch (err) {
+
+			if (err instanceof Error) throw new Error(`${err.message}`);
+
 		}
 	}
 
@@ -124,4 +149,17 @@ export default class VeterinaryModel {
 			if (err instanceof Error) throw new Error(`${err.message}`);
 		}
 	}
+
+	async deleteVeterinary(id: number) {
+		try {
+			return await prisma.veterinary.delete({
+				where:{
+					id: id
+				}
+			})
+		} catch (err) {
+			if (err instanceof Error) throw new Error(`${err.message}`);
+		}
+	}
+
 }
