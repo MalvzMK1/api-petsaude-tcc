@@ -61,7 +61,7 @@ model Veterinary {
 	isVet              Boolean  @default(true)
 	biography          String?  @db.Text
 
-	AnimalTypesVetInfos     AnimalTypesVetInfos[]
+	PetSpecieVeterinary     PetSpecieVeterinary[]
 	VeterinaryEspecialities VeterinarySpecialities[]
 	Appointments            Appointment[]
 
@@ -73,15 +73,15 @@ model Veterinary {
 
 // ************************** VET INFOS **************************
 
-model AnimalTypesVetInfos {
+model PetSpecieVeterinary {
 	id Int @id @default(autoincrement())
 
-	animalTypesId Int         @map("animal_type_id")
-	animalTypes   AnimalTypes @relation(fields: [animalTypesId], references: [id])
+	petSpecieId 	Int? 				@map("pet_specie_id")
+	PetSpecie 		PetSpecie? 	@relation(fields: [petSpecieId], references: [id])
 	veterinaryId  Int?        @map("veterinary_id")
 	Veterinary    Veterinary? @relation(fields: [veterinaryId], references: [id])
 
-	@@map("tbl_animal_type_vet_infos")
+	@@map("tbl_pet_specie_veterinary")
 }
 
 model VeterinarySpecialities {
@@ -100,14 +100,6 @@ model Specialities {
 	VeterinaryEspecialities VeterinarySpecialities[]
 
 	@@map("tbl_specialities")
-}
-
-model AnimalTypes {
-	id                  Int                   @id @default(autoincrement())
-	name                String
-	AnimalTypesVetInfos AnimalTypesVetInfos[]
-
-	@@map("tbl_animal_type")
 }
 
 // ************************** ADDRESS **************************
@@ -163,6 +155,7 @@ model PetSpecie {
 	id   Int    @id @default(autoincrement())
 	name String
 	Pet  Pet[]
+	PetSpecieVeterinary PetSpecieVeterinary[]
 
 	@@map("tbl_pet_specie")
 }
