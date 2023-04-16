@@ -3,7 +3,7 @@ import VeterinaryModel from "../model/veterinaryModel";
 import appointmentModel from "../model/appointmentModel";
 import {parse} from "date-fns";
 import transformDateTimeStringIntoDate from "../utils/transformDateTimeStringIntoDate";
-import {Appointment} from "@prisma/client";
+import {Appointment, Prisma} from "@prisma/client";
 
 const timeZone = 'America/Sao_Paulo'
 
@@ -96,6 +96,7 @@ class AppointmentController {
 				return {statusCode: 200, message: appointment}
 			return {statusCode: 404, message: 'Nenhuma conculsta foi achada no banco de dados'}
 		} catch (err) {
+			if (err instanceof Prisma.PrismaClientKnownRequestError) return {statusCode: 400, message: err}
 			if (err instanceof Error) return {statusCode: 500, message: err}
 			return {statusCode: 500, message: `Unkown error \n ${err}`}
 		}
@@ -108,7 +109,11 @@ class AppointmentController {
 				return {statusCode: 200, message: deletedAppointment}
 			return {statusCode: 404, message: 'Não foi possível realizar a exclusão'}
 		} catch (err) {
-			if (err instanceof Error) return {statusCode: 500, message: err}
+			if (err instanceof Prisma.PrismaClientKnownRequestError) {
+				if (err.code === 'P2025')
+					return {statusCode: 400, message: err}
+				return {statusCode: 400, message: err}
+			}
 			return {statusCode: 500, message: `Unkown error \n ${err}`}
 		}
 	}

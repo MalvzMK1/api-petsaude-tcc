@@ -3,8 +3,8 @@ type CreatePetInfosModelProps = {
 	birthDate: Date;
 	photo: string;
 	microship: boolean;
-	size: EnumPetSize;
-	gender: EnumPetGender;
+	size: PetSize;
+	gender: PetGender;
 	specieId: number;
 	ownerId: number;
 };
@@ -14,8 +14,8 @@ type PetInfosControllerProps = {
 	birthDate: string;
 	photo: string;
 	microship: boolean;
-	size: EnumPetSize;
-	gender: EnumPetGender;
+	size: string;
+	gender: string;
 	specie: string;
 	ownerID: number;
 };
@@ -32,16 +32,16 @@ type UpdatePetInfosModelProps = {
 };
 
 enum EnumPetSize {
-	BIG = "BIG",
-	MEDIUM = "MEDIUM",
-	SMALL = "SMALL",
+	BIG = 'BIG',
+	MEDIUM = 'MEDIUM',
+	SMALL = 'SMALL',
 }
 
-type PetSize = keyof typeof EnumPetSize
+type PetSize = keyof typeof EnumPetSize;
 
 enum EnumPetGender {
-	FEMALE = 'F',
-	MALE = 'M',
+	F = 'F',
+	M = 'M',
 }
 
-type PetGender = keyof typeof EnumPetGender
+type PetGender = keyof typeof EnumPetGender;

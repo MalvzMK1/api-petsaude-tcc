@@ -33,7 +33,7 @@ export default async function appointmentRoutes(fastify: FastifyInstance) {
 			reply.status(401).send({message: 'Token JWT não recebido'})
 
 		} catch (err) {
-			if (err instanceof Error) reply.status(404).send({message: err.message})
+			if (err instanceof Error) reply.status(404).send({message: JSON.parse(err.message)})
 			else reply.status(404).send({message: 'Campos inválidos'})
 		}
 	})
@@ -57,8 +57,8 @@ export default async function appointmentRoutes(fastify: FastifyInstance) {
 			reply.status(response.statusCode).send(response.message)
 
 		} catch (err) {
-			if (err instanceof Error) reply.status(500).send({message: JSON.parse(err.message)})
-			reply.status(500).send({message: err})
+			if (err instanceof Error) reply.status(400).send({message: JSON.parse(err.message)})
+			reply.status(400).send({message: err})
 		}
 	})
 	fastify.delete('/appointment', {onRequest: authenticate}, async (request, reply) => {
@@ -73,7 +73,7 @@ export default async function appointmentRoutes(fastify: FastifyInstance) {
 			reply.status(response.statusCode).send({response: response.message})
 		} catch (err) {
 			if (err instanceof Error) reply.status(400).send({message: JSON.parse(err.message)})
-			reply.status(500).send({message: err})
+			reply.status(400).send({message: err})
 		}
 	})
 }
