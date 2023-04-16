@@ -25,8 +25,8 @@ type UpdatePetInfosModelProps = {
 	birthDate: Date;
 	photo: string;
 	microship: boolean;
-	size: EnumPetSize;
-	gender: EnumPetGender;
+	size: PetSize;
+	gender: PetGender;
 	specieId: number;
 	ownerId: number;
 };

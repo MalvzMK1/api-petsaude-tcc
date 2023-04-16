@@ -181,12 +181,54 @@ export default class PetController {
 
 	async updatePet(petID: number, pet: PetInfosControllerProps) {
 		try {
-			const splittedDate = pet.birthDate.split('-');
-			const petBirthDate = new Date(
-				parseInt(splittedDate[0]),
-				parseInt(splittedDate[1]),
-				parseInt(splittedDate[2])
-			);
+			const birthDate = parse(pet.birthDate, 'dd-MM-yyyy', new Date());
+
+			if (birthDate.toString().toLowerCase() === 'invalid date')
+				return {
+					statusCode: 400,
+					message: {
+						error: {
+							title: 'Formato de data incorreto',
+							fix: 'Espera-se um formato dd-MM-yyyy',
+						},
+					},
+				};
+
+			let gender: PetGender | null;
+			let size: PetSize | null;
+
+			switch (pet.size) {
+				case 'SMALL':
+					size = 'SMALL';
+					break;
+				case 'MEDIUM':
+					size = 'MEDIUM';
+					break;
+				case 'BIG':
+					size = 'BIG';
+					break;
+				default:
+					return {
+						statusCode: 400,
+						message: 'Tipos de tamanho incorretos',
+						options: ['SMALL', 'MEDIUM', 'BIG'],
+					};
+			}
+
+			switch (pet.gender) {
+				case 'F':
+					gender = 'F';
+					break;
+				case 'M':
+					gender = 'M';
+					break;
+				default:
+					return {
+						statusCode: 400,
+						message: 'Tipos de gênero incorretos',
+						options: ['F', 'M'],
+					};
+			}
 
 			const findOrCreateSpecieResponse = await petModel.findOrCreateSpecie(
 				pet.specie
@@ -198,15 +240,15 @@ export default class PetController {
 			else specie = findOrCreateSpecieResponse;
 
 			const petInfos: UpdatePetInfosModelProps = {
-				gender: pet.gender,
-				size: pet.size,
+				gender: gender,
+				size: size,
 				specieId: specie.id,
 
 				microship: pet.microship,
 				name: pet.name,
 				ownerId: pet.ownerID,
 				photo: pet.photo,
-				birthDate: petBirthDate,
+				birthDate: birthDate,
 			};
 
 			const updatedPet = await petModel.updatePet(petID, petInfos);
