@@ -5,21 +5,7 @@ import authenticate from '../middlewares/authenticate';
 import specialtiesPetsController from '../controller/specialtiesPetsController';
 import veterinaryController from '../controller/veterinaryController';
 
-
 export default async function veterinaryRoutes(fastify: FastifyInstance) {
-
-	fastify.get('/veterinary/:email', async (req, reply) => {
-
-		const queryParams = z.object({ email: z.string() });
-
-		const { email } = queryParams.parse(req.params)
-
-		const response = await veterinaryController.getVeterinaryByEmail(email)
-
-		reply.status(response.statusCode).send({ response: response.veterinary })
-
-	})
-
 	fastify.get('/veterinary', async (request, reply) => {
 		const queryParams = z.object({
 			userName: z.optional(z.string()),
