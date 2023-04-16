@@ -87,58 +87,61 @@ export default async function petRoutes(fastify: FastifyInstance) {
 		'/pet',
 		{ onRequest: authenticate },
 		async (request, reply) => {
+			try {
+				const queryParams = z.object({
+					petID: z.string(),
+				});
+
+				const { petID } = queryParams.parse(request.query);
+				const controllerResponse = await petController.deletePet(
+					parseInt(petID)
+				);
+
+				reply.status(200).send({ response: controllerResponse });
+			} catch (err) {
+				if (err instanceof Error)
+					reply.status(400).send({ message: err.message });
+				reply.status(400).send({ message: err });
+			}
+		}
+	);
+
+	fastify.put('/pet', { onRequest: authenticate }, async (request, reply) => {
+		try {
+			const bodyParams = z.object({
+				name: z.string(),
+				birthDate: z.string(),
+				photo: z.string(),
+				microship: z.boolean(),
+				size: z.nativeEnum(EnumPetSize),
+				gender: z.nativeEnum(EnumPetGender),
+				specie: z.string(),
+				ownerID: z.number(),
+			});
 			const queryParams = z.object({
 				petID: z.string(),
 			});
 
 			const { petID } = queryParams.parse(request.query);
-			const controllerResponse = await petController.deletePet(parseInt(petID));
+			const petInfos = bodyParams.parse(request.body);
 
-			reply.status(200).send({ response: controllerResponse });
+			const controllerResponse = await petController.updatePet(
+				parseInt(petID),
+				petInfos
+			);
+
+			if (controllerResponse.pet)
+				reply.status(controllerResponse.statusCode).send({
+					pet: controllerResponse.pet,
+					message: controllerResponse.message,
+				});
+			reply
+				.status(controllerResponse.statusCode)
+				.send({ message: controllerResponse.message });
+		} catch (err) {
+			if (err instanceof Error)
+				reply.status(400).send({ message: err.message });
+			reply.status(400).send({ message: err });
 		}
-	);
-
-	fastify.put('/pet', { onRequest: authenticate }, async (request, reply) => {
-		const bodyParams = z.object({
-			name: z.string(),
-			birthDate: z.string(),
-			photo: z.string(),
-			microship: z.boolean(),
-			size: z.nativeEnum(EnumPetSize),
-			gender: z.nativeEnum(EnumPetGender),
-			specie: z.string(),
-			ownerID: z.number(),
-		});
-		const queryParams = z.object({
-			petID: z.string(),
-		});
-
-		const { petID } = queryParams.parse(request.query);
-		const petInfos = bodyParams.parse(request.body);
-
-		const controllerResponse = await petController.updatePet(
-			parseInt(petID),
-			petInfos
-		);
-
-		if (controllerResponse.pet)
-			reply.status(controllerResponse.statusCode).send({
-				pet: controllerResponse.pet,
-				message: controllerResponse.message,
-			});
-		reply
-			.status(controllerResponse.statusCode)
-			.send({ message: controllerResponse.message });
 	});
 }
-
-// enum PetSize {
-// 	BIG = 'BIG',
-// 	MEDIUM = 'MEDIUM',
-// 	SMALL = 'SMALL',
-// }
-//
-// enum PetGender {
-// 	MALE = 'M',
-// 	FEMALE = 'F',
-// }
