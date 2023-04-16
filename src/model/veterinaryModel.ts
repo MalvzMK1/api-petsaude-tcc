@@ -44,10 +44,10 @@ export default class VeterinaryModel {
 							specialities: true,
 						},
 					},
-					AnimalTypesVetInfos: {
+					PetSpecieVeterinary: {
 						include: {
-							animalTypes: true,
-						},
+							PetSpecie: true
+						}
 					},
 					Appointments: true,
 				},
@@ -92,10 +92,10 @@ export default class VeterinaryModel {
 			throw new Error(`${err}`);
 		}
 	}
-	
+
 	async updateVeterinaryProfessionalInfos(id:number, body: UpdateVeterinaryProfessionalInfos) {
 		try {
-			
+
 			return await prisma.veterinary.update({
 				where:{
 					id: id
