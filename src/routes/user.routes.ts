@@ -46,102 +46,113 @@ export default async function userRoutes(fastify: FastifyInstance) {
 		}
 	});
 
-	fastify.get('/user', async (req, res) => {
-		const queryParams = z.object({
-			userID: z.string(),
-		});
+	fastify.get('/user', async (request, reply) => {
+		try {
+			const queryParams = z.object({
+				userID: z.string(),
+			});
 
-		const { userID } = queryParams.parse(req.query);
+			const { userID } = queryParams.parse(request.query);
 
-		if (!userID) res.status(400).send({ message: 'Required ID' });
+			if (!userID) reply.status(400).send({ message: 'Required ID' });
 
-		const userInfos = await userController.getUserById(parseInt(userID));
+			const userInfos = await userController.getUserById(parseInt(userID));
 
-		res.status(userInfos.statusCode).send({ user: userInfos?.message });
+			reply.status(userInfos.statusCode).send({ user: userInfos?.message });
+		} catch (err) {
+			if (err instanceof Error)
+				reply.status(400).send({ response: JSON.parse(err.message) });
+			reply.status(400).send({ response: 'Unknown error' });
+		}
 	});
 
 	fastify.get('/user/all', async (req, reply) => {
-		const allUsers = await userController.getAllUsers();
+		try {
+			const allUsers = await userController.getAllUsers();
 
-		reply.status(allUsers.statusCode).send(allUsers.message);
+			reply.status(allUsers.statusCode).send(allUsers.message);
+		} catch (err) {
+			if (err instanceof Error)
+				reply.status(400).send({ response: JSON.parse(err.message) });
+			reply.status(400).send({ response: 'Unknown error' });
+		}
 	});
 
 	fastify.put(
 		'/user/personal-infos',
 		{ onRequest: authenticate },
 		async (request, reply) => {
-			const bodyParams = z.object({
-				personName: z.string(),
-				cpf: z.string(),
-				rg: z.string(),
-				phoneNumber: z.string(),
-				cellphoneNumber: z.string(),
-				bio: z.string(),
-			});
-
-			const queryParams = z.object({
-				userID: z.string(),
-			});
-
-			const rawBody = bodyParams.parse(request.body);
-
-			if (!validateEmptyBody(rawBody)) {
-				reply
-					.status(400)
-					.send({ message: new Messages().MESSAGE_ERROR.EMPTY_BODY });
-			}
 			try {
-				bodyParams.parse(request.body);
-			} catch (error) {
-				console.log(error);
-				reply
-					.status(422)
-					.send({ message: message.MESSAGE_ERROR.TYPES_DOESNT_MATCH });
+				const bodyParams = z.object({
+					personName: z.string(),
+					cpf: z.string(),
+					rg: z.string(),
+					phoneNumber: z.string(),
+					cellphoneNumber: z.string(),
+					bio: z.string(),
+				});
+
+				const queryParams = z.object({
+					userID: z.string(),
+				});
+
+				const rawBody = bodyParams.parse(request.body);
+
+				if (!validateEmptyBody(rawBody)) {
+					reply
+						.status(400)
+						.send({ message: new Messages().MESSAGE_ERROR.EMPTY_BODY });
+				}
+				try {
+					bodyParams.parse(request.body);
+				} catch (error) {
+					console.log(error);
+					reply
+						.status(422)
+						.send({ message: message.MESSAGE_ERROR.TYPES_DOESNT_MATCH });
+				}
+
+				const body: UpdateUserInfosProps = bodyParams.parse(request.body);
+				const { userID } = queryParams.parse(request.query);
+
+				const updateUser = await userController.updateUser(
+					parseInt(userID),
+					body
+				);
+
+				reply.status(updateUser.statusCode).send(updateUser.message);
+			} catch (err) {
+				if (err instanceof Error)
+					reply.status(400).send({ response: JSON.parse(err.message) });
+				reply.status(400).send({ response: 'Unknown error' });
 			}
-
-			const body: UpdateUserInfosProps = bodyParams.parse(request.body);
-			const { userID } = queryParams.parse(request.query);
-
-			const updateUser = await userController.updateUser(
-				parseInt(userID),
-				body
-			);
-
-			reply.status(updateUser.statusCode).send(updateUser.message);
 		}
 	);
 
-	fastify.delete('/user', { onRequest: authenticate }, async (req, res) => {
-		const queryParams = z.object({
-			userID: z.string(),
-		});
+	fastify.delete(
+		'/user',
+		{ onRequest: authenticate },
+		async (request, reply) => {
+			try {
+				const queryParams = z.object({
+					userID: z.string(),
+				});
 
-		const { userID } = queryParams.parse(req.query);
+				const { userID } = queryParams.parse(request.query);
 
-		if (!userID)
-			res.status(400).send({
-				message: message.MESSAGE_ERROR.REQUIRED_ID,
-			});
+				if (!userID)
+					reply.status(400).send({
+						message: message.MESSAGE_ERROR.REQUIRED_ID,
+					});
 
-		const result = await userController.deleteUser(parseInt(userID));
+				const result = await userController.deleteUser(parseInt(userID));
 
-		res.status(result.statusCode).send({ allUsers: result?.message });
-	});
-
-	fastify.get('/user/:id', { onRequest: authenticate }, async (req, res) => {
-		const queryParams = z.object({
-			userID: z.string(),
-		});
-
-		const { userID } = queryParams.parse(req.query);
-
-		if (!userID)
-			res.status(400).send({
-				message: message.MESSAGE_ERROR.REQUIRED_ID,
-			});
-
-		const result = await userController.getUserById(parseInt(userID));
-
-		res.status(result.statusCode).send(result.message);
-	});
+				reply.status(result.statusCode).send({ allUsers: result?.message });
+			} catch (err) {
+				if (err instanceof Error)
+					reply.status(400).send({ response: JSON.parse(err.message) });
+				reply.status(400).send({ response: 'Unknown error' });
+			}
+		}
+	);
 }
