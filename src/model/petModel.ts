@@ -1,6 +1,6 @@
 import prisma from '../lib/prisma';
 
-export default class Pet {
+export default class PetModel {
 	async findPet(petID: number) {
 		try {
 			const pet = await prisma.pet.findUnique({

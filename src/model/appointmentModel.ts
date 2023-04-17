@@ -12,6 +12,7 @@ class AppointmentModel {
 					endsAt: infos.endsAt,
 					clientId: infos.clientId,
 					veterinaryId: infos.veterinaryId,
+					petId: infos.petId
 				}
 			})
 		} catch (err) {
@@ -22,7 +23,17 @@ class AppointmentModel {
 
 	async getAllAppointments(): Promise<Appointment[]> {
 		try {
-			return await prisma.appointment.findMany()
+			return await prisma.appointment.findMany({
+				include: {
+					pet: {
+						include: {
+							petSpecie: true
+						}
+					},
+					Client: true,
+					Veterinary: true,
+				}
+			})
 		} catch (err) {
 			if (err instanceof Error) throw new Error(`${err.message}`)
 			throw new Error(`${err}`)
@@ -34,6 +45,15 @@ class AppointmentModel {
 			return await prisma.appointment.findUnique({
 				where: {
 					id
+				},
+				include: {
+					pet: {
+						include: {
+							petSpecie: true
+						}
+					},
+					Client: true,
+					Veterinary: true,
 				}
 			})
 		} catch (err) {
