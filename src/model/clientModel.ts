@@ -81,27 +81,39 @@ export default class ClientModel {
 		}
 	}
 
-	async updateClient(userID: number, userInfos: UpdateUserInfosProps) {
-		try {
-			return await prisma.client.update({
-				where: {
-					id: userID,
-				},
-				data: {
-					personName: userInfos.personName,
-					cpf: userInfos.cpf,
-					rg: userInfos.rg,
-					phoneNumber: userInfos.phoneNumber,
-					cellphoneNumber: userInfos.cellphoneNumber,
-				},
-			});
-		} catch (err) {
-			throw new Error(`${err}`);
-		}
+	async updateClientPersonalInfos(userID: number, userInfos: UpdateClientPersonalInfosProps) {
+		return await prisma.client.update({
+			where: {
+				id: userID,
+			},
+			data: {
+				personName: userInfos.personName,
+				cpf: userInfos.cpf,
+				rg: userInfos.rg,
+				phoneNumber: userInfos.phoneNumber,
+				cellphoneNumber: userInfos.cellphoneNumber,
+			},
+		});
+	}
+
+	async updateClientProfileInfos(clientID: number, clientInfos: UpdateClientProfileInfosProps) {
+		return await prisma.client.update({
+			where: {
+				id: clientID
+			},
+			data: {
+				...clientInfos
+			}
+		})
 	}
 
 	async deleteClient(userID: number) {
 		try {
+			const deleteAppointments = await prisma.appointment.deleteMany({
+				where: {
+					clientId: userID
+				}
+			})
 			const userPetDelete = await prisma.pet.deleteMany({
 				where: {
 					id: userID,
@@ -114,7 +126,7 @@ export default class ClientModel {
 				},
 			});
 
-			return !!(userPetDelete && userDelete);
+			return !!(userPetDelete && userDelete && deleteAppointments);
 		} catch (err) {
 			throw new Error(`${err}`);
 		}

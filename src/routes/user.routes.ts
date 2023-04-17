@@ -1,15 +1,14 @@
-import { FastifyInstance } from 'fastify';
+import {FastifyInstance} from 'fastify';
 import userController from '../controller/userController';
 import authenticate from '../middlewares/authenticate';
-import { z } from 'zod';
+import {z} from 'zod';
 import Message from '../messages/message';
 import Messages from '../messages/message';
-import validateEmptyBody from '../utils/validateBody';
 
 const message = new Message();
 
 export default async function userRoutes(fastify: FastifyInstance) {
-	fastify.post('/user', async (request, reply) => {
+	fastify.post('/client', async (request, reply) => {
 		try {
 			const bodyParams = z.object({
 				personName: z.string(),
@@ -38,51 +37,82 @@ export default async function userRoutes(fastify: FastifyInstance) {
 
 			reply
 				.status(createUser.statusCode)
-				.send({ response: createUser.message });
+				.send({response: createUser.message});
 		} catch (err) {
 			if (err instanceof Error)
-				reply.status(400).send({ response: JSON.parse(err.message) });
-			reply.status(400).send({ response: 'Unknown error' });
+				reply.status(400).send({response: JSON.parse(err.message)});
+			reply.status(400).send({response: 'Unknown error'});
 		}
 	});
 
-	fastify.get('/user', async (request, reply) => {
+	fastify.get('/client', async (request, reply) => {
 		try {
 			const queryParams = z.object({
 				userID: z.string(),
 			});
 
-			const { userID } = queryParams.parse(request.query);
+			const {userID} = queryParams.parse(request.query);
 
-			if (!userID) reply.status(400).send({ message: 'Required ID' });
+			if (!userID) reply.status(400).send({message: 'Required ID'});
 
 			const userInfos = await userController.getUserById(parseInt(userID));
 
-			reply.status(userInfos.statusCode).send({ user: userInfos?.message });
+			reply.status(userInfos.statusCode).send({user: userInfos?.message});
 		} catch (err) {
 			if (err instanceof Error)
-				reply.status(400).send({ response: JSON.parse(err.message) });
-			reply.status(400).send({ response: 'Unknown error' });
+				reply.status(400).send({response: JSON.parse(err.message)});
+			reply.status(400).send({response: 'Unknown error'});
 		}
 	});
 
-	fastify.get('/user/all', async (req, reply) => {
+	fastify.get('/client/all', async (req, reply) => {
 		try {
 			const allUsers = await userController.getAllUsers();
 
 			reply.status(allUsers.statusCode).send(allUsers.message);
 		} catch (err) {
 			if (err instanceof Error)
-				reply.status(400).send({ response: JSON.parse(err.message) });
-			reply.status(400).send({ response: 'Unknown error' });
+				reply.status(400).send({response: JSON.parse(err.message)});
+			reply.status(400).send({response: 'Unknown error'});
 		}
 	});
 
+	fastify.put('/client/profile-infos', {onRequest: authenticate}, async (request, reply) => {
+		try {
+			const jwt = request.headers.authorization
+			const token = jwt?.split(' ')[1]
+
+			const bodyParams = z.object({
+				userName: z.string(),
+				profilePhoto: z.string(),
+				profileBannerPhoto: z.string(),
+				email: z.string(),
+				password: z.string()
+			})
+
+			const body = bodyParams.parse(request.body)
+			if (token) {
+				const decodedJwt: JwtSignUser | null = fastify.jwt.decode(token)
+				if (decodedJwt) {
+					const updatedUser = await userController.updateClientProfileInfos(decodedJwt.id, body)
+				}
+			}
+
+		} catch (err) {
+			if (err instanceof Error)
+				reply.status(400).send({response: JSON.parse(err.message)})
+			reply.status(400).send({response: 'Unknown error'});
+		}
+	})
+
 	fastify.put(
-		'/user/personal-infos',
-		{ onRequest: authenticate },
+		'/client/personal-infos',
+		{onRequest: authenticate},
 		async (request, reply) => {
 			try {
+				const jwt = request.headers.authorization
+				const token = jwt?.split(' ')[1]
+
 				const bodyParams = z.object({
 					personName: z.string(),
 					cpf: z.string(),
@@ -92,66 +122,50 @@ export default async function userRoutes(fastify: FastifyInstance) {
 					bio: z.string(),
 				});
 
-				const queryParams = z.object({
-					userID: z.string(),
-				});
+				const body: UpdateClientPersonalInfosProps = bodyParams.parse(request.body);
+				if (token) {
+					const decodedJwt: JwtSignUser | null = fastify.jwt.decode(token)
 
-				const rawBody = bodyParams.parse(request.body);
-
-				if (!validateEmptyBody(rawBody)) {
-					reply
-						.status(400)
-						.send({ message: new Messages().MESSAGE_ERROR.EMPTY_BODY });
+					if (decodedJwt) {
+						const updateUser = await userController.updateClientPersonalInfos(
+							decodedJwt.id,
+							body
+						);
+						reply.status(updateUser.statusCode).send({message: updateUser.message});
+					}
+					reply.status(401).send({message: 'Token inválido'})
 				}
-				try {
-					bodyParams.parse(request.body);
-				} catch (error) {
-					console.log(error);
-					reply
-						.status(422)
-						.send({ message: message.MESSAGE_ERROR.TYPES_DOESNT_MATCH });
-				}
-
-				const body: UpdateUserInfosProps = bodyParams.parse(request.body);
-				const { userID } = queryParams.parse(request.query);
-
-				const updateUser = await userController.updateUser(
-					parseInt(userID),
-					body
-				);
-
-				reply.status(updateUser.statusCode).send(updateUser.message);
+				reply.status(401).send({message: 'Token inválido'})
 			} catch (err) {
 				if (err instanceof Error)
-					reply.status(400).send({ response: JSON.parse(err.message) });
-				reply.status(400).send({ response: 'Unknown error' });
+					reply.status(400).send({response: JSON.parse(err.message)});
+				reply.status(400).send({response: 'Unknown error'});
 			}
 		}
 	);
 
 	fastify.delete(
-		'/user',
-		{ onRequest: authenticate },
+		'/client',
+		{onRequest: authenticate},
 		async (request, reply) => {
 			try {
-				const queryParams = z.object({
-					userID: z.string(),
-				});
+				const jwt = request.headers.authorization
+				const token = jwt?.split(' ')[1]
 
-				const { userID } = queryParams.parse(request.query);
+				if (token) {
+					const decodedToken: JwtSignUser | null = fastify.jwt.decode(token)
+					if (decodedToken) {
+						const result = await userController.deleteUser(decodedToken.id);
 
-				if (!userID)
-					reply.status(400).send({
-						message: message.MESSAGE_ERROR.REQUIRED_ID,
-					});
-
-				const result = await userController.deleteUser(parseInt(userID));
-
-				reply.status(result.statusCode).send({ allUsers: result?.message });
+						reply.status(result.statusCode).send({message: result.message});
+					}
+					reply.status(401).send({message: 'Token inválido'})
+				}
+				reply.status(401).send({message: 'Token inválido'})
 			} catch (err) {
 				if (err instanceof Error)
-					reply.status(400).send({ response: JSON.parse(err.message) });
-				reply.status(400).send({ response: 'Unknown error' });
+					reply.status(400).send({response: JSON.parse(err.message)});
+				reply.status(400).send({response: 'Unknown error'});
 			}
 		}
 	);

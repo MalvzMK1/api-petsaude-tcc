@@ -1,5 +1,5 @@
 export default class ValidateUserInfosProps {
-	validateUpdateUserInfos(userInfos: UpdateUserInfosProps) {
+	validateUpdateUserInfos(userInfos: UpdateClientPersonalInfosProps) {
 		return !(userInfos.cpf === null ||
 			userInfos.cpf === '' ||
 			userInfos.personName === null ||

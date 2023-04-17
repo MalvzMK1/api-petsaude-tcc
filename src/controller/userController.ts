@@ -2,6 +2,8 @@ import Message from '../messages/message';
 import ClientModel from '../model/clientModel';
 import validateSameCpfBetweenClientsAndVeterinarians from '../utils/validateSameCpfBetweenClientsAndVeterinarians';
 import validateSameEmailBetweenClientsAndVeterinarians from '../utils/validateSameEmailBetweenClientsAndVeterinarians';
+import {Prisma} from "@prisma/client";
+import {validateIfClientExists} from "../utils/validateExistentRegisters";
 
 const clientModel = new ClientModel();
 const message = new Message();
@@ -152,12 +154,12 @@ class ClientController {
 		}
 	}
 
-	async updateUser(userID: number, userInfos: UpdateUserInfosProps) {
+	async updateClientPersonalInfos(userID: number, userInfos: UpdateClientPersonalInfosProps) {
 		try {
-			const updatedUser = await clientModel.updateClient(userID, userInfos);
+			const updatedUser = await clientModel.updateClientPersonalInfos(userID, userInfos);
 			if (updatedUser)
 				return {
-					statusCode: 204,
+					statusCode: 200,
 					message: message.MESSAGE_SUCESS.UPDATE_ITEM,
 				};
 			return {
@@ -165,6 +167,38 @@ class ClientController {
 				message: message.MESSAGE_ERROR.INTERNAL_ERROR_DB,
 			};
 		} catch (err) {
+			if (err instanceof Prisma.PrismaClientKnownRequestError)
+				return {
+					statusCode: 400,
+					message: err
+				}
+			if (err instanceof Error)
+				return {
+					statusCode: 500,
+					message: JSON.parse(err.message),
+				};
+			return {
+				statusCode: 500,
+				message: message.MESSAGE_ERROR.INTERNAL_ERROR_DB,
+			};
+		}
+	}
+
+	async updateClientProfileInfos(clientID: number, clientInfos: UpdateClientProfileInfosProps) {
+		try {
+			if (!validateIfClientExists(clientID))
+				return {
+					statusCode: 404,
+					message: 'O cliente não existe no banco de dados'
+				}
+
+			const updatedUser = await clientModel.updateClientProfileInfos(clientID, clientInfos)
+		} catch (err) {
+			if (err instanceof Prisma.PrismaClientKnownRequestError)
+				return {
+					statusCode: 400,
+					message: err
+				}
 			if (err instanceof Error)
 				return {
 					statusCode: 500,
@@ -199,10 +233,15 @@ class ClientController {
 				message: message.MESSAGE_ERROR.NOT_FOUND_DB,
 			};
 		} catch (err) {
+			if (err instanceof Prisma.PrismaClientKnownRequestError)
+				return {
+					statusCode: 400,
+					message: err
+				}
 			if (err instanceof Error)
 				return {
 					statusCode: 500,
-					message: JSON.parse(err.message),
+					message: err.message,
 				};
 			return {
 				statusCode: 500,
