@@ -1,6 +1,7 @@
 import Message from '../messages/message';
 import VeterinaryModel from '../model/veterinaryModel';
 import validateSameEmailBetweenClientsAndVeterinarians from '../utils/validateSameEmailBetweenClientsAndVeterinarians';
+import {Prisma} from "@prisma/client";
 
 const veterinaryModel = new VeterinaryModel();
 const messages = new Message();
@@ -26,48 +27,52 @@ class VeterinaryController {
 				}
 				if (filters.speciality) {
 					const speciality = filters.speciality.toLowerCase();
-					response = response.filter((veterinary) => {
-						veterinary.VeterinaryEspecialities.filter(
-							(veterinarySpecialities) => { }
-						);
-					});
-					// response = response.filter((veterinary) => {
-					// 	return veterinary.VeterinaryEspecialities.map(
-					// 		async (veterinarySpeciality) => {
-					// 			const specialityResponse =
-					// 				await specialtiesController.getSpecialityById(
-					// 					veterinarySpeciality.specialitiesId
-					// 				);
-					// 			if (
-					// 				specialityResponse &&
-					// 				specialityResponse.name.toLowerCase() === speciality
-					// 			) {
-					// 				console.log(veterinary);
-					// 				return veterinary;
-					// 			}
-					// 		}
-					// 	);
-					// });
+					// @ts-ignore
+					let filteredVeterinarians = []
+					response.forEach((veterinary) => {
+						veterinary.VeterinaryEspecialities.forEach(veterinarySpeciality => {
+							if (veterinarySpeciality.specialities.name.toLowerCase().includes(speciality.toLowerCase()))
+								filteredVeterinarians.push(veterinary)
+							// return veterinary
+						})
+					})
+					// @ts-ignore
+					response = filteredVeterinarians
 				}
 				if (filters.animal) {
 					const animal = filters.animal.toLowerCase();
-					response = response.filter((veterinary) => {
-						veterinary.AnimalTypesVetInfos.forEach((animalType) => {
-							if (animalType.animalTypesId === 1) return veterinary;
+					// @ts-ignore
+					let filteredVeterinarians = []
+					response.forEach((veterinary) => {
+						veterinary.PetSpecieVeterinary.forEach((petSpecie) => {
+							if (petSpecie.PetSpecie?.name.toLowerCase().includes(animal.toLowerCase()))
+								filteredVeterinarians.push(veterinary)
 						});
 					});
+					// @ts-ignore
+					response = filteredVeterinarians
 				}
 
+				if (response.length > 0)
+					return {
+						statusCode: 200,
+						veterinarys: response,
+					};
 				return {
-					statusCode: 200,
-					veterinarys: response,
-				};
+					statusCode: 404,
+					message: 'Nenhum veterinário atende aos filtros de pesquisa'
+				}
 			}
 			return {
 				statusCode: 404,
 				message: messages.MESSAGE_ERROR.NOT_FOUND_DB,
 			};
 		} catch (err) {
+			if (err instanceof Prisma.PrismaClientKnownRequestError)
+				return {
+					statusCode: 400,
+					message: err
+				}
 			if (err instanceof Error)
 				return {
 					statusCode: 500,
@@ -183,10 +188,10 @@ class VeterinaryController {
 			const response = await veterinaryModel.updateVeterinaryProfessionalInfos(id, body)
 
 			if (response)
-				return { message: response, statusCode: 200 }
-			else 
-				return { statusCode: 404, message: new Message().MESSAGE_ERROR.NOT_FOUND_DB }
-			
+				return {message: response, statusCode: 200}
+			else
+				return {statusCode: 404, message: new Message().MESSAGE_ERROR.NOT_FOUND_DB}
+
 
 		} catch (err) {
 			if (err instanceof Error)
@@ -207,11 +212,11 @@ class VeterinaryController {
 
 			const response = await veterinaryModel.updateVeterinaryPersonalInfos(id, body)
 
-			if (response) 
-				return { message: response, statusCode: 200 }
+			if (response)
+				return {message: response, statusCode: 200}
 			else
-				return { statusCode: 404, message: new Message().MESSAGE_ERROR.NOT_FOUND_DB }
-			
+				return {statusCode: 404, message: new Message().MESSAGE_ERROR.NOT_FOUND_DB}
+
 
 		} catch (err) {
 			if (err instanceof Error)
@@ -233,9 +238,9 @@ class VeterinaryController {
 			const response = await veterinaryModel.deleteVeterinary(id)
 
 			if (response)
-				return { message: messages.MESSAGE_SUCESS.DELETE_ITEM, statusCode: 200 }
+				return {message: messages.MESSAGE_SUCESS.DELETE_ITEM, statusCode: 200}
 			else
-				return { statusCode: 404, message: new Message().MESSAGE_ERROR.NOT_FOUND_DB }
+				return {statusCode: 404, message: new Message().MESSAGE_ERROR.NOT_FOUND_DB}
 
 		} catch (err) {
 			if (err instanceof Error)
