@@ -86,6 +86,8 @@ export default class VeterinaryModel {
 					cellphoneNumber: body.cellphoneNumber,
 					rg: body.rg,
 					phoneNumber: body.phoneNumber,
+					profileBannerPhoto: body.profileBannerPhoto,
+					profilePhoto: body.profilePhoto
 				},
 			});
 		} catch (err) {

@@ -72,6 +72,8 @@ type UpdateVeterinaryPersonalInfos = {
 	cellphoneNumber: string;
 	rg: string;
 	phoneNumber: string | null;
+	profilePhoto: string | null;
+	profileBannerPhoto: string | null;
 }
 
 type UpdateVeterinaryProfessionalInfos = {

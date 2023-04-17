@@ -103,7 +103,7 @@ export default async function veterinaryRoutes(fastify: FastifyInstance) {
 				const body = bodyParams.parse(req.body);
 				const { id } = queryParams.parse(req.params);
 
-				if (id != null && id != undefined) {
+				if (id) {
 
 					const updateVeterinary = await veterinaryController.updateVeterinaryProfessionalInfos(parseInt(id), body)
 
@@ -133,7 +133,9 @@ export default async function veterinaryRoutes(fastify: FastifyInstance) {
 					password: z.string(),
 					cellphoneNumber: z.string(),
 					rg: z.string(),
-					phoneNumber: z.string()
+					phoneNumber: z.string(),
+					profilePhoto: z.string().nullable(),
+					profileBannerPhoto: z.string().nullable(),
 				})
 
 				const queryParams = z.object({ id: z.string() });
