@@ -1,13 +1,9 @@
 import Messages from '../messages/message';
 import Pet from '../model/petModel';
-import {
-	CreatePetInfosModelProps,
-	PetInfosControllerProps,
-	UpdatePetInfosModelProps,
-} from '../@types/petInfosProps';
-import { PetSpecie } from '@prisma/client';
+import { PetSpecie, Prisma } from '@prisma/client';
+import { parse } from 'date-fns';
 
-const messages = new Messages();
+const message = new Messages();
 const petModel = new Pet();
 
 export default class PetController {
@@ -21,13 +17,17 @@ export default class PetController {
 				};
 			return {
 				statusCode: 404,
-				message: messages.MESSAGE_ERROR.NOT_FOUND_DB,
+				message: message.MESSAGE_ERROR.NOT_FOUND_DB,
 			};
 		} catch (err) {
-			console.log(err);
+			if (err instanceof Error)
+				return {
+					statusCode: 500,
+					message: JSON.parse(err.message),
+				};
 			return {
 				statusCode: 500,
-				message: messages.MESSAGE_ERROR.INTERNAL_ERROR_DB,
+				message: message.MESSAGE_ERROR.INTERNAL_ERROR_DB,
 			};
 		}
 	}
@@ -38,34 +38,35 @@ export default class PetController {
 			if (pets) return { statusCode: 200, pets };
 			return {
 				statusCode: 404,
-				message: messages.MESSAGE_ERROR.NOT_FOUND_DB,
+				message: message.MESSAGE_ERROR.NOT_FOUND_DB,
 			};
 		} catch (err) {
+			if (err instanceof Error)
+				return {
+					statusCode: 500,
+					message: JSON.parse(err.message),
+				};
 			return {
 				statusCode: 500,
-				message: messages.MESSAGE_ERROR.INTERNAL_ERROR_DB,
+				message: message.MESSAGE_ERROR.INTERNAL_ERROR_DB,
 			};
 		}
 	}
 
 	async createPet(pet: PetInfosControllerProps) {
-		let birthDate: Date;
+		const birthDate = parse(pet.birthDate, 'dd-MM-yyyy', new Date());
 
-		try {
-			const splittedDate = pet.birthDate.split('-');
-			birthDate = new Date(
-				parseInt(splittedDate[0]),
-				parseInt(splittedDate[1]),
-				parseInt(splittedDate[2])
-			);
-			console.log(birthDate);
-		} catch (err) {
-			console.log(err);
+		if (birthDate.toString().toLowerCase() === 'invalid date')
 			return {
 				statusCode: 400,
-				message: messages.MESSAGE_ERROR.INCORRECT_DATE_TYPE,
+				message: {
+					error: {
+						title: 'Formato de data incorreto',
+						fix: 'Espera-se um formato dd-MM-yyyy',
+					},
+				},
 			};
-		}
+
 		const findOrCreateSpecieResponse = await petModel.findOrCreateSpecie(
 			pet.specie
 		);
@@ -76,29 +77,80 @@ export default class PetController {
 		else specie = findOrCreateSpecieResponse;
 
 		try {
-			const petInfosJSON: CreatePetInfosModelProps = {
-				name: pet.name,
-				birthDate: birthDate,
-				microship: pet.microship,
-				photo: pet.photo,
-				gender: pet.gender,
-				size: pet.size,
-				specieId: specie.id,
-				ownerId: pet.ownerID,
-			};
-			const createdPet = await petModel.createNewPet(petInfosJSON);
+			let gender: PetGender | null;
+			let size: PetSize | null;
+
+			switch (pet.size) {
+				case 'SMALL':
+					size = 'SMALL';
+					break;
+				case 'MEDIUM':
+					size = 'MEDIUM';
+					break;
+				case 'BIG':
+					size = 'BIG';
+					break;
+				default:
+					return {
+						statusCode: 400,
+						message: 'Tipos de tamanho incorretos',
+						options: ['SMALL', 'MEDIUM', 'BIG'],
+					};
+			}
+
+			switch (pet.gender) {
+				case 'F':
+					gender = 'F';
+					break;
+				case 'M':
+					gender = 'M';
+					break;
+				default:
+					return {
+						statusCode: 400,
+						message: 'Tipos de gênero incorretos',
+						options: ['F', 'M'],
+					};
+			}
+
+			if (size && gender) {
+				const petInfosJSON: CreatePetInfosModelProps = {
+					name: pet.name,
+					birthDate: birthDate,
+					microship: pet.microship,
+					photo: pet.photo,
+					gender: gender,
+					size: size,
+					specieId: specie.id,
+					ownerId: pet.ownerID,
+				};
+				const createdPet = await petModel.createNewPet(petInfosJSON);
+				return {
+					statusCode: 201,
+					message: message.MESSAGE_SUCESS.INSERT_ITEM,
+					pet: createdPet,
+				};
+			}
 			return {
-				statusCode: 201,
-				message: messages.MESSAGE_SUCESS.INSERT_ITEM,
-				pet: createdPet,
+				statusCode: 400,
+				message: 'Tipos incorretos',
 			};
 		} catch (err) {
+			if (err instanceof Prisma.PrismaClientKnownRequestError)
+				if (err.code === 'P2009')
+					return {
+						statusCode: 400,
+						message: err,
+					};
 			if (err instanceof Error)
 				return {
-					statusCode: 500,
+					statusCode: 400,
 					message: err.message,
 				};
-			return messages.MESSAGE_ERROR.INTERNAL_ERROR_DB;
+			return {
+				statusCode: 100,
+				message: err,
+			};
 		}
 	}
 
@@ -108,29 +160,75 @@ export default class PetController {
 			if (deletedPet)
 				return {
 					statusCode: 200,
-					message: messages.MESSAGE_SUCESS.DELETE_ITEM,
+					message: message.MESSAGE_SUCESS.DELETE_ITEM,
 				};
 			return {
 				statusCode: 400,
-				message: messages.MESSAGE_ERROR.INTERNAL_ERROR_DB,
+				message: message.MESSAGE_ERROR.INTERNAL_ERROR_DB,
 			};
 		} catch (err) {
-			console.log(err);
+			if (err instanceof Error)
+				return {
+					statusCode: 500,
+					message: JSON.parse(err.message),
+				};
 			return {
 				statusCode: 500,
-				message: `${err}`,
+				message: message.MESSAGE_ERROR.INTERNAL_ERROR_DB,
 			};
 		}
 	}
 
 	async updatePet(petID: number, pet: PetInfosControllerProps) {
 		try {
-			const splittedDate = pet.birthDate.split('-');
-			const petBirthDate = new Date(
-				parseInt(splittedDate[0]),
-				parseInt(splittedDate[1]),
-				parseInt(splittedDate[2])
-			);
+			const birthDate = parse(pet.birthDate, 'dd-MM-yyyy', new Date());
+
+			if (birthDate.toString().toLowerCase() === 'invalid date')
+				return {
+					statusCode: 400,
+					message: {
+						error: {
+							title: 'Formato de data incorreto',
+							fix: 'Espera-se um formato dd-MM-yyyy',
+						},
+					},
+				};
+
+			let gender: PetGender | null;
+			let size: PetSize | null;
+
+			switch (pet.size) {
+				case 'SMALL':
+					size = 'SMALL';
+					break;
+				case 'MEDIUM':
+					size = 'MEDIUM';
+					break;
+				case 'BIG':
+					size = 'BIG';
+					break;
+				default:
+					return {
+						statusCode: 400,
+						message: 'Tipos de tamanho incorretos',
+						options: ['SMALL', 'MEDIUM', 'BIG'],
+					};
+			}
+
+			switch (pet.gender) {
+				case 'F':
+					gender = 'F';
+					break;
+				case 'M':
+					gender = 'M';
+					break;
+				default:
+					return {
+						statusCode: 400,
+						message: 'Tipos de gênero incorretos',
+						options: ['F', 'M'],
+					};
+			}
 
 			const findOrCreateSpecieResponse = await petModel.findOrCreateSpecie(
 				pet.specie
@@ -142,15 +240,15 @@ export default class PetController {
 			else specie = findOrCreateSpecieResponse;
 
 			const petInfos: UpdatePetInfosModelProps = {
-				gender: pet.gender,
-				size: pet.size,
+				gender: gender,
+				size: size,
 				specieId: specie.id,
 
 				microship: pet.microship,
 				name: pet.name,
 				ownerId: pet.ownerID,
 				photo: pet.photo,
-				birthDate: petBirthDate,
+				birthDate: birthDate,
 			};
 
 			const updatedPet = await petModel.updatePet(petID, petInfos);
@@ -158,18 +256,22 @@ export default class PetController {
 			if (updatedPet)
 				return {
 					statusCode: 200,
-					message: messages.MESSAGE_SUCESS.UPDATE_ITEM,
+					message: message.MESSAGE_SUCESS.UPDATE_ITEM,
 					pet: updatedPet,
 				};
 			return {
 				statusCode: 400,
-				message: messages.MESSAGE_ERROR.COULDNT_UPDATE_ITEM,
+				message: message.MESSAGE_ERROR.COULDNT_UPDATE_ITEM,
 			};
 		} catch (err) {
-			console.log(err);
+			if (err instanceof Error)
+				return {
+					statusCode: 500,
+					message: JSON.parse(err.message),
+				};
 			return {
 				statusCode: 500,
-				message: `${err}`,
+				message: message.MESSAGE_ERROR.INTERNAL_ERROR_DB,
 			};
 		}
 	}

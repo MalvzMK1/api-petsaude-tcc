@@ -10,7 +10,6 @@ export default class VeterinaryModel {
 					cpf: veterinary.cpf,
 					email: veterinary.email,
 					password: veterinary.password,
-					rg: '',
 					profilePhoto: '',
 					profileBannerPhoto: '',
 					phoneNumber: veterinary.phoneNumber,
@@ -37,53 +36,86 @@ export default class VeterinaryModel {
 
 	async getAllVeterinarys() {
 		try {
-			const allVeterinary = await prisma.veterinary.findMany({
+			return await prisma.veterinary.findMany({
 				include: {
 					Address: true,
 					VeterinaryEspecialities: {
 						include: {
-							specialities: true
-						}
+							specialities: true,
+						},
 					},
-					AnimalTypesVetInfos: {
+					PetSpecieVeterinary: {
 						include: {
-							animalTypes: true
+							PetSpecie: true
 						}
 					},
-					Appointments: {
-						include: {
-							Client: true
-						}
-					},
-				},
-			});
-			if (allVeterinary.length > 0) return allVeterinary;
-			return false;
-		} catch (err) {
-			if (err instanceof Error) throw new Error(`${err}`);
-		}
-	}
-
-	async updateVeterinaryPersonalInfos(
-		veterinaryID: number,
-		veterinary: UpdateVeterinaryProps
-	) {
-		try {
-			return await prisma.veterinary.update({
-				where: {
-					id: veterinaryID,
-				},
-				data: {
-					personName: veterinary.personName,
-					rg: veterinary.rg,
-					phoneNumber: veterinary.phoneNumber,
-					cellphoneNumber: veterinary.cellphoneNumber,
-					// TODO: BIO FOR USER TABLE
-					// bio: veterinary.bio,
+					Appointments: true,
 				},
 			});
 		} catch (err) {
 			throw new Error(`${err}`);
+		}
+	}
+
+	async findVeterinaryById(id: number) {
+		try {
+			return await prisma.veterinary.findUnique({
+				where: {
+					id
+				}
+			})
+		} catch (err) {
+			if (err instanceof Error) throw new Error(`${err.message}`)
+		}
+	}
+
+	async updateVeterinaryPersonalInfos(
+		id: number,
+		body: UpdateVeterinaryPersonalInfos
+	) {
+		try {
+			return await prisma.veterinary.update({
+				where: {
+					id: id,
+				},
+				data: {
+					personName: body.personName,
+					cpf: body.cpf,
+					email: body.email,
+					password: body.password,
+					cellphoneNumber: body.cellphoneNumber,
+					rg: body.rg,
+					phoneNumber: body.phoneNumber,
+					profileBannerPhoto: body.profileBannerPhoto,
+					profilePhoto: body.profilePhoto
+				},
+			});
+		} catch (err) {
+			throw new Error(`${err}`);
+		}
+	}
+
+	async updateVeterinaryProfessionalInfos(id:number, body: UpdateVeterinaryProfessionalInfos) {
+		try {
+
+			return await prisma.veterinary.update({
+				where:{
+					id: id
+				},
+				data:{
+					occupationArea: body.occupationArea,
+					formation: body.formation,
+					institution: body.institution,
+					crmv: body.crmv,
+					startActingDate: body.startActingDate,
+					formationDate: body.formationDate,
+				}
+			})
+
+		} catch (err) {
+
+			if (err instanceof Error) throw new Error(`${err.message}`);
+
 		}
 	}
 
@@ -98,4 +130,38 @@ export default class VeterinaryModel {
 			if (err instanceof Error) throw new Error(`${err.message}`);
 		}
 	}
+
+	async findVeterinarysByEmail(email: string) {
+		try {
+			// prisma.veterinary
+			// 	.findUnique({
+			// 		where: {
+			// 			email: 'dedeco@gmail.com',
+			// 		},
+			// 	})
+			// 	.then((response) => console.log(response));
+			console.log(email);
+
+			return await prisma.veterinary.findUnique({
+				where: {
+					email: email,
+				},
+			});
+		} catch (err) {
+			if (err instanceof Error) throw new Error(`${err.message}`);
+		}
+	}
+
+	async deleteVeterinary(id: number) {
+		try {
+			return await prisma.veterinary.delete({
+				where:{
+					id: id
+				}
+			})
+		} catch (err) {
+			if (err instanceof Error) throw new Error(`${err.message}`);
+		}
+	}
+
 }

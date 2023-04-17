@@ -1,13 +1,13 @@
 import Message from '../messages/message';
 import VeterinaryModel from '../model/veterinaryModel';
-import ClientModel from '../model/clientModel';
-import specialtiesController from "./specialtiesController";
+import validateSameEmailBetweenClientsAndVeterinarians from '../utils/validateSameEmailBetweenClientsAndVeterinarians';
+import {Prisma} from "@prisma/client";
 
-const clientModel = new ClientModel();
 const veterinaryModel = new VeterinaryModel();
 const messages = new Message();
 
 class VeterinaryController {
+
 	async getAllVeterinarys(filters: {
 		userName: string | null | undefined;
 		speciality: string | null | undefined;
@@ -21,40 +21,58 @@ class VeterinaryController {
 				if (filters.userName) {
 					const name = filters.userName.toLowerCase();
 					response = response.filter((veterinary) => {
-						if (veterinary.userName.toLowerCase().includes(name)) return veterinary;
+						if (veterinary.userName.toLowerCase().includes(name))
+							return veterinary;
 					});
 				}
 				if (filters.speciality) {
 					const speciality = filters.speciality.toLowerCase();
-					response = response.filter((veterinary) => {
-						return veterinary.VeterinaryEspecialities.map(async (veterinarySpeciality) => {
-							const specialityResponse = await specialtiesController.getSpecialityById(veterinarySpeciality.specialitiesId)
-							if (specialityResponse && specialityResponse.name.toLowerCase() === speciality) {
-								console.log(veterinary)
-								return veterinary
-							}
+					// @ts-ignore
+					let filteredVeterinarians = []
+					response.forEach((veterinary) => {
+						veterinary.VeterinaryEspecialities.forEach(veterinarySpeciality => {
+							if (veterinarySpeciality.specialities.name.toLowerCase().includes(speciality.toLowerCase()))
+								filteredVeterinarians.push(veterinary)
+							// return veterinary
 						})
-					});
+					})
+					// @ts-ignore
+					response = filteredVeterinarians
 				}
 				if (filters.animal) {
 					const animal = filters.animal.toLowerCase();
-					response = response.filter((veterinary) => {
-						veterinary.AnimalTypesVetInfos.forEach((animalType) => {
-							if (animalType.animalTypesId === 1) return veterinary;
+					// @ts-ignore
+					let filteredVeterinarians = []
+					response.forEach((veterinary) => {
+						veterinary.PetSpecieVeterinary.forEach((petSpecie) => {
+							if (petSpecie.PetSpecie?.name.toLowerCase().includes(animal.toLowerCase()))
+								filteredVeterinarians.push(veterinary)
 						});
 					});
+					// @ts-ignore
+					response = filteredVeterinarians
 				}
 
+				if (response.length > 0)
+					return {
+						statusCode: 200,
+						veterinarys: response,
+					};
 				return {
-					statusCode: 200,
-					veterinarys: response,
-				};
+					statusCode: 404,
+					message: 'Nenhum veterinário atende aos filtros de pesquisa'
+				}
 			}
 			return {
 				statusCode: 404,
 				message: messages.MESSAGE_ERROR.NOT_FOUND_DB,
 			};
 		} catch (err) {
+			if (err instanceof Prisma.PrismaClientKnownRequestError)
+				return {
+					statusCode: 400,
+					message: err
+				}
 			if (err instanceof Error)
 				return {
 					statusCode: 500,
@@ -71,9 +89,40 @@ class VeterinaryController {
 		}
 	}
 
+	async getVeterinaryByEmail(email: string) {
+		try {
+			if (email === '')
+				return {
+					statusCode: 400,
+					message: messages.MESSAGE_ERROR.REQUIRED_FIELDS,
+				};
+			const foundVeterinary = await veterinaryModel.findVeterinarysByEmail(
+				email
+			);
+			if (foundVeterinary)
+				return {
+					statusCode: 200,
+					veterinary: foundVeterinary,
+				};
+			return {
+				statusCode: 404,
+				message: messages.MESSAGE_ERROR.NOT_FOUND_DB,
+			};
+		} catch (err) {
+			if (err instanceof Error)
+				return {
+					statusCode: 500,
+					message: JSON.parse(err.message),
+				};
+			return {
+				statusCode: 500,
+				message: new Message().MESSAGE_ERROR.INTERNAL_ERROR_DB,
+			};
+		}
+	}
+
 	async createVeterinary(infos: createVeterinaryController) {
 		try {
-			// TODO: VALIDAR O EMAIL EM USO
 			const veterinarysWithSameCrmv =
 				await veterinaryModel.findVeterinarysByCrmv(infos.crmv);
 			if (veterinarysWithSameCrmv && veterinarysWithSameCrmv.length > 0)
@@ -82,6 +131,15 @@ class VeterinaryController {
 					message: {
 						error: 'CRMV já está em uso',
 					},
+				};
+
+			const usersWithSameEmail =
+				await validateSameEmailBetweenClientsAndVeterinarians(infos.email);
+
+			if (usersWithSameEmail !== undefined && usersWithSameEmail.length > 0)
+				return {
+					statusCode: 400,
+					message: 'E-mail já está em uso',
 				};
 
 			const veterinary: createVeterinaryModel = {
@@ -121,6 +179,80 @@ class VeterinaryController {
 				statusCode: 500,
 				message: messages.MESSAGE_ERROR.INTERNAL_ERROR_DB,
 			};
+		}
+	}
+
+	async updateVeterinaryProfessionalInfos(id: number, body: UpdateVeterinaryProfessionalInfos) {
+		try {
+
+			const response = await veterinaryModel.updateVeterinaryProfessionalInfos(id, body)
+
+			if (response)
+				return {message: response, statusCode: 200}
+			else
+				return {statusCode: 404, message: new Message().MESSAGE_ERROR.NOT_FOUND_DB}
+
+
+		} catch (err) {
+			if (err instanceof Error)
+				return {
+					statusCode: 500,
+					message: JSON.parse(err.message),
+				};
+			else
+				return {
+					statusCode: 500,
+					message: new Message().MESSAGE_ERROR.INTERNAL_ERROR_DB,
+				};
+		}
+	}
+
+	async updateVeterinaryPersonalInfos(id: number, body: UpdateVeterinaryPersonalInfos) {
+		try {
+
+			const response = await veterinaryModel.updateVeterinaryPersonalInfos(id, body)
+
+			if (response)
+				return {message: response, statusCode: 200}
+			else
+				return {statusCode: 404, message: new Message().MESSAGE_ERROR.NOT_FOUND_DB}
+
+
+		} catch (err) {
+			if (err instanceof Error)
+				return {
+					statusCode: 500,
+					message: JSON.parse(err.message),
+				};
+			else
+				return {
+					statusCode: 500,
+					message: new Message().MESSAGE_ERROR.INTERNAL_ERROR_DB,
+				};
+		}
+	}
+
+	async deleteVeterinary(id: number) {
+		try {
+
+			const response = await veterinaryModel.deleteVeterinary(id)
+
+			if (response)
+				return {message: messages.MESSAGE_SUCESS.DELETE_ITEM, statusCode: 200}
+			else
+				return {statusCode: 404, message: new Message().MESSAGE_ERROR.NOT_FOUND_DB}
+
+		} catch (err) {
+			if (err instanceof Error)
+				return {
+					statusCode: 500,
+					message: JSON.parse(err.message),
+				};
+			else
+				return {
+					statusCode: 500,
+					message: new Message().MESSAGE_ERROR.INTERNAL_ERROR_DB,
+				};
 		}
 	}
 }

@@ -1,16 +1,23 @@
 import Message from '../messages/message';
 import SpecialitiesModel from '../model/specialitiesModel';
+import removeDuplicates from '../utils/removeDuplicates';
 
 const specialitiesModel = new SpecialitiesModel();
 const message = new Message();
 
 class SpecialtiesController {
-	async createSpecialties(specialities: {name: string}[]) {
+	async createSpecialties(specialities: { name: string }[]) {
 		try {
-			const existentSpecialities = await specialitiesModel.findAllSpecialities();
-			const nonExistentSpecialities = specialities.filter((speciality) => {
+			const specialitiesArray: { name: string }[] =
+				removeDuplicates(specialities);
+			const existentSpecialities =
+				await specialitiesModel.findAllSpecialities();
+			const nonExistentSpecialities = specialitiesArray.filter((speciality) => {
 				return !existentSpecialities.find((existentSpeciality) => {
-					return existentSpeciality.name.toLowerCase() === speciality.name.toLowerCase();
+					return (
+						existentSpeciality.name.toLowerCase() ===
+						speciality.name.toLowerCase()
+					);
 				});
 			});
 
@@ -21,7 +28,10 @@ class SpecialtiesController {
 				if (createSpecialties)
 					return {
 						statusCode: 201,
-						message: createSpecialties,
+						message: {
+							response: createSpecialties,
+							createdSpecialities: nonExistentSpecialities,
+						},
 					};
 				return {
 					statusCode: 400,
@@ -30,24 +40,40 @@ class SpecialtiesController {
 			}
 			return {
 				statusCode: 400,
-				message: 'As especialidades já existem no banco de dados'
-			}
+				message: 'As especialidades já existem no banco de dados',
+			};
 		} catch (err) {
 			console.log(err);
+			if (err instanceof Error)
+				return {
+					statusCode: 500,
+					message: {
+						message: message.MESSAGE_ERROR.INTERNAL_ERROR_DB,
+						error: err.message,
+					},
+				};
 			return {
 				statusCode: 500,
 				message: message.MESSAGE_ERROR.INTERNAL_ERROR_DB,
 			};
 		}
 	}
+
 	async getSpecialityById(id: number) {
 		try {
-			const response = await specialitiesModel.findSpecialityById(id)
-			if (response)
-				return response
-			return null
+			const response = await specialitiesModel.findSpecialityById(id);
+			if (response) return response;
+			return null;
 		} catch (err) {
-			throw new Error(`${err}`)
+			if (err instanceof Error)
+				return {
+					statusCode: 500,
+					message: JSON.parse(err.message),
+				};
+			return {
+				statusCode: 500,
+				message: message.MESSAGE_ERROR.INTERNAL_ERROR_DB,
+			};
 		}
 	}
 }

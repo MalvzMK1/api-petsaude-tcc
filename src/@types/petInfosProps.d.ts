@@ -1,12 +1,10 @@
-import { PetGenderEnum, PetSizeEnum } from '@prisma/client';
-
 type CreatePetInfosModelProps = {
 	name: string;
 	birthDate: Date;
 	photo: string;
 	microship: boolean;
-	size: PetSizeEnum;
-	gender: PetGenderEnum;
+	size: PetSize;
+	gender: PetGender;
 	specieId: number;
 	ownerId: number;
 };
@@ -16,8 +14,8 @@ type PetInfosControllerProps = {
 	birthDate: string;
 	photo: string;
 	microship: boolean;
-	size: PetSizeEnum;
-	gender: PetGenderEnum;
+	size: string;
+	gender: string;
 	specie: string;
 	ownerID: number;
 };
@@ -27,8 +25,23 @@ type UpdatePetInfosModelProps = {
 	birthDate: Date;
 	photo: string;
 	microship: boolean;
-	size: PetSizeEnum;
-	gender: PetGenderEnum;
+	size: PetSize;
+	gender: PetGender;
 	specieId: number;
 	ownerId: number;
 };
+
+enum EnumPetSize {
+	BIG = 'BIG',
+	MEDIUM = 'MEDIUM',
+	SMALL = 'SMALL',
+}
+
+type PetSize = keyof typeof EnumPetSize;
+
+enum EnumPetGender {
+	F = 'F',
+	M = 'M',
+}
+
+type PetGender = keyof typeof EnumPetGender;

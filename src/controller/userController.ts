@@ -1,7 +1,9 @@
 import Message from '../messages/message';
 import ClientModel from '../model/clientModel';
+import validateSameCpfBetweenClientsAndVeterinarians from '../utils/validateSameCpfBetweenClientsAndVeterinarians';
+import validateSameEmailBetweenClientsAndVeterinarians from '../utils/validateSameEmailBetweenClientsAndVeterinarians';
 
-const userModel = new ClientModel();
+const clientModel = new ClientModel();
 const message = new Message();
 
 class ClientController {
@@ -11,30 +13,26 @@ class ClientController {
 			const complement = userInfos.address.complement
 				? userInfos.address.complement
 				: '';
-			const users = await userModel.findAllClients();
 
-			if (users) {
-				const usersWithSameEmail = users.filter((user) => {
-					return user.email === userInfos.email;
-				});
-				if (usersWithSameEmail.length > 0)
-					return {
-						statusCode: 400,
-						message: {
-							error: 'E-mail já está em uso',
-						},
-					};
-				const usersWithSameCpf = users.filter((user) => {
-					return user.cpf === userInfos.cpf;
-				});
-				if (usersWithSameCpf.length > 0)
-					return {
-						statusCode: 400,
-						message: {
-							error: 'O CPF já está em uso',
-						},
-					};
-			}
+			console.log(userInfos.cpf);
+
+			const usersWithSameEmail =
+				await validateSameEmailBetweenClientsAndVeterinarians(userInfos.email);
+			if (usersWithSameEmail !== undefined && usersWithSameEmail.length > 0)
+				return {
+					statusCode: 400,
+					message: 'E-mail já está em uso',
+				};
+
+			const usersWithSameCpf =
+				await validateSameCpfBetweenClientsAndVeterinarians(userInfos.cpf);
+			if (usersWithSameCpf !== undefined && usersWithSameCpf.length > 0)
+				return {
+					statusCode: 400,
+					message: 'CPF já está em uso',
+				};
+
+			console.log(usersWithSameEmail);
 
 			const userInfosToCreate: CreateUserInfosModelProps = {
 				personName: userInfos.personName,
@@ -49,7 +47,8 @@ class ClientController {
 					number: userInfos.address.number,
 				},
 			};
-			const createdUser = await userModel.createClient(userInfosToCreate);
+
+			const createdUser = await clientModel.createClient(userInfosToCreate);
 			if (createdUser)
 				return {
 					statusCode: 201,
@@ -60,7 +59,11 @@ class ClientController {
 				message: message.MESSAGE_ERROR.REQUIRED_FIELDS,
 			};
 		} catch (err) {
-			console.log(err);
+			if (err instanceof Error)
+				return {
+					statusCode: 500,
+					message: JSON.parse(err.message),
+				};
 			return {
 				statusCode: 500,
 				message: message.MESSAGE_ERROR.INTERNAL_ERROR_DB,
@@ -70,7 +73,7 @@ class ClientController {
 
 	async getUserById(userID: number) {
 		try {
-			const userInfos = await userModel.findClientById(userID);
+			const userInfos = await clientModel.findClientById(userID);
 
 			if (!userInfos) {
 				return {
@@ -84,7 +87,11 @@ class ClientController {
 				message: userInfos,
 			};
 		} catch (err) {
-			console.log(err);
+			if (err instanceof Error)
+				return {
+					statusCode: 500,
+					message: JSON.parse(err.message),
+				};
 			return {
 				statusCode: 500,
 				message: message.MESSAGE_ERROR.INTERNAL_ERROR_DB,
@@ -94,7 +101,7 @@ class ClientController {
 
 	async getUserByEmail(userEmail: string) {
 		try {
-			const userInfos = await userModel.findClientByEmail(userEmail);
+			const userInfos = await clientModel.findClientByEmail(userEmail);
 
 			if (userInfos.length > 0)
 				return {
@@ -106,16 +113,21 @@ class ClientController {
 				message: message.MESSAGE_ERROR.NOT_FOUND_DB,
 			};
 		} catch (err) {
+			if (err instanceof Error)
+				return {
+					statusCode: 500,
+					message: JSON.parse(err.message),
+				};
 			return {
 				statusCode: 500,
-				message: `${err}`,
+				message: message.MESSAGE_ERROR.INTERNAL_ERROR_DB,
 			};
 		}
 	}
 
 	async getAllUsers() {
 		try {
-			const getUsers = await userModel.findAllClients();
+			const getUsers = await clientModel.findAllClients();
 
 			if (!getUsers) {
 				return {
@@ -128,7 +140,11 @@ class ClientController {
 					message: getUsers,
 				};
 		} catch (err) {
-			console.log(err);
+			if (err instanceof Error)
+				return {
+					statusCode: 500,
+					message: JSON.parse(err.message),
+				};
 			return {
 				statusCode: 500,
 				message: message.MESSAGE_ERROR.INTERNAL_ERROR_DB,
@@ -138,7 +154,7 @@ class ClientController {
 
 	async updateUser(userID: number, userInfos: UpdateUserInfosProps) {
 		try {
-			const updatedUser = await userModel.updateClient(userID, userInfos);
+			const updatedUser = await clientModel.updateClient(userID, userInfos);
 			if (updatedUser)
 				return {
 					statusCode: 204,
@@ -149,7 +165,11 @@ class ClientController {
 				message: message.MESSAGE_ERROR.INTERNAL_ERROR_DB,
 			};
 		} catch (err) {
-			console.log(err);
+			if (err instanceof Error)
+				return {
+					statusCode: 500,
+					message: JSON.parse(err.message),
+				};
 			return {
 				statusCode: 500,
 				message: message.MESSAGE_ERROR.INTERNAL_ERROR_DB,
@@ -159,9 +179,9 @@ class ClientController {
 
 	async deleteUser(userID: number) {
 		try {
-			const user = await userModel.findClientById(userID);
+			const user = await clientModel.findClientById(userID);
 			if (user) {
-				const userDelete = await userModel.deleteClient(userID);
+				const userDelete = await clientModel.deleteClient(userID);
 				if (!userDelete) {
 					return {
 						statusCode: 500,
@@ -179,7 +199,11 @@ class ClientController {
 				message: message.MESSAGE_ERROR.NOT_FOUND_DB,
 			};
 		} catch (err) {
-			console.log(err);
+			if (err instanceof Error)
+				return {
+					statusCode: 500,
+					message: JSON.parse(err.message),
+				};
 			return {
 				statusCode: 500,
 				message: message.MESSAGE_ERROR.INTERNAL_ERROR_DB,

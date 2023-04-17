@@ -64,6 +64,27 @@ type UpdateVeterinaryProps = {
 	bio: string;
 };
 
+type UpdateVeterinaryPersonalInfos = {
+	personName: string;
+	cpf: string;
+	email: string;
+	password: string;
+	cellphoneNumber: string;
+	rg: string;
+	phoneNumber: string | null;
+	profilePhoto: string | null;
+	profileBannerPhoto: string | null;
+}
+
+type UpdateVeterinaryProfessionalInfos = {
+	occupationArea: string;
+	formation: string;
+	institution: string;
+	crmv: string;
+	startActingDate: string;
+	formationDate: string;
+}
+
 type UpdateSpecialities = {
 	id: number;
 	name: string;
