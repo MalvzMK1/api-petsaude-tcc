@@ -4,6 +4,7 @@ import appointmentModel from "../model/appointmentModel";
 import {parse} from "date-fns";
 import transformDateTimeStringIntoDate from "../utils/transformDateTimeStringIntoDate";
 import {Appointment, Prisma} from "@prisma/client";
+import PetModel from "../model/petModel";
 
 const timeZone = 'America/Sao_Paulo'
 
@@ -14,6 +15,8 @@ class AppointmentController {
 				return {statusCode: 404, message: 'O cliente não existe'}
 			if (!await validateIfVeterinaryExists(infos.veterinaryId))
 				return {statusCode: 404, message: 'O veterinário não existe'}
+			if (!await validateIfPetExists(infos.petId))
+				return {statusCode: 404, message: 'O pet não existe'}
 
 			const appointmentDate = parse(infos.date, 'dd-MM-yyyy', new Date())
 			if (appointmentDate.toString().toLowerCase() === 'invalid date')
@@ -21,8 +24,7 @@ class AppointmentController {
 					statusCode: 400,
 					message: 'Formato de data incorreto, espera-se um formato dd-MM-yyyy'
 				}
-
-
+			
 			if (parse(infos.startsAt, 'dd-MM-yyyy HH:mm:ss', new Date()).toString().toLowerCase() === 'invalid date')
 				return {
 					statusCode: 400,
@@ -62,6 +64,7 @@ class AppointmentController {
 				veterinaryId: infos.veterinaryId,
 				clientId: infos.clientId,
 				description: infos.description,
+				petId: infos.petId
 			}
 
 			const createdAppointment = await appointmentModel.createAppointment(appointmentInfos)
@@ -133,6 +136,16 @@ async function validateIfVeterinaryExists(veterinaryId: number): Promise<boolean
 	try {
 		const veterinary = await new VeterinaryModel().findVeterinaryById(veterinaryId)
 		return !!veterinary;
+
+	} catch (err) {
+		return false
+	}
+}
+
+async function validateIfPetExists(petId: number): Promise<boolean> {
+	try {
+		const pet = await new PetModel().findPet(petId)
+		return !!pet;
 
 	} catch (err) {
 		return false

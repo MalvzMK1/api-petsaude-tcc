@@ -14,6 +14,7 @@ export default async function appointmentRoutes(fastify: FastifyInstance) {
 					endsAt: z.string(),
 					description: z.string(),
 					veterinaryId: z.number(),
+					petId: z.number()
 				})
 				const jwt: JwtSignUser | null = fastify.jwt.decode(token.split(' ')[1])
 				const infos = bodyParams.parse(request.body)
@@ -63,14 +64,21 @@ export default async function appointmentRoutes(fastify: FastifyInstance) {
 	})
 	fastify.delete('/appointment', {onRequest: authenticate}, async (request, reply) => {
 		try {
+			const jwt = request.headers.authorization
+			const token = jwt?.split(' ')[1]
+
 			const queryParams = z.object({
 				appointmentId: z.string()
 			})
 			const {appointmentId} = queryParams.parse(request.query)
 
-			const response = await appointmentController.deleteAppointment(Number(appointmentId))
-
-			reply.status(response.statusCode).send({response: response.message})
+			if (token) {
+				const decodedToken: JwtSignUser | null = fastify.jwt.decode(token)
+				if (decodedToken) {
+					const response = await appointmentController.deleteAppointment(Number(appointmentId), decodedToken.id)
+					reply.status(response.statusCode).send({response: response.message})
+				}
+			}
 		} catch (err) {
 			if (err instanceof Error) reply.status(400).send({message: JSON.parse(err.message)})
 			reply.status(400).send({message: err})
