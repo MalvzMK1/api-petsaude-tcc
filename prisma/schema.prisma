@@ -2,190 +2,185 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider      = "prisma-client-js"
-  binaryTargets = ["native", "debian-openssl-1.1.x"]
+	provider      = "prisma-client-js"
+	binaryTargets = ["native", "debian-openssl-1.1.x"]
 }
 
 generator erd {
-  provider = "prisma-erd-generator"
+	provider = "prisma-erd-generator"
 }
 
 datasource db {
-  provider = "mysql"
-  url      = env("DATABASE_URL")
+	provider = "mysql"
+	url      = env("DATABASE_URL")
 }
 
 // ************************** COMMON USER **************************
 
 model Client {
-  id                 Int           @id @default(autoincrement())
-  personName         String        @map("person_name")
-  userName           String        @map("user_name")
-  cpf                String        @unique
-  rg                 String?       @unique
-  profilePhoto       String?       @map("profile_photo")
-  profileBannerPhoto String?       @map("profile_banner_photo")
-  email              String        @unique
-  password           String
-  phoneNumber        String?
-  cellphoneNumber    String
-  isVet              Boolean       @default(false)
-  Pet                Pet[]
-  Appointments       Appointment[]
+	id                 Int           @id @default(autoincrement())
+	personName         String        @map("person_name")
+	userName           String        @map("user_name")
+	cpf                String        @unique
+	rg                 String?       @unique
+	profilePhoto       String?       @map("profile_photo")
+	profileBannerPhoto String?       @map("profile_banner_photo")
+	email              String        @unique
+	password           String
+	phoneNumber        String?
+	cellphoneNumber    String
+	isVet              Boolean       @default(false)
+	biography          String?       @db.Text
+	Pet                Pet[]
+	Appointments       Appointment[]
 
-  addressId Int     @unique @map("address_id")
-  Address   Address @relation(fields: [addressId], references: [id])
+	addressId Int     @unique @map("address_id")
+	Address   Address @relation(fields: [addressId], references: [id])
 
-  @@map("tbl_user")
+	@@map("tbl_client")
 }
 
 model Veterinary {
-  id                 Int      @id @default(autoincrement())
-  personName         String   @map("person_name")
-  userName           String   @map("user_name")
-  cpf                String   @unique
-  rg                 String?  @unique
-  profilePhoto       String?  @map("profile_photo")
-  profileBannerPhoto String?  @map("profile_banner_photo")
-  email              String   @unique
-  password           String
-  occupationArea     String   @map("occupation_area")
-  formation          String
-  institution        String
-  crmv               String   @unique
-  formationDate      DateTime @map("formation_date")
-  startActingDate    DateTime @map("start_acting_date")
-  phoneNumber        String?
-  cellphoneNumber    String
-  isVet              Boolean  @default(true)
+	id                 Int      @id @default(autoincrement())
+	personName         String   @map("person_name")
+	userName           String   @map("user_name")
+	cpf                String   @unique
+	rg                 String?  @unique
+	profilePhoto       String?  @map("profile_photo")
+	profileBannerPhoto String?  @map("profile_banner_photo")
+	email              String   @unique
+	password           String
+	occupationArea     String   @map("occupation_area")
+	formation          String
+	institution        String
+	crmv               String   @unique
+	formationDate      DateTime @map("formation_date")
+	startActingDate    DateTime @map("start_acting_date")
+	phoneNumber        String?
+	cellphoneNumber    String
+	isVet              Boolean  @default(true)
+	biography          String?  @db.Text
 
-  AnimalTypesVetInfos     AnimalTypesVetInfos[]
-  VeterinaryEspecialities VeterinarySpecialities[]
-  Appointments            Appointment[]
+	PetSpecieVeterinary     PetSpecieVeterinary[]
+	VeterinaryEspecialities VeterinarySpecialities[]
+	Appointments            Appointment[]
 
-  addressId Int     @unique @map("address_id")
-  Address   Address @relation(fields: [addressId], references: [id])
+	addressId Int     @unique @map("address_id")
+	Address   Address @relation(fields: [addressId], references: [id])
 
-  @@map("tbl_veterinary")
+	@@map("tbl_veterinary")
 }
 
 // ************************** VET INFOS **************************
 
-model AnimalTypesVetInfos {
-  id Int @id @default(autoincrement())
+model PetSpecieVeterinary {
+	id Int @id @default(autoincrement())
 
-  animalTypesId Int         @map("animal_type_id")
-  animalTypes   AnimalTypes @relation(fields: [animalTypesId], references: [id])
-  veterinaryId  Int?        @map("veterinary_id")
-  Veterinary    Veterinary? @relation(fields: [veterinaryId], references: [id])
+	petSpecieId 	Int? 				@map("pet_specie_id")
+	PetSpecie 		PetSpecie? 	@relation(fields: [petSpecieId], references: [id])
+	veterinaryId  Int?        @map("veterinary_id")
+	Veterinary    Veterinary? @relation(fields: [veterinaryId], references: [id])
 
-  @@map("tbl_animal_type_vet_infos")
+	@@map("tbl_pet_specie_veterinary")
 }
 
 model VeterinarySpecialities {
-  id             Int          @id @default(autoincrement())
-  specialitiesId Int          @map("specialities_id")
-  specialities   Specialities @relation(fields: [specialitiesId], references: [id])
-  veterinaryId   Int?         @map("veterinary_id")
-  Veterinary     Veterinary?  @relation(fields: [veterinaryId], references: [id])
+	id             Int          @id @default(autoincrement())
+	specialitiesId Int          @map("specialities_id")
+	specialities   Specialities @relation(fields: [specialitiesId], references: [id])
+	veterinaryId   Int?         @map("veterinary_id")
+	Veterinary     Veterinary?  @relation(fields: [veterinaryId], references: [id])
 
-  @@map("tbl_veterinary_specialities")
+	@@map("tbl_veterinary_specialities")
 }
 
 model Specialities {
-  id                      Int                      @id @default(autoincrement())
-  name                    String
-  VeterinaryEspecialities VeterinarySpecialities[]
+	id                      Int                      @id @default(autoincrement())
+	name                    String
+	VeterinaryEspecialities VeterinarySpecialities[]
 
-  @@map("tbl_specialities")
-}
-
-model AnimalTypes {
-  id                  Int                   @id @default(autoincrement())
-  name                String
-  AnimalTypesVetInfos AnimalTypesVetInfos[]
-
-  @@map("tbl_animal_type")
+	@@map("tbl_specialities")
 }
 
 // ************************** ADDRESS **************************
 
 model Address {
-  id         Int     @id @default(autoincrement())
-  cep        String
-  complement String?
-  number     String
+	id         Int     @id @default(autoincrement())
+	cep        String
+	complement String?
+	number     String
 
-  Client     Client[]
-  Veterinary Veterinary[]
+	Client     Client[]
+	Veterinary Veterinary[]
 
-  @@map("tbl_address")
+	@@map("tbl_address")
 }
 
 // ************************** PET INFOS **************************
 
 model Pet {
-  id        Int           @id @default(autoincrement())
-  name      String
-  birthDate DateTime      @map("birth_date")
-  photo     String?
-  microship Boolean
-  petSize   PetSizeEnum   @map("pet_size")
-  petGender PetGenderEnum @map("pet_gender")
+	id        Int           @id @default(autoincrement())
+	name      String
+	birthDate DateTime      @map("birth_date")
+	photo     String?
+	microship Boolean
+	petSize   PetSizeEnum   @map("pet_size")
+	petGender PetGenderEnum @map("pet_gender")
 
-  petSpecieId Int       @map("pet_specie_id")
-  petSpecie   PetSpecie @relation(fields: [petSpecieId], references: [id])
+	petSpecieId Int       @map("pet_specie_id")
+	petSpecie   PetSpecie @relation(fields: [petSpecieId], references: [id])
 
-  ownerId Int    @map("owner_id")
-  Owner   Client @relation(fields: [ownerId], references: [id])
+	ownerId Int    @map("owner_id")
+	Owner   Client @relation(fields: [ownerId], references: [id])
 
-  @@map("tbl_pet")
+	@@map("tbl_pet")
 }
 
 enum PetSizeEnum {
-  BIG
-  MEDIUM
-  SMALL
+	BIG
+	MEDIUM
+	SMALL
 
-  @@map("tbl_pet_size")
+	@@map("tbl_pet_size")
 }
 
 enum PetGenderEnum {
-  M
-  F
+	M
+	F
 
-  @@map("tbl_pet_gender")
+	@@map("tbl_pet_gender")
 }
 
 model PetSpecie {
-  id   Int    @id @default(autoincrement())
-  name String
-  Pet  Pet[]
+	id   Int    @id @default(autoincrement())
+	name String
+	Pet  Pet[]
+	PetSpecieVeterinary PetSpecieVeterinary[]
 
-  @@map("tbl_pet_specie")
+	@@map("tbl_pet_specie")
 }
 
 model Appointment {
-  id          Int      @id @default(autoincrement())
-  description String
-  status      Status   @default(WAITING_CONFIRMATION)
-  date        DateTime @db.Date
-  startsAt    DateTime @map("starts_at") @db.Time()
-  endsAt      DateTime @map("ends_at") @db.Time()
+	id          Int      @id @default(autoincrement())
+	description String   @db.Text
+	status      Status   @default(WAITING_CONFIRMATION)
+	date        DateTime @db.Date
+	startsAt    DateTime @map("starts_at") @db.Time()
+	endsAt      DateTime @map("ends_at") @db.Time()
 
-  clientId     Int?        @map("client_id")
-  Client       Client?     @relation(fields: [clientId], references: [id])
-  veterinaryId Int?        @map("veterinary_id")
-  Veterinary   Veterinary? @relation(fields: [veterinaryId], references: [id])
+	clientId     Int?        @map("client_id")
+	Client       Client?     @relation(fields: [clientId], references: [id])
+	veterinaryId Int?        @map("veterinary_id")
+	Veterinary   Veterinary? @relation(fields: [veterinaryId], references: [id])
 
-  @@map("tbl_appointment")
+	@@map("tbl_appointment")
 }
 
 enum Status {
-  CONCLUDED
-  SCHEDULED
-  WAITING_CONFIRMATION
-  CANCELED
+	CONCLUDED
+	SCHEDULED
+	WAITING_CONFIRMATION
+	CANCELED
 
-  @@map("tbl_status")
+	@@map("tbl_status")
 }

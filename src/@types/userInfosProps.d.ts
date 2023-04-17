@@ -40,7 +40,7 @@ type postPhoneUser = {
 	number: string;
 };
 
-type jwtSignUser = {
+type JwtSignUser = {
 	id: number;
 	userName: string;
 	email: string;

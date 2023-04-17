@@ -40,6 +40,7 @@ export default class ClientModel {
 						},
 					},
 					Address: true,
+					Appointments: true
 				},
 			});
 		} catch (err) {
@@ -60,6 +61,7 @@ export default class ClientModel {
 						},
 					},
 					Address: true,
+					Appointments: true
 				},
 			});
 		} catch (err) {

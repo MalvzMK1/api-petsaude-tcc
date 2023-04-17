@@ -4,7 +4,6 @@ import { z } from 'zod';
 import Messages from '../messages/message';
 import AddressController from '../controller/addressController';
 
-const messages = new Messages();
 const addressController = new AddressController();
 
 export default async function addressRoutes(fastify: FastifyInstance) {
@@ -12,37 +11,31 @@ export default async function addressRoutes(fastify: FastifyInstance) {
 		'/address',
 		{ onRequest: authenticate },
 		async (request, reply) => {
-			const bodyParams = z.object({
-				zipCode: z.string(),
-				complement: z.string(),
-				number: z.string(),
-			});
-			const queryParams = z.object({
-				addressID: z.string(),
-			});
-			const rawBody = request.body;
-			if (JSON.stringify(rawBody) === '{}')
-				reply.status(400).send(new Messages().MESSAGE_ERROR.EMPTY_BODY);
-
 			try {
-				bodyParams.parse(request.body);
-			} catch (error) {
+				const bodyParams = z.object({
+					zipCode: z.string(),
+					complement: z.string(),
+					number: z.string(),
+				});
+				const queryParams = z.object({
+					addressID: z.string(),
+				});
+
+				const body: AddressUpdateControllerProps = bodyParams.parse(request.body);
+				const {addressID} = queryParams.parse(request.query);
+
+				const updatedAddress = await addressController.updateAddress(
+					parseInt(addressID),
+					body
+				);
+
 				reply
-					.status(400)
-					.send({ message: messages.MESSAGE_ERROR.TYPES_DOESNT_MATCH });
+					.status(updatedAddress.statusCode)
+					.send({message: updatedAddress.message});
+			} catch (err) {
+				if (err instanceof Error) reply.status(404).send({message: JSON.parse(err.message)})
+				else reply.status(404).send({message: 'Campos inválidos'})
 			}
-
-			const body: AddressUpdateControllerProps = bodyParams.parse(request.body);
-			const { addressID } = queryParams.parse(request.query);
-
-			const updatedAddress = await addressController.updateAddress(
-				parseInt(addressID),
-				body
-			);
-
-			reply
-				.status(updatedAddress.statusCode)
-				.send({ message: updatedAddress.message });
 		}
 	);
 }
