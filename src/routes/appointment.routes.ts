@@ -75,7 +75,7 @@ export default async function appointmentRoutes(fastify: FastifyInstance) {
 			if (token) {
 				const decodedToken: JwtSignUser | null = fastify.jwt.decode(token)
 				if (decodedToken) {
-					const response = await appointmentController.deleteAppointment(Number(appointmentId), decodedToken.id)
+					const response = await appointmentController.deleteAppointment(Number(appointmentId))
 					reply.status(response.statusCode).send({response: response.message})
 				}
 			}

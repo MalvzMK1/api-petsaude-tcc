@@ -25,7 +25,7 @@ class SpecialtiesPetController {
 
 			if (nonExistentPetSpecialities.length > 0) {
 				const createPetSpecialties =
-					await specialtiesPetModel.createPetSpecialties(
+					await specialtiesPetModel.createPetSpecies(
 						nonExistentPetSpecialities
 					);
 				if (createPetSpecialties)

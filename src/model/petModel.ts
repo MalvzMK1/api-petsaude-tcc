@@ -59,12 +59,14 @@ export default class PetModel {
 
 	async deletePet(petID: number) {
 		try {
+			await prisma.appointment.deleteMany({
+				where: {
+					petId: petID
+				}
+			})
 			return prisma.pet.delete({
 				where: {
 					id: petID,
-				},
-				include: {
-					petSpecie: true,
 				},
 			});
 		} catch (err) {
