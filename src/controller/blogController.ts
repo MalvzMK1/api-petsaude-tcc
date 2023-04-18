@@ -54,6 +54,54 @@ class BlogController {
 			};
 		}
 	}
+	async getAllPosts() {
+		try {
+			const getPost = await blogModel.getAllPosts()
+			if (getPost)
+				return {
+					statusCode: 201,
+					message: getPost,
+				}
+			return {
+				statusCode: 400,
+				message: message.MESSAGE_ERROR.REQUIRED_FIELDS,
+			};
+		} catch (err) {
+			if (err instanceof Error)
+				return {
+					statusCode: 500,
+					message: JSON.parse(err.message),
+				};
+			return {
+				statusCode: 500,
+				message: message.MESSAGE_ERROR.INTERNAL_ERROR_DB,
+			};
+		}
+	}
+	async deletePost(id: number) {
+		try {
+			const deletePost = await blogModel.deletePost(id)
+			if (deletePost)
+				return {
+					statusCode: 201,
+					message: "Post excluido com sucesso",
+				}
+			return {
+				statusCode: 400,
+				message: message.MESSAGE_ERROR.REQUIRED_FIELDS,
+			};
+		} catch (err) {
+			if (err instanceof Error)
+				return {
+					statusCode: 500,
+					message: JSON.parse(err.message),
+				};
+			return {
+				statusCode: 500,
+				message: message.MESSAGE_ERROR.INTERNAL_ERROR_DB,
+			};
+		}
+	}
 }
 
 export default new BlogController()

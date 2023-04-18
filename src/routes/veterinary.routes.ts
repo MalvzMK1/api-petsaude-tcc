@@ -134,21 +134,17 @@ export default async function veterinaryRoutes(fastify: FastifyInstance) {
 					profilePhoto: z.string().nullable(),
 					profileBannerPhoto: z.string().nullable(),
 				})
+				const body = bodyParams.parse(req.body);
 
 				const queryParams = z.object({ id: z.string() });
-
-				const body = bodyParams.parse(req.body);
 				const { id } = queryParams.parse(req.params);
 
-				if (id != null && id != undefined) {
-					const updateVeterinary =
-						await veterinaryController.updateVeterinaryPersonalInfos(
-							parseInt(id),
-							body
-						);
 
-					res.status(200).send(updateVeterinary.message);
-				} else res.status(400).send(new Messages().MESSAGE_ERROR.REQUIRED_ID);
+				if (!id) res.status(400).send({ message: 'Required ID' });
+
+				const updateVeterinary = await veterinaryController.updateVeterinaryPersonalInfos(parseInt(id),body);
+
+				res.status(200).send(updateVeterinary.message);
 			} catch (err) {
 				if (err instanceof Error)
 					res.status(400).send({ response: JSON.parse(err.message) });
