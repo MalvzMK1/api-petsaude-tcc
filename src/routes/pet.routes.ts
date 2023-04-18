@@ -16,10 +16,10 @@ export default async function petRoutes(fastify: FastifyInstance) {
 			const controllerResponse = await petController.getPetById(
 				parseInt(petID)
 			);
-
 			reply
 				.status(controllerResponse.statusCode)
 				.send({message: controllerResponse});
+				
 		} catch (err) {
 			if (err instanceof Error)
 				reply.status(400).send({message: JSON.parse(err.message)});
