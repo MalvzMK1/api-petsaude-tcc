@@ -64,6 +64,7 @@ model Veterinary {
   PetSpecieVeterinary     PetSpecieVeterinary[]
   VeterinaryEspecialities VeterinarySpecialities[]
   Appointments            Appointment[]
+  posts                   Blog[]
 
   addressId Int     @unique @map("address_id")
   Address   Address @relation(fields: [addressId], references: [id])
@@ -159,6 +160,18 @@ model PetSpecie {
   PetSpecieVeterinary PetSpecieVeterinary[]
 
   @@map("tbl_pet_specie")
+}
+
+model Blog {
+  id    Int     @id @default(autoincrement())
+  title String 
+  text  String  @db.Text
+  image String?
+
+  veterinaryId Int @map("veterinary_id")
+  veterinary   Veterinary @relation(fields: [veterinaryId], references: [id])
+
+  @@map("tbl_blog")
 }
 
 model Appointment {

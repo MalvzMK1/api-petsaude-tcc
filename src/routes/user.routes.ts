@@ -2,10 +2,8 @@ import {FastifyInstance} from 'fastify';
 import userController from '../controller/userController';
 import authenticate from '../middlewares/authenticate';
 import {z} from 'zod';
-import Message from '../messages/message';
 import Messages from '../messages/message';
 
-const message = new Message();
 
 export default async function userRoutes(fastify: FastifyInstance) {
 	fastify.post('/client', async (request, reply) => {
