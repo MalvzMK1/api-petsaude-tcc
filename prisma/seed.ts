@@ -29,7 +29,7 @@ async function main() {
 					photo:
 						'https://loucosporbichos.com.br/wp-content/uploads/2023/02/pastor-alemao.jpg',
 					microship: false,
-					petSize: 'MEDIUM',
+					petSize: 'BIG',
 					petGender: 'M',
 					petSpecie: {
 						create: {
@@ -136,7 +136,7 @@ async function main() {
 			personName: 'Will Ramos',
 			userName: 'willCore',
 			cpf: '321.123.654-78',
-			rg: '123.123.123-12',
+			rg: '23.123.123-12',
 			email: 'willramos@gmail.com',
 			password: 'lorna321',
 			phoneNumber: '',
