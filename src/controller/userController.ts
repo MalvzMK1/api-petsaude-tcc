@@ -1,9 +1,11 @@
 import Message from '../messages/message';
 import ClientModel from '../model/clientModel';
-import validateSameCpfBetweenClientsAndVeterinarians from '../utils/validateSameCpfBetweenClientsAndVeterinarians';
-import validateSameEmailBetweenClientsAndVeterinarians from '../utils/validateSameEmailBetweenClientsAndVeterinarians';
+import {
+	validateIfClientExists,
+	validateSameCpfBetweenClientsAndVeterinarians,
+	validateSameEmailBetweenClientsAndVeterinarians
+} from '../utils/validateExistentRegisters'
 import {Prisma} from "@prisma/client";
-import {validateIfClientExists} from "../utils/validateExistentRegisters";
 
 const clientModel = new ClientModel();
 const message = new Message();
@@ -33,7 +35,7 @@ class ClientController {
 					statusCode: 400,
 					message: 'CPF já está em uso',
 				};
-
+			
 			console.log(usersWithSameEmail);
 
 			const userInfosToCreate: CreateUserInfosModelProps = {
@@ -186,7 +188,7 @@ class ClientController {
 
 	async updateClientProfileInfos(clientID: number, clientInfos: UpdateClientProfileInfosProps) {
 		try {
-			if (!validateIfClientExists(clientID))
+			if (!await validateIfClientExists(clientID))
 				return {
 					statusCode: 404,
 					message: 'O cliente não existe no banco de dados'

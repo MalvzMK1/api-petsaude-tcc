@@ -31,6 +31,5 @@ fastify.register(appointmentRoutes);
 
 const port = process.env.PORT || 8080;
 
-fastify.listen({port: 8080});
-
-export default fastify;
+// @ts-ignore
+fastify.listen({port});
