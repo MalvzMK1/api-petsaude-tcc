@@ -67,6 +67,7 @@ model Veterinary {
 
 	addressId Int     @unique @map("address_id")
 	Address   Address @relation(fields: [addressId], references: [id])
+	Posts     Post[]
 
 	@@map("tbl_veterinary")
 }
@@ -177,6 +178,17 @@ model Appointment {
 	pet          Pet        @relation(fields: [petId], references: [id])
 
 	@@map("tbl_appointment")
+}
+
+model Post {
+	id           Int        @id @default(autoincrement())
+	title        String     @db.VarChar(50)
+	text         String     @db.VarChar(1000)
+	image        String?
+	veterinaryId Int        @map("veterinary_id")
+	veterinary   Veterinary @relation(fields: [veterinaryId], references: [id])
+
+	@@map("tbl_post")
 }
 
 enum Status {
