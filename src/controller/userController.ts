@@ -6,6 +6,7 @@ import {
 	validateSameEmailBetweenClientsAndVeterinarians
 } from '../utils/validateExistentRegisters'
 import {Prisma} from "@prisma/client";
+import bcrypt from "../lib/bcrypt";
 
 const clientModel = new ClientModel();
 const message = new Message();
@@ -17,8 +18,6 @@ class ClientController {
 			const complement = userInfos.address.complement
 				? userInfos.address.complement
 				: '';
-
-			console.log(userInfos.cpf);
 
 			const usersWithSameEmail =
 				await validateSameEmailBetweenClientsAndVeterinarians(userInfos.email);
@@ -35,8 +34,8 @@ class ClientController {
 					statusCode: 400,
 					message: 'CPF já está em uso',
 				};
-			
-			console.log(usersWithSameEmail);
+
+			const hashedpassword = await bcrypt.hash(userInfos.password, 10)
 
 			const userInfosToCreate: CreateUserInfosModelProps = {
 				personName: userInfos.personName,
@@ -44,7 +43,7 @@ class ClientController {
 				phoneNumber: phoneNumber,
 				cpf: userInfos.cpf,
 				email: userInfos.email,
-				password: userInfos.password,
+				password: hashedpassword,
 				address: {
 					zipCode: userInfos.address.zipCode,
 					complement: complement,

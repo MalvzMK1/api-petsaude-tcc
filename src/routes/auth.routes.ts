@@ -1,13 +1,14 @@
-import { FastifyInstance } from 'fastify';
-import { z } from 'zod';
+import {FastifyInstance} from 'fastify';
+import {z} from 'zod';
 import authenticate from '../middlewares/authenticate';
 import userController from '../controller/userController';
 import veterinaryController from '../controller/veterinaryController';
-import { Client, Veterinary } from '@prisma/client';
+import {Client, Veterinary} from '@prisma/client';
+import bcrypt from "../lib/bcrypt";
 
 export default async function authRoutes(fastify: FastifyInstance) {
-	fastify.get('/auth', { onRequest: [authenticate] }, (req) => {
-		return { user: req.user };
+	fastify.get('/auth', {onRequest: [authenticate]}, (req) => {
+		return {user: req.user};
 	});
 
 	fastify.post('/signup', async (request, reply) => {
@@ -19,9 +20,9 @@ export default async function authRoutes(fastify: FastifyInstance) {
 
 			const body = bodyParams.parse(request.body);
 			if (body.email === '' || body.password === '')
-				reply.status(400).send({ message: 'Campos vazios' });
+				reply.status(400).send({message: 'Campos vazios'});
 			if (!body.email.includes('@'))
-				reply.status(400).send({ message: 'E-mail inválido' });
+				reply.status(400).send({message: 'E-mail inválido'});
 
 			const foundClient = await userController.getUserByEmail(body.email);
 			const foundVeterinary = await veterinaryController.getVeterinaryByEmail(
@@ -37,7 +38,7 @@ export default async function authRoutes(fastify: FastifyInstance) {
 			}
 
 			if (user) {
-				if (body.password === user.password) {
+				if (await bcrypt.compare(body.password, user.password)) {
 					const payload: JwtSignUser = {
 						id: user.id,
 						email: user.email,
@@ -55,13 +56,13 @@ export default async function authRoutes(fastify: FastifyInstance) {
 							expiresIn: '7 days',
 						}
 					);
-					reply.status(200).send({ token });
+					reply.status(200).send({token});
 				}
-				reply.status(404).send({ message: 'E-mail ou senha incorretos' });
+				reply.status(404).send({message: 'E-mail ou senha incorretos'});
 			}
 			reply
 				.status(404)
-				.send({ message: 'Nenhum registro encontrado no banco' });
+				.send({message: 'Nenhum registro encontrado no banco'});
 
 			if (body.password === user?.password)
 				if (foundClient.user) {
@@ -91,7 +92,7 @@ export default async function authRoutes(fastify: FastifyInstance) {
 								expiresIn: '7days',
 							}
 						);
-						reply.status(foundClient.statusCode).send({ token });
+						reply.status(foundClient.statusCode).send({token});
 					}
 
 					if (foundVeterinary.veterinary) {
@@ -122,19 +123,19 @@ export default async function authRoutes(fastify: FastifyInstance) {
 									expiresIn: '7days',
 								}
 							);
-							reply.status(foundClient.statusCode).send({ token });
+							reply.status(foundClient.statusCode).send({token});
 						}
 
-						reply.status(400).send({ message: 'E-mail ou senha incorretos' });
+						reply.status(400).send({message: 'E-mail ou senha incorretos'});
 					}
 					reply
 						.status(foundClient.statusCode)
-						.send({ message: 'E-mail ou senha incorretos' });
+						.send({message: 'E-mail ou senha incorretos'});
 				}
 		} catch (err) {
 			if (err instanceof Error)
-				reply.status(400).send({ message: JSON.parse(err.message) });
-			reply.status(400).send({ message: err });
+				reply.status(400).send({message: JSON.parse(err.message)});
+			reply.status(400).send({message: err});
 		}
 	});
 }

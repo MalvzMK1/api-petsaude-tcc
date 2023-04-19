@@ -2,7 +2,7 @@ import Message from '../messages/message';
 import VeterinaryModel from '../model/veterinaryModel';
 import {validateSameEmailBetweenClientsAndVeterinarians} from '../utils/validateExistentRegisters';
 import {Prisma} from "@prisma/client";
-import * as bcrypt from "bcrypt"
+import bcrypt from "../lib/bcrypt";
 
 const veterinaryModel = new VeterinaryModel();
 const messages = new Message();
