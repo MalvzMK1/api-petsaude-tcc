@@ -74,6 +74,28 @@ class AppointmentModel {
 			return null
 		}
 	}
+
+	async getVeterinaryAppointments(veterinaryId: number): Promise<Appointment[] | null> {
+		const appointments = await prisma.appointment.findMany({
+			where: {
+				veterinaryId
+			}
+		})
+
+		if (appointments.length > 0) return appointments
+		return null
+	}
+
+	async getClientAppointments(clientId: number): Promise<Appointment[] | null> {
+		const appointments = await prisma.appointment.findMany({
+			where: {
+				clientId
+			}
+		})
+
+		if (appointments.length > 0) return appointments
+		return null
+	}
 }
 
 export default new AppointmentModel()
