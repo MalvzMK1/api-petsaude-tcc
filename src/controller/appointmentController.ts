@@ -3,7 +3,7 @@ import { parse, isEqual, isSameMinute } from 'date-fns';
 import transformDateTimeStringIntoDate, {
 	transformDateStringIntoDate,
 } from '../utils/transformDateTimeStringIntoDate';
-import { Appointment, Prisma } from '@prisma/client';
+import { Appointment, Prisma, Status } from '@prisma/client';
 import {
 	validateIfClientExists,
 	validateIfPetExists,
@@ -14,6 +14,7 @@ import {
 	petAppointmentsOverlaps,
 	veterinaryAppointmentsOverlaps,
 } from '../utils/validateOverlappingAppointmentDateTimes';
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
 
 class AppointmentController {
 	async createAppointment(infos: AppointmentInfosToBeParsed) {
@@ -92,32 +93,6 @@ class AppointmentController {
 					statusCode: 400,
 					message: 'A data de término não pode ser anterior à data de início',
 				};
-
-			// const veterinaryAppointments =
-			// 	await appointmentModel.getVeterinaryAppointments(infos.veterinaryId);
-
-			// const sameDateAppointment = veterinaryAppointments?.filter(
-			// 	(appointment) => isEqual(appointment.date, appointmentDate)
-			// );
-			// if (sameDateAppointment) {
-			// 	const sameDateTimeAppointment = sameDateAppointment.find(
-			// 		(appointment) => {
-			// 			const appointmentStartsAtTime = `${appointment.startsAt.getHours()}:${appointment.startsAt.getMinutes()}:${
-			// 				appointment.startsAt.getSeconds
-			// 			}`;
-			// 			const appointmentToCreateStartsAtTime = `${appointmentStartsAt.getHours()}:${appointmentStartsAt.getMinutes()}:${
-			// 				appointmentStartsAt.getSeconds
-			// 			}`;
-			// 			return appointmentStartsAtTime === appointmentToCreateStartsAtTime;
-			// 		}
-			// 	);
-
-			// 	if (sameDateTimeAppointment)
-			// 		return {
-			// 			statusCode: 400,
-			// 			message: 'Já existe uma consulta agendada nesse horário',
-			// 		};
-			// }
 
 			const appointmentInfos: AppointmentInfos = {
 				date: appointmentDate,
@@ -221,6 +196,35 @@ class AppointmentController {
 				return { statusCode: 400, message: err };
 			}
 			return { statusCode: 500, message: `Unkown error \n ${err}` };
+		}
+	}
+
+	async updateAppointmentStatus(appointmentId: number, status: string) {
+		try {
+			let parsedStatus: Status;
+			switch (status) {
+				case 'WAITING_CONFIRMATION':
+					status = 'WAITING_CONFIRMATION';
+					break;
+				case 'CANCELED':
+					status = 'CANCELED';
+					break;
+				case 'CONCLUDED':
+					status = 'CONCLUDED';
+					break;
+				default:
+					return {
+						statusCode: 400,
+						message: 'Tipos de tamanho incorretos',
+						options: ['SMALL', 'MEDIUM', 'BIG'],
+					};
+			}
+		} catch (err) {
+			if (err instanceof Error)
+				return { statusCode: 400, message: JSON.parse(err.message) };
+			if (err instanceof PrismaClientKnownRequestError)
+				return { statusCode: 500, message: err };
+			return { statusCode: 500, message: { unknown_error: err } };
 		}
 	}
 }
