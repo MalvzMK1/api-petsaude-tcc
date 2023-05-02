@@ -1,5 +1,5 @@
-import prisma from "../lib/prisma";
-import {Appointment} from "@prisma/client";
+import prisma from '../lib/prisma';
+import { Appointment } from '@prisma/client';
 
 class AppointmentModel {
 	async createAppointment(infos: AppointmentInfos): Promise<Appointment> {
@@ -12,12 +12,12 @@ class AppointmentModel {
 					endsAt: infos.endsAt,
 					clientId: infos.clientId,
 					veterinaryId: infos.veterinaryId,
-					petId: infos.petId
-				}
-			})
+					petId: infos.petId,
+				},
+			});
 		} catch (err) {
-			if (err instanceof Error) throw new Error(`${err.message}`)
-			throw new Error(`${err}`)
+			if (err instanceof Error) throw new Error(`${err.message}`);
+			throw new Error(`${err}`);
 		}
 	}
 
@@ -27,16 +27,16 @@ class AppointmentModel {
 				include: {
 					pet: {
 						include: {
-							petSpecie: true
-						}
+							petSpecie: true,
+						},
 					},
 					Client: true,
 					Veterinary: true,
-				}
-			})
+				},
+			});
 		} catch (err) {
-			if (err instanceof Error) throw new Error(`${err.message}`)
-			throw new Error(`${err}`)
+			if (err instanceof Error) throw new Error(`${err.message}`);
+			throw new Error(`${err}`);
 		}
 	}
 
@@ -44,21 +44,21 @@ class AppointmentModel {
 		try {
 			return await prisma.appointment.findUnique({
 				where: {
-					id
+					id,
 				},
 				include: {
 					pet: {
 						include: {
-							petSpecie: true
-						}
+							petSpecie: true,
+						},
 					},
 					Client: true,
 					Veterinary: true,
-				}
-			})
+				},
+			});
 		} catch (err) {
-			if (err instanceof Error) throw new Error(`${err.message}`)
-			throw new Error(`${err}`)
+			if (err instanceof Error) throw new Error(`${err.message}`);
+			throw new Error(`${err}`);
 		}
 	}
 
@@ -66,14 +66,49 @@ class AppointmentModel {
 		try {
 			return prisma.appointment.delete({
 				where: {
-					id
-				}
+					id,
+				},
 			});
 		} catch (err) {
-			console.log(err)
-			return null
+			console.log(err);
+			return null;
 		}
+	}
+
+	async getVeterinaryAppointments(
+		veterinaryId: number
+	): Promise<Appointment[] | null> {
+		const appointments = await prisma.appointment.findMany({
+			where: {
+				veterinaryId,
+			},
+		});
+
+		if (appointments.length > 0) return appointments;
+		return null;
+	}
+
+	async getClientAppointments(clientId: number): Promise<Appointment[] | null> {
+		const appointments = await prisma.appointment.findMany({
+			where: {
+				clientId,
+			},
+		});
+
+		if (appointments.length > 0) return appointments;
+		return null;
+	}
+
+	async getPetAppointments(petId: number): Promise<Appointment[] | null> {
+		const appointments = await prisma.appointment.findMany({
+			where: {
+				petId,
+			},
+		});
+
+		if (appointments.length > 0) return appointments;
+		return null;
 	}
 }
 
-export default new AppointmentModel()
+export default new AppointmentModel();

@@ -1,4 +1,5 @@
 import {PrismaClient} from '@prisma/client';
+import bcrypt from '../src/lib/bcrypt'
 
 const prisma = new PrismaClient();
 
@@ -10,7 +11,7 @@ async function main() {
 			cpf: '987.654.321-90',
 			rg: '12.123.456-12',
 			email: 'hermanli@gmail.com',
-			password: 'herman321',
+			password: await bcrypt.hash('senhaherman', 10),
 			phoneNumber: '',
 			cellphoneNumber: '11932169874',
 			profilePhoto: 'https://whiplash.net/imagens_promo_22/dragonforce_herman_li_promo.jpg?nocache',
@@ -29,7 +30,7 @@ async function main() {
 					photo:
 						'https://loucosporbichos.com.br/wp-content/uploads/2023/02/pastor-alemao.jpg',
 					microship: false,
-					petSize: 'MEDIUM',
+					petSize: 'BIG',
 					petGender: 'M',
 					petSpecie: {
 						create: {
@@ -48,7 +49,7 @@ async function main() {
 			cpf: '333.333.333-00',
 			rg: '00.000.000-00',
 			email: 'johndoe@gmail.com',
-			password: 'password123',
+			password: await bcrypt.hash('password123', 10),
 			phoneNumber: '',
 			cellphoneNumber: '11994600546',
 			profilePhoto: 'github.com/malvzmk1.png',
@@ -82,7 +83,7 @@ async function main() {
 			cpf: '222.222.222-22',
 			rg: '22.222.222-22',
 			email: 'dedeco@gmail.com',
-			password: 'senhadodeco',
+			password: await bcrypt.hash('senhadodeco', 10),
 			phoneNumber: '',
 			cellphoneNumber: '11999999999',
 			profilePhoto: 'https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80',
@@ -136,9 +137,9 @@ async function main() {
 			personName: 'Will Ramos',
 			userName: 'willCore',
 			cpf: '321.123.654-78',
-			rg: '123.123.123-12',
+			rg: '23.123.123-12',
 			email: 'willramos@gmail.com',
-			password: 'lorna321',
+			password: await bcrypt.hash('lorna321', 10),
 			phoneNumber: '',
 			cellphoneNumber: '12995513265',
 			profilePhoto: 'https://cdn-p.smehost.net/sites/7f9737f2506941499994d771a29ad47a/wp-content/uploads/2022/03/Will-Ramos.png',

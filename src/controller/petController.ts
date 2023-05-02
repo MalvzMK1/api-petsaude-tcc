@@ -1,7 +1,7 @@
 import Messages from '../messages/message';
 import Pet from '../model/petModel';
-import { PetSpecie, Prisma } from '@prisma/client';
-import { parse } from 'date-fns';
+import {PetSpecie, Prisma} from '@prisma/client';
+import {parse} from 'date-fns';
 
 const message = new Messages();
 const petModel = new Pet();
@@ -35,7 +35,7 @@ export default class PetController {
 	async getAllPets(userID: number) {
 		try {
 			const pets = await petModel.findAllPets(userID);
-			if (pets) return { statusCode: 200, pets };
+			if (pets) return {statusCode: 200, pets};
 			return {
 				statusCode: 404,
 				message: message.MESSAGE_ERROR.NOT_FOUND_DB,
@@ -167,6 +167,8 @@ export default class PetController {
 				message: message.MESSAGE_ERROR.INTERNAL_ERROR_DB,
 			};
 		} catch (err) {
+			if (err instanceof Prisma.PrismaClientKnownRequestError)
+				return {statusCode: 400, message: err}
 			if (err instanceof Error)
 				return {
 					statusCode: 500,
@@ -210,8 +212,7 @@ export default class PetController {
 				default:
 					return {
 						statusCode: 400,
-						message: 'Tipos de tamanho incorretos',
-						options: ['SMALL', 'MEDIUM', 'BIG'],
+						message: {error: 'Tipos de tamanho incorretos', options: ['SMALL', 'MEDIUM', 'BIG']},
 					};
 			}
 
@@ -225,8 +226,7 @@ export default class PetController {
 				default:
 					return {
 						statusCode: 400,
-						message: 'Tipos de gênero incorretos',
-						options: ['F', 'M'],
+						message: {error: 'Tipos de gênero incorretos', options: ['F', 'M']},
 					};
 			}
 

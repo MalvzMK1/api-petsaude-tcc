@@ -1,7 +1,8 @@
 import Message from '../messages/message';
 import VeterinaryModel from '../model/veterinaryModel';
-import validateSameEmailBetweenClientsAndVeterinarians from '../utils/validateSameEmailBetweenClientsAndVeterinarians';
+import {validateSameEmailBetweenClientsAndVeterinarians} from '../utils/validateExistentRegisters';
 import {Prisma} from "@prisma/client";
+import bcrypt from "../lib/bcrypt";
 
 const veterinaryModel = new VeterinaryModel();
 const messages = new Message();
@@ -142,13 +143,15 @@ class VeterinaryController {
 					message: 'E-mail já está em uso',
 				};
 
+			const hashedPassword = await bcrypt.hash(infos.password, 10)
+
 			const veterinary: createVeterinaryModel = {
 				personName: infos.personName,
 				cellphoneNumber: infos.cellphoneNumber,
 				phoneNumber: infos.phoneNumber,
 				cpf: infos.cpf,
 				email: infos.email,
-				password: infos.password,
+				password: hashedPassword,
 				address: {
 					zipCode: infos.address.zipCode,
 					complement: infos.address.complement,

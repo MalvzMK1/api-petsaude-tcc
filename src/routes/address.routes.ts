@@ -1,7 +1,6 @@
 import { FastifyInstance } from 'fastify';
 import authenticate from '../middlewares/authenticate';
 import { z } from 'zod';
-import Messages from '../messages/message';
 import AddressController from '../controller/addressController';
 
 const addressController = new AddressController();
@@ -21,8 +20,10 @@ export default async function addressRoutes(fastify: FastifyInstance) {
 					addressID: z.string(),
 				});
 
-				const body: AddressUpdateControllerProps = bodyParams.parse(request.body);
-				const {addressID} = queryParams.parse(request.query);
+				const body: AddressUpdateControllerProps = bodyParams.parse(
+					request.body
+				);
+				const { addressID } = queryParams.parse(request.query);
 
 				const updatedAddress = await addressController.updateAddress(
 					parseInt(addressID),
@@ -31,10 +32,11 @@ export default async function addressRoutes(fastify: FastifyInstance) {
 
 				reply
 					.status(updatedAddress.statusCode)
-					.send({message: updatedAddress.message});
+					.send({ response: updatedAddress.message });
 			} catch (err) {
-				if (err instanceof Error) reply.status(404).send({message: JSON.parse(err.message)})
-				else reply.status(404).send({message: 'Campos inválidos'})
+				if (err instanceof Error)
+					reply.status(404).send({ response: JSON.parse(err.message) });
+				else reply.status(404).send({ response: 'Campos inválidos' });
 			}
 		}
 	);

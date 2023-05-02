@@ -1,61 +1,123 @@
-import ClientModel from "../model/clientModel";
-import VeterinaryModel from "../model/veterinaryModel";
-import appointmentModel from "../model/appointmentModel";
-import {parse} from "date-fns";
-import transformDateTimeStringIntoDate from "../utils/transformDateTimeStringIntoDate";
-import {Appointment, Prisma} from "@prisma/client";
-import PetModel from "../model/petModel";
-
-const timeZone = 'America/Sao_Paulo'
+import appointmentModel from '../model/appointmentModel';
+import { parse, isEqual, isSameMinute } from 'date-fns';
+import transformDateTimeStringIntoDate, {
+	transformDateStringIntoDate,
+} from '../utils/transformDateTimeStringIntoDate';
+import { Appointment, Prisma } from '@prisma/client';
+import {
+	validateIfClientExists,
+	validateIfPetExists,
+	validateIfVeterinaryExists,
+} from '../utils/validateExistentRegisters';
+import {
+	clientAppointmentsOverlaps,
+	petAppointmentsOverlaps,
+	veterinaryAppointmentsOverlaps,
+} from '../utils/validateOverlappingAppointmentDateTimes';
 
 class AppointmentController {
 	async createAppointment(infos: AppointmentInfosToBeParsed) {
 		try {
-			if (!await validateIfClientExists(infos.clientId))
-				return {statusCode: 404, message: 'O cliente não existe'}
-			if (!await validateIfVeterinaryExists(infos.veterinaryId))
-				return {statusCode: 404, message: 'O veterinário não existe'}
-			if (!await validateIfPetExists(infos.petId))
-				return {statusCode: 404, message: 'O pet não existe'}
+			if (!(await validateIfClientExists(infos.clientId)))
+				return { statusCode: 404, message: 'O cliente não existe' };
+			if (!(await validateIfVeterinaryExists(infos.veterinaryId)))
+				return { statusCode: 404, message: 'O veterinário não existe' };
+			if (!(await validateIfPetExists(infos.petId)))
+				return { statusCode: 404, message: 'O pet não existe' };
 
-			const appointmentDate = parse(infos.date, 'dd-MM-yyyy', new Date())
-			if (appointmentDate.toString().toLowerCase() === 'invalid date')
+			if (
+				parse(infos.date, 'dd-MM-yyyy', new Date()).toString().toLowerCase() ===
+				'invalid date'
+			)
 				return {
 					statusCode: 400,
-					message: 'Formato de data incorreto, espera-se um formato dd-MM-yyyy'
-				}
-			
-			if (parse(infos.startsAt, 'dd-MM-yyyy HH:mm:ss', new Date()).toString().toLowerCase() === 'invalid date')
+					message: {
+						error: {
+							title: 'Formato de data incorreto',
+							fix: 'Espera-se um formato dd-MM-yyyy',
+							path: 'date',
+						},
+					},
+				};
+
+			if (
+				parse(infos.startsAt, 'dd-MM-yyyy HH:mm:ss', new Date())
+					.toString()
+					.toLowerCase() === 'invalid date'
+			)
 				return {
 					statusCode: 400,
 					message: {
 						error: {
 							title: 'Formato de data incorreto',
 							fix: 'Espera-se um formato dd-MM-yyyy HH:mm:ss',
-							path: 'startsAt'
-						}
-					}
-				}
+							path: 'startsAt',
+						},
+					},
+				};
 
-			if (parse(infos.endsAt, 'dd-MM-yyyy HH:mm:ss', new Date()).toString().toLowerCase() === 'invalid date')
+			if (
+				parse(infos.endsAt, 'dd-MM-yyyy HH:mm:ss', new Date())
+					.toString()
+					.toLowerCase() === 'invalid date'
+			)
 				return {
 					statusCode: 400,
 					message: {
 						error: {
 							title: 'Formato de data incorreto',
 							fix: 'Espera-se um formato dd-MM-yyyy HH:mm:ss',
-							path: 'endsAt'
-						}
-					}
-				}
+							path: 'endsAt',
+						},
+					},
+				};
 
-			const appointmentStartsAt = transformDateTimeStringIntoDate(infos.startsAt)
-			const appointmentEndsAt = transformDateTimeStringIntoDate(infos.endsAt)
+			const appointmentStartsAt = transformDateTimeStringIntoDate(
+				infos.startsAt
+			);
+			const appointmentEndsAt = transformDateTimeStringIntoDate(infos.endsAt);
+			const appointmentDate = transformDateStringIntoDate(infos.date);
 
-			// return {statusCode: 400, message: appointmentDate}
+			if (
+				appointmentStartsAt < new Date() ||
+				appointmentDate < new Date() ||
+				appointmentEndsAt < new Date()
+			)
+				return {
+					statusCode: 400,
+					message: 'A data não pode ser anterior a atual',
+				};
+			else if (appointmentEndsAt < appointmentStartsAt)
+				return {
+					statusCode: 400,
+					message: 'A data de término não pode ser anterior à data de início',
+				};
 
-			if (appointmentStartsAt < new Date() || appointmentDate < new Date() || appointmentEndsAt < new Date())
-				return {statusCode: 400, message: 'A data não pode ser anterior à atual'}
+			// const veterinaryAppointments =
+			// 	await appointmentModel.getVeterinaryAppointments(infos.veterinaryId);
+
+			// const sameDateAppointment = veterinaryAppointments?.filter(
+			// 	(appointment) => isEqual(appointment.date, appointmentDate)
+			// );
+			// if (sameDateAppointment) {
+			// 	const sameDateTimeAppointment = sameDateAppointment.find(
+			// 		(appointment) => {
+			// 			const appointmentStartsAtTime = `${appointment.startsAt.getHours()}:${appointment.startsAt.getMinutes()}:${
+			// 				appointment.startsAt.getSeconds
+			// 			}`;
+			// 			const appointmentToCreateStartsAtTime = `${appointmentStartsAt.getHours()}:${appointmentStartsAt.getMinutes()}:${
+			// 				appointmentStartsAt.getSeconds
+			// 			}`;
+			// 			return appointmentStartsAtTime === appointmentToCreateStartsAtTime;
+			// 		}
+			// 	);
+
+			// 	if (sameDateTimeAppointment)
+			// 		return {
+			// 			statusCode: 400,
+			// 			message: 'Já existe uma consulta agendada nesse horário',
+			// 		};
+			// }
 
 			const appointmentInfos: AppointmentInfos = {
 				date: appointmentDate,
@@ -64,92 +126,103 @@ class AppointmentController {
 				veterinaryId: infos.veterinaryId,
 				clientId: infos.clientId,
 				description: infos.description,
-				petId: infos.petId
-			}
+				petId: infos.petId,
+			};
 
-			const createdAppointment = await appointmentModel.createAppointment(appointmentInfos)
-			if (createdAppointment) return {
-				statusCode: 201,
-				response: {message: 'Consulta criada com sucesso', createdAppointment}
-			}
-			return {statusCode: 400, message: 'Não foi possível criar a consulta'}
+			if (await veterinaryAppointmentsOverlaps(appointmentInfos))
+				return {
+					statusCode: 400,
+					message:
+						'Já existe uma consulta agendada para o Veterinário nesse horário',
+				};
 
+			if (await clientAppointmentsOverlaps(appointmentInfos))
+				return {
+					statusCode: 400,
+					message:
+						'Já existe uma consulta agendada para o Cliente nesse horário',
+				};
+
+			if (await petAppointmentsOverlaps(appointmentInfos))
+				return {
+					statusCode: 400,
+					message: 'Já existe uma consulta agendada para o Pet nesse horário',
+				};
+
+			const createdAppointment = await appointmentModel.createAppointment(
+				appointmentInfos
+			);
+			if (createdAppointment)
+				return {
+					statusCode: 201,
+					response: {
+						message: 'Consulta criada com sucesso',
+						createdAppointment,
+					},
+				};
+			return { statusCode: 400, message: 'Não foi possível criar a consulta' };
 		} catch (err) {
-			if (err instanceof Error) return {statusCode: 500, message: {error: JSON.parse(err.message)}}
-			return {statusCode: 500, message: {error: `Unknown error \n ${err}`}}
+			if (err instanceof Error)
+				return { statusCode: 500, message: { error: JSON.parse(err.message) } };
+			return { statusCode: 500, message: { error: `Unknown error \n ${err}` } };
 		}
 	}
 
-	async getAllAppointments(): Promise<{ statusCode: number, message: string | Appointment[] | Error }> {
+	async getAllAppointments(): Promise<{
+		statusCode: number;
+		message: string | Appointment[] | Error;
+	}> {
 		try {
-			const allAppointments = await appointmentModel.getAllAppointments()
+			const allAppointments = await appointmentModel.getAllAppointments();
 			if (allAppointments.length > 0)
-				return {statusCode: 200, message: allAppointments}
-			return {statusCode: 404, message: 'Nenhuma consulta foi achada no banco de dados'}
+				return { statusCode: 200, message: allAppointments };
+			return {
+				statusCode: 404,
+				message: 'Nenhuma consulta foi achada no banco de dados',
+			};
 		} catch (err) {
-			if (err instanceof Error) return {statusCode: 500, message: err}
-			return {statusCode: 500, message: `Unkown error \n ${err}`}
+			if (err instanceof Error) return { statusCode: 500, message: err };
+			return { statusCode: 500, message: `Unkown error \n ${err}` };
 		}
 	}
 
-	async getAppointmentById(id: number): Promise<{ statusCode: number, message: string | Appointment | Error }> {
+	async getAppointmentById(
+		id: number
+	): Promise<{ statusCode: number; message: string | Appointment | Error }> {
 		try {
-			const appointment = await appointmentModel.findAppointmentById(id)
-			if (appointment)
-				return {statusCode: 200, message: appointment}
-			return {statusCode: 404, message: 'Nenhuma conculsta foi achada no banco de dados'}
+			const appointment = await appointmentModel.findAppointmentById(id);
+			if (appointment) return { statusCode: 200, message: appointment };
+			return {
+				statusCode: 404,
+				message: 'Nenhuma conculsta foi achada no banco de dados',
+			};
 		} catch (err) {
-			if (err instanceof Prisma.PrismaClientKnownRequestError) return {statusCode: 400, message: err}
-			if (err instanceof Error) return {statusCode: 500, message: err}
-			return {statusCode: 500, message: `Unkown error \n ${err}`}
+			if (err instanceof Prisma.PrismaClientKnownRequestError)
+				return { statusCode: 400, message: err };
+			if (err instanceof Error) return { statusCode: 500, message: err };
+			return { statusCode: 500, message: `Unkown error \n ${err}` };
 		}
 	}
 
-	async deleteAppointment(id: number): Promise<{ statusCode: number, message: string | Appointment | Error }> {
+	async deleteAppointment(
+		id: number
+	): Promise<{ statusCode: number; message: string | Appointment | Error }> {
 		try {
-			const deletedAppointment = await appointmentModel.deleteAppointment(id)
+			const deletedAppointment = await appointmentModel.deleteAppointment(id);
 			if (deletedAppointment)
-				return {statusCode: 200, message: deletedAppointment}
-			return {statusCode: 404, message: 'Não foi possível realizar a exclusão'}
+				return { statusCode: 200, message: deletedAppointment };
+			return {
+				statusCode: 404,
+				message: 'Não foi possível realizar a exclusão',
+			};
 		} catch (err) {
 			if (err instanceof Prisma.PrismaClientKnownRequestError) {
-				if (err.code === 'P2025')
-					return {statusCode: 400, message: err}
-				return {statusCode: 400, message: err}
+				if (err.code === 'P2025') return { statusCode: 400, message: err };
+				return { statusCode: 400, message: err };
 			}
-			return {statusCode: 500, message: `Unkown error \n ${err}`}
+			return { statusCode: 500, message: `Unkown error \n ${err}` };
 		}
 	}
 }
 
-async function validateIfClientExists(clientId: number): Promise<boolean> {
-	try {
-		const client = await new ClientModel().findClientById(clientId)
-		return !!client;
-
-	} catch (err) {
-		return false
-	}
-}
-
-async function validateIfVeterinaryExists(veterinaryId: number): Promise<boolean> {
-	try {
-		const veterinary = await new VeterinaryModel().findVeterinaryById(veterinaryId)
-		return !!veterinary;
-
-	} catch (err) {
-		return false
-	}
-}
-
-async function validateIfPetExists(petId: number): Promise<boolean> {
-	try {
-		const pet = await new PetModel().findPet(petId)
-		return !!pet;
-
-	} catch (err) {
-		return false
-	}
-}
-
-export default new AppointmentController()
+export default new AppointmentController();

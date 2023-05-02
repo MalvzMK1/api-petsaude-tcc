@@ -26,7 +26,7 @@ type CreateUserInfosModelProps = {
 	};
 };
 
-type UpdateUserInfosProps = {
+type UpdateClientPersonalInfosProps = {
 	personName: string;
 	cpf: string;
 	rg: string;
@@ -34,6 +34,14 @@ type UpdateUserInfosProps = {
 	phoneNumber: string;
 	bio: string;
 };
+
+type UpdateClientProfileInfosProps = {
+	userName: string;
+	profilePhoto: string;
+	profileBannerPhoto: string;
+	email: string;
+	password: string;
+}
 
 type postPhoneUser = {
 	userId: number;

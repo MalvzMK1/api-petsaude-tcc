@@ -19,11 +19,11 @@ export default async function petRoutes(fastify: FastifyInstance) {
 
 			reply
 				.status(controllerResponse.statusCode)
-				.send({ message: controllerResponse });
+				.send({ resposne: controllerResponse });
 		} catch (err) {
 			if (err instanceof Error)
-				reply.status(400).send({ message: JSON.parse(err.message) });
-			reply.status(400).send({ message: err });
+				reply.status(400).send({ resposne: JSON.parse(err.message) });
+			reply.status(400).send({ response: err });
 		}
 	});
 
@@ -78,8 +78,8 @@ export default async function petRoutes(fastify: FastifyInstance) {
 				.send({ response: controllerResponse });
 		} catch (err) {
 			if (err instanceof Error)
-				reply.status(400).send({ message: err.message });
-			reply.status(400).send({ message: err });
+				reply.status(400).send({ response: err.message });
+			reply.status(400).send({ response: err });
 		}
 	});
 
@@ -100,8 +100,8 @@ export default async function petRoutes(fastify: FastifyInstance) {
 				reply.status(200).send({ response: controllerResponse });
 			} catch (err) {
 				if (err instanceof Error)
-					reply.status(400).send({ message: err.message });
-				reply.status(400).send({ message: err });
+					reply.status(400).send({ response: err.message });
+				reply.status(400).send({ response: err });
 			}
 		}
 	);
@@ -113,8 +113,8 @@ export default async function petRoutes(fastify: FastifyInstance) {
 				birthDate: z.string(),
 				photo: z.string(),
 				microship: z.boolean(),
-				size: z.nativeEnum(EnumPetSize),
-				gender: z.nativeEnum(EnumPetGender),
+				size: z.string(),
+				gender: z.string(),
 				specie: z.string(),
 				ownerID: z.number(),
 			});
@@ -133,15 +133,15 @@ export default async function petRoutes(fastify: FastifyInstance) {
 			if (controllerResponse.pet)
 				reply.status(controllerResponse.statusCode).send({
 					pet: controllerResponse.pet,
-					message: controllerResponse.message,
+					response: controllerResponse.message,
 				});
 			reply
 				.status(controllerResponse.statusCode)
-				.send({ message: controllerResponse.message });
+				.send({ response: controllerResponse.message });
 		} catch (err) {
 			if (err instanceof Error)
-				reply.status(400).send({ message: err.message });
-			reply.status(400).send({ message: err });
+				reply.status(400).send({ response: err.message });
+			reply.status(400).send({ response: err });
 		}
 	});
 }

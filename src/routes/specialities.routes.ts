@@ -1,5 +1,5 @@
 import { FastifyInstance } from 'fastify';
-import { unknown, z } from 'zod';
+import { z } from 'zod';
 import SpecialtiesController from '../controller/specialtiesController';
 import SpecialtiesPetController from '../controller/specialtiesPetsController';
 import Messages from '../messages/message';
@@ -24,16 +24,10 @@ export default async function specialitiesRoutes(fastify: FastifyInstance) {
 
 			const body = bodyParams.parse(request.body);
 
-			const headerContentType = request.headers['content-type'];
-
-			if (headerContentType == 'application/json') {
-				if (JSON.stringify(body) != '{}') {
-					const createdSpecialities =
-						await SpecialtiesController.createSpecialties(body.specialities);
-					reply.send(createdSpecialities);
-				} else reply.status(404).send('the body cannot be empty');
-			} else
-				reply.status(415).send('The request header has no valid content-type!');
+			const createdSpecialities = await SpecialtiesController.createSpecialties(
+				body.specialities
+			);
+			reply.send(createdSpecialities);
 		} catch (err) {
 			if (err instanceof Error)
 				reply.status(400).send({ response: JSON.parse(err.message) });
@@ -57,20 +51,14 @@ export default async function specialitiesRoutes(fastify: FastifyInstance) {
 					.send({ response: new Messages().MESSAGE_ERROR.EMPTY_BODY });
 
 			const body = bodyParams.parse(request.body);
-			const headerContentType = request.headers['content-type'];
 
-			if (headerContentType == 'application/json') {
-				if (JSON.stringify(body) != '{}') {
-					const createdAttendedAnimals =
-						await SpecialtiesPetController.createPetSpecialties(
-							body.attendedAnimals
-						);
-					reply
-						.status(createdAttendedAnimals.statusCode)
-						.send({ message: createdAttendedAnimals.message });
-				} else reply.status(404).send('the body cannot be empty');
-			} else
-				reply.status(415).send('The request header has no valid content-type!');
+			const createdAttendedAnimals =
+				await SpecialtiesPetController.createPetSpecialties(
+					body.attendedAnimals
+				);
+			reply
+				.status(createdAttendedAnimals.statusCode)
+				.send({ message: createdAttendedAnimals.message });
 		} catch (err) {
 			if (err instanceof Error)
 				reply.status(400).send({ response: JSON.parse(err.message) });

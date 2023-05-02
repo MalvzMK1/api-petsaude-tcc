@@ -19,18 +19,18 @@ datasource db {
 
 model Client {
   id                 Int           @id @default(autoincrement())
-  personName         String        @map("person_name")
-  userName           String        @map("user_name")
-  cpf                String        @unique
-  rg                 String?       @unique
+  personName         String        @map("person_name") @db.VarChar(100)
+  userName           String        @map("user_name") @db.VarChar(50)
+  cpf                String        @unique @db.VarChar(14)
+  rg                 String?       @unique @db.VarChar(14)
   profilePhoto       String?       @map("profile_photo")
   profileBannerPhoto String?       @map("profile_banner_photo")
-  email              String        @unique
+  email              String        @unique @db.VarChar(256)
   password           String
-  phoneNumber        String?
-  cellphoneNumber    String
-  isVet              Boolean       @default(false)
-  biography          String?       @db.Text
+  phoneNumber        String?       @map("phone_number") @db.VarChar(15)
+  cellphoneNumber    String        @map("cellphone_number") @db.VarChar(15)
+  isVet              Boolean       @default(false) @map("is_vet")
+  biography          String?       @db.VarChar(1000)
   Pet                Pet[]
   Appointments       Appointment[]
 
@@ -42,24 +42,24 @@ model Client {
 
 model Veterinary {
   id                 Int      @id @default(autoincrement())
-  personName         String   @map("person_name")
-  userName           String   @map("user_name")
-  cpf                String   @unique
-  rg                 String?  @unique
+  personName         String   @map("person_name") @db.VarChar(100)
+  userName           String   @map("user_name") @db.VarChar(50)
+  cpf                String   @unique @db.VarChar(14)
+  rg                 String?  @unique @db.VarChar(13)
   profilePhoto       String?  @map("profile_photo")
   profileBannerPhoto String?  @map("profile_banner_photo")
-  email              String   @unique
+  email              String   @unique @db.VarChar(256)
   password           String
-  occupationArea     String   @map("occupation_area")
-  formation          String
-  institution        String
-  crmv               String   @unique
-  formationDate      DateTime @map("formation_date")
-  startActingDate    DateTime @map("start_acting_date")
-  phoneNumber        String?
-  cellphoneNumber    String
+  occupationArea     String   @map("occupation_area") @db.VarChar(50)
+  formation          String   @db.VarChar(30)
+  institution        String   @db.VarChar(100)
+  crmv               String   @unique @db.VarChar(6)
+  formationDate      DateTime @map("formation_date") @db.Date
+  startActingDate    DateTime @map("start_acting_date") @db.Date
+  phoneNumber        String?  @map("phone_number") @db.VarChar(15)
+  cellphoneNumber    String   @map("cellphone_number") @db.VarChar(15)
   isVet              Boolean  @default(true)
-  biography          String?  @db.Text
+  biography          String?  @db.VarChar(1000)
 
   PetSpecieVeterinary     PetSpecieVeterinary[]
   VeterinaryEspecialities VeterinarySpecialities[]
@@ -67,6 +67,7 @@ model Veterinary {
 
   addressId Int     @unique @map("address_id")
   Address   Address @relation(fields: [addressId], references: [id])
+  Posts     Post[]
 
   @@map("tbl_veterinary")
 }
@@ -96,7 +97,7 @@ model VeterinarySpecialities {
 
 model Specialities {
   id                      Int                      @id @default(autoincrement())
-  name                    String
+  name                    String                   @db.TinyText
   VeterinaryEspecialities VeterinarySpecialities[]
 
   @@map("tbl_specialities")
@@ -106,9 +107,9 @@ model Specialities {
 
 model Address {
   id         Int     @id @default(autoincrement())
-  cep        String
-  complement String?
-  number     String
+  cep        String  @db.VarChar(10)
+  complement String? @db.VarChar(5)
+  number     String  @db.VarChar(10)
 
   Client     Client[]
   Veterinary Veterinary[]
@@ -120,8 +121,8 @@ model Address {
 
 model Pet {
   id        Int           @id @default(autoincrement())
-  name      String
-  birthDate DateTime      @map("birth_date")
+  name      String        @db.VarChar(100)
+  birthDate DateTime      @map("birth_date") @db.Date
   photo     String?
   microship Boolean
   petSize   PetSizeEnum   @map("pet_size")
@@ -154,7 +155,7 @@ enum PetGenderEnum {
 
 model PetSpecie {
   id                  Int                   @id @default(autoincrement())
-  name                String
+  name                String                @db.TinyText
   Pet                 Pet[]
   PetSpecieVeterinary PetSpecieVeterinary[]
 
@@ -163,7 +164,7 @@ model PetSpecie {
 
 model Appointment {
   id          Int      @id @default(autoincrement())
-  description String   @db.Text
+  description String   @db.VarChar(1000)
   status      Status   @default(WAITING_CONFIRMATION)
   date        DateTime @db.Date
   startsAt    DateTime @map("starts_at") @db.Time()
@@ -177,6 +178,17 @@ model Appointment {
   pet          Pet        @relation(fields: [petId], references: [id])
 
   @@map("tbl_appointment")
+}
+
+model Post {
+  id           Int        @id @default(autoincrement())
+  title        String     @db.VarChar(50)
+  text         String     @db.VarChar(1000)
+  image        String?
+  veterinaryId Int        @map("veterinary_id")
+  veterinary   Veterinary @relation(fields: [veterinaryId], references: [id])
+
+  @@map("tbl_post")
 }
 
 enum Status {
