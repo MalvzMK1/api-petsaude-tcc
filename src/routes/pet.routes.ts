@@ -41,7 +41,7 @@ export default async function petRoutes(fastify: FastifyInstance) {
 			if (controllerResponse.pets)
 				reply
 					.status(controllerResponse.statusCode)
-					.send({response: controllerResponse});
+					.send({response: controllerResponse.pets});
 			reply
 				.status(404)
 				.send({response: 'Nenhum registro encrontrado no banco de dados'})
