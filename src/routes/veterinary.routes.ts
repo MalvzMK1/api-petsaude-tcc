@@ -34,6 +34,29 @@ export default async function veterinaryRoutes(fastify: FastifyInstance) {
 		}
 	});
 
+	fastify.get('/veterinary', async (request, reply) => {
+		try {
+			const queryParams = z.object({
+				userID: z.string(),
+			});
+
+			const { userID } = queryParams.parse(request.query);
+
+			if (!userID) reply.status(400).send({ message: 'Required ID' });
+
+			const userInfos = await veterinaryController.getVeterinaryById(parseInt(userID));
+
+			reply
+				.status(userInfos.statusCode)
+				.send({ response: { user: userInfos?.message } });
+		} catch (err) {
+			if (err instanceof Error)
+				reply.status(400).send({ response: JSON.parse(err.message) });
+			reply.status(400).send({ response: 'Unknown error' });
+		}
+	});
+
+
 	fastify.post('/veterinary', async (request, reply) => {
 		try {
 			const bodyParams = z.object({
@@ -68,11 +91,9 @@ export default async function veterinaryRoutes(fastify: FastifyInstance) {
 				formationDate.toString() === 'Invalid Date' ||
 				startActingDate.toString() === 'Invalid Date'
 			)
-				reply.status(400).send({
-					response: {
-						error: 'Wrong date format, expected YYYY-MM-DD',
-					},
-				});
+				reply
+					.status(400)
+					.send({ message: 'Wrong date format, expected YYYY-MM-DD' });
 
 			const result = await veterinaryController.createVeterinary(body);
 
@@ -120,49 +141,76 @@ export default async function veterinaryRoutes(fastify: FastifyInstance) {
 		}
 	);
 
+	fastify.put('/veterinary/profile-infos', {onRequest: authenticate}, async (request, reply) => {
+		try {
+			const jwt = request.headers.authorization
+			const token = jwt?.split(' ')[1]
+
+			const bodyParams = z.object({
+				userName: z.string(),
+				profilePhoto: z.string(),
+				profileBannerPhoto: z.string(),
+				email: z.string(),
+				password: z.string()
+			})
+
+			const body = bodyParams.parse(request.body)
+			if (token) {
+				const decodedJwt: JwtSignUser | null = fastify.jwt.decode(token)
+				if (decodedJwt) {
+					const updatedUser = await veterinaryController.updateVeterinaryProfileInfos(decodedJwt.id, body)
+				}
+			}
+
+		} catch (err) {
+			if (err instanceof Error)
+				reply.status(400).send({response: JSON.parse(err.message)})
+			reply.status(400).send({response: 'Unknown error'});
+		}
+	})
+
 	fastify.put(
-		'/veterinary/personal/:id',
-		{ onRequest: authenticate },
+		'/veterinary/personal-infos',
+		{onRequest: authenticate},
 		async (request, reply) => {
 			try {
+				const jwt = request.headers.authorization
+				const token = jwt?.split(' ')[1]
+
 				const bodyParams = z.object({
 					personName: z.string(),
 					cpf: z.string(),
-					email: z.string(),
-					password: z.string(),
-					cellphoneNumber: z.string(),
 					rg: z.string(),
 					phoneNumber: z.string(),
-					profilePhoto: z.string().nullable(),
-					profileBannerPhoto: z.string().nullable(),
+					cellphoneNumber: z.string(),
+					bio: z.string(),
 				});
 
-				const queryParams = z.object({ id: z.string() });
+				const body: UpdateClientPersonalInfosProps = bodyParams.parse(request.body);
+				if (token) {
+					const decodedJwt: JwtSignUser | null = fastify.jwt.decode(token)
 
-				const body = bodyParams.parse(request.body);
-				const { id } = queryParams.parse(request.params);
-
-				if (id != null && id != undefined) {
-					const updateVeterinary =
-						await veterinaryController.updateVeterinaryPersonalInfos(
-							parseInt(id),
+					if (decodedJwt) {
+						const updateUser = await veterinaryController.updateVeterinaryPersonalInfos(
+							decodedJwt.id,
 							body
 						);
-
-					reply.status(200).send({ response: updateVeterinary.message });
-				} else reply.status(400).send(new Messages().MESSAGE_ERROR.REQUIRED_ID);
+						reply.status(updateUser.statusCode).send({message: updateUser.message});
+					}
+					reply.status(401).send({message: 'Token inválido'})
+				}
+				reply.status(401).send({message: 'Token inválido'})
 			} catch (err) {
 				if (err instanceof Error)
-					reply.status(400).send({ response: JSON.parse(err.message) });
-				reply.status(400).send({ response: 'Unknown error' });
+					reply.status(400).send({response: JSON.parse(err.message)});
+				reply.status(400).send({response: 'Unknown error'});
 			}
 		}
 	);
-
 	fastify.put(
 		'/veterinarian/attended-animals',
 		{ onRequest: authenticate },
-		async (request, reply) => {
+		async (req, res) => {
 			try {
 				const bodyParams = z.object({
 					AnimalTypesVetInfos: z.array(
@@ -174,20 +222,18 @@ export default async function veterinaryRoutes(fastify: FastifyInstance) {
 					),
 				});
 
-				const body = bodyParams.parse(request.body);
+				const body = bodyParams.parse(req.body);
 
 				const updateUser =
 					await specialtiesPetsController.updateSpecialitiesPet(
 						body.AnimalTypesVetInfos
 					);
 
-				reply
-					.status(updateUser.statusCode)
-					.send({ response: updateUser.message });
+				res.status(updateUser.statusCode).send(updateUser.message);
 			} catch (err) {
 				if (err instanceof Error)
-					reply.status(400).send({ response: JSON.parse(err.message) });
-				reply.status(400).send({ response: 'Unknown error' });
+					res.status(400).send({ response: JSON.parse(err.message) });
+				res.status(400).send({ response: 'Unknown error' });
 			}
 		}
 	);
@@ -229,26 +275,26 @@ export default async function veterinaryRoutes(fastify: FastifyInstance) {
 	fastify.delete(
 		'/veterinary/:id',
 		{ onRequest: authenticate },
-		async (request, reply) => {
+		async (req, res) => {
 			try {
 				const queryParams = z.object({ id: z.string() });
 
-				const { id } = queryParams.parse(request.params);
+				const { id } = queryParams.parse(req.params);
 
 				if (!id)
-					reply
+					res
 						.status(400)
-						.send({ response: new Messages().MESSAGE_ERROR.REQUIRED_ID });
+						.send({ message: new Messages().MESSAGE_ERROR.REQUIRED_ID });
 				else {
 					const response = await veterinaryController.deleteVeterinary(
 						parseInt(id)
 					);
-					reply.status(response.statusCode).send(response.message);
+					res.status(response.statusCode).send(response.message);
 				}
 			} catch (err) {
 				if (err instanceof Error)
-					reply.status(400).send({ response: JSON.parse(err.message) });
-				reply.status(400).send({ response: 'Unknown error' });
+					res.status(400).send({ response: JSON.parse(err.message) });
+				res.status(400).send({ response: 'Unknown error' });
 			}
 		}
 	);
@@ -256,7 +302,7 @@ export default async function veterinaryRoutes(fastify: FastifyInstance) {
 	fastify.delete(
 		'/veterinarian/user/pet',
 		{ onRequest: authenticate },
-		async (request, reply) => {
+		async (req, res) => {
 			try {
 				const bodyParams = z.object({
 					AnimalTypesVetInfos: z.array(
@@ -268,20 +314,18 @@ export default async function veterinaryRoutes(fastify: FastifyInstance) {
 					),
 				});
 
-				const body = bodyParams.parse(request.body);
+				const body = bodyParams.parse(req.body);
 
 				const updateUser =
 					await specialtiesPetsController.deleteSpecialitiesPet(
 						body.AnimalTypesVetInfos
 					);
 
-				reply
-					.status(updateUser.statusCode)
-					.send({ response: updateUser.message });
+				res.status(updateUser.statusCode).send(updateUser.message);
 			} catch (err) {
 				if (err instanceof Error)
-					reply.status(400).send({ response: JSON.parse(err.message) });
-				reply.status(400).send({ response: 'Unknown error' });
+					res.status(400).send({ response: JSON.parse(err.message) });
+				res.status(400).send({ response: 'Unknown error' });
 			}
 		}
 	);
@@ -289,7 +333,7 @@ export default async function veterinaryRoutes(fastify: FastifyInstance) {
 	fastify.delete(
 		'/veterinarian/user',
 		{ onRequest: authenticate },
-		async (request, reply) => {
+		async (req, res) => {
 			try {
 				const bodyParams = z.object({
 					VeterinaryEspecialities: z.array(
@@ -301,22 +345,22 @@ export default async function veterinaryRoutes(fastify: FastifyInstance) {
 					),
 				});
 
-				const body = bodyParams.parse(request.body);
+				const body = bodyParams.parse(req.body);
 
 				// const updateUser = await specialtiesController.deleteSpecialities(
 				// 	body.VeterinaryEspecialities
 				// );
 
 				// res.status(updateUser.statusCode).send(updateUser.message);
-				reply.status(500).send({
+				res.status(500).send({
 					response: {
 						message: 'Feature in progress',
 					},
 				});
 			} catch (err) {
 				if (err instanceof Error)
-					reply.status(400).send({ response: JSON.parse(err.message) });
-				reply.status(400).send({ response: 'Unknown error' });
+					res.status(400).send({ response: JSON.parse(err.message) });
+				res.status(400).send({ response: 'Unknown error' });
 			}
 		}
 	);
