@@ -1,9 +1,7 @@
 import appointmentModel from '../model/appointmentModel';
-import { parse, isEqual, isSameMinute } from 'date-fns';
-import transformDateTimeStringIntoDate, {
-	transformDateStringIntoDate,
-} from '../utils/transformDateTimeStringIntoDate';
-import { Appointment, Prisma, Status } from '@prisma/client';
+import {parse} from 'date-fns';
+import transformDateTimeStringIntoDate, {transformDateStringIntoDate,} from '../utils/transformDateTimeStringIntoDate';
+import {Appointment, Prisma, Status} from '@prisma/client';
 import {
 	validateIfClientExists,
 	validateIfPetExists,
@@ -14,17 +12,17 @@ import {
 	petAppointmentsOverlaps,
 	veterinaryAppointmentsOverlaps,
 } from '../utils/validateOverlappingAppointmentDateTimes';
-import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
+import {PrismaClientKnownRequestError} from '@prisma/client/runtime';
 
 class AppointmentController {
 	async createAppointment(infos: AppointmentInfosToBeParsed) {
 		try {
 			if (!(await validateIfClientExists(infos.clientId)))
-				return { statusCode: 404, message: 'O cliente não existe' };
+				return {statusCode: 404, message: 'O cliente não existe'};
 			if (!(await validateIfVeterinaryExists(infos.veterinaryId)))
-				return { statusCode: 404, message: 'O veterinário não existe' };
+				return {statusCode: 404, message: 'O veterinário não existe'};
 			if (!(await validateIfPetExists(infos.petId)))
-				return { statusCode: 404, message: 'O pet não existe' };
+				return {statusCode: 404, message: 'O pet não existe'};
 
 			if (
 				parse(infos.date, 'dd-MM-yyyy', new Date()).toString().toLowerCase() ===
@@ -135,11 +133,11 @@ class AppointmentController {
 						createdAppointment,
 					},
 				};
-			return { statusCode: 400, message: 'Não foi possível criar a consulta' };
+			return {statusCode: 400, message: 'Não foi possível criar a consulta'};
 		} catch (err) {
 			if (err instanceof Error)
-				return { statusCode: 500, message: { error: JSON.parse(err.message) } };
-			return { statusCode: 500, message: { error: `Unknown error \n ${err}` } };
+				return {statusCode: 500, message: {error: JSON.parse(err.message)}};
+			return {statusCode: 500, message: {error: `Unknown error \n ${err}`}};
 		}
 	}
 
@@ -150,14 +148,14 @@ class AppointmentController {
 		try {
 			const allAppointments = await appointmentModel.getAllAppointments();
 			if (allAppointments.length > 0)
-				return { statusCode: 200, message: allAppointments };
+				return {statusCode: 200, message: allAppointments};
 			return {
 				statusCode: 404,
 				message: 'Nenhuma consulta foi achada no banco de dados',
 			};
 		} catch (err) {
-			if (err instanceof Error) return { statusCode: 500, message: err };
-			return { statusCode: 500, message: `Unkown error \n ${err}` };
+			if (err instanceof Error) return {statusCode: 500, message: err};
+			return {statusCode: 500, message: `Unkown error \n ${err}`};
 		}
 	}
 
@@ -166,16 +164,16 @@ class AppointmentController {
 	): Promise<{ statusCode: number; message: string | Appointment | Error }> {
 		try {
 			const appointment = await appointmentModel.findAppointmentById(id);
-			if (appointment) return { statusCode: 200, message: appointment };
+			if (appointment) return {statusCode: 200, message: appointment};
 			return {
 				statusCode: 404,
 				message: 'Nenhuma conculsta foi achada no banco de dados',
 			};
 		} catch (err) {
 			if (err instanceof Prisma.PrismaClientKnownRequestError)
-				return { statusCode: 400, message: err };
-			if (err instanceof Error) return { statusCode: 500, message: err };
-			return { statusCode: 500, message: `Unkown error \n ${err}` };
+				return {statusCode: 400, message: err};
+			if (err instanceof Error) return {statusCode: 500, message: err};
+			return {statusCode: 500, message: `Unkown error \n ${err}`};
 		}
 	}
 
@@ -185,48 +183,60 @@ class AppointmentController {
 		try {
 			const deletedAppointment = await appointmentModel.deleteAppointment(id);
 			if (deletedAppointment)
-				return { statusCode: 200, message: deletedAppointment };
+				return {statusCode: 200, message: deletedAppointment};
 			return {
 				statusCode: 404,
 				message: 'Não foi possível realizar a exclusão',
 			};
 		} catch (err) {
 			if (err instanceof Prisma.PrismaClientKnownRequestError) {
-				if (err.code === 'P2025') return { statusCode: 400, message: err };
-				return { statusCode: 400, message: err };
+				if (err.code === 'P2025') return {statusCode: 400, message: err};
+				return {statusCode: 400, message: err};
 			}
-			return { statusCode: 500, message: `Unkown error \n ${err}` };
+			return {statusCode: 500, message: `Unkown error \n ${err}`};
 		}
 	}
 
-	async updateAppointmentStatus(appointmentId: number, status: string) {
+	async updateAppointmentStatus(appointmentId: number, status: string, decodedToken: JwtSignUser) {
 		try {
+			validateIfIsVet(decodedToken)
 			let parsedStatus: Status;
 			switch (status) {
-				case 'WAITING_CONFIRMATION':
-					status = 'WAITING_CONFIRMATION';
+				case 'SCHEDULED':
+					parsedStatus = 'SCHEDULED';
+					break;
+				case 'DECLINED':
+					parsedStatus = 'DECLINED'
 					break;
 				case 'CANCELED':
-					status = 'CANCELED';
+					parsedStatus = 'CANCELED';
 					break;
 				case 'CONCLUDED':
-					status = 'CONCLUDED';
+					parsedStatus = 'CONCLUDED';
 					break;
 				default:
 					return {
 						statusCode: 400,
-						message: 'Tipos de tamanho incorretos',
-						options: ['SMALL', 'MEDIUM', 'BIG'],
+						message: 'Status inválido',
+						options: ['SCHEDULED', 'DECLINED', 'CANCELED', 'CONCLUDED'],
 					};
 			}
+			return {statusCode: 300, message: decodedToken}
+			// const updatedAppointment = await appointmentModel.updateAppointmentStatus(appointmentId, parsedStatus)
+			// return {statusCode: 200, updatedAppointment}
+
 		} catch (err) {
 			if (err instanceof Error)
-				return { statusCode: 400, message: JSON.parse(err.message) };
+				return {statusCode: 400, message: JSON.parse(err.message)};
 			if (err instanceof PrismaClientKnownRequestError)
-				return { statusCode: 500, message: err };
-			return { statusCode: 500, message: { unknown_error: err } };
+				return {statusCode: 500, message: err};
+			return {statusCode: 500, message: {unknown_error: err}};
 		}
 	}
 }
 
 export default new AppointmentController();
+
+function validateIfIsVet(decodedToken: JwtSignUser): boolean {
+	return decodedToken.isVet
+}
