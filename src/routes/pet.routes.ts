@@ -1,6 +1,6 @@
-import { FastifyInstance } from 'fastify';
+import {FastifyInstance} from 'fastify';
 import authenticate from '../middlewares/authenticate';
-import { z } from 'zod';
+import {z} from 'zod';
 import PetController from '../controller/petController';
 
 const petController = new PetController();
@@ -12,18 +12,18 @@ export default async function petRoutes(fastify: FastifyInstance) {
 				petID: z.string(),
 			});
 
-			const { petID } = queryParams.parse(request.query);
+			const {petID} = queryParams.parse(request.query);
 			const controllerResponse = await petController.getPetById(
 				parseInt(petID)
 			);
 
 			reply
 				.status(controllerResponse.statusCode)
-				.send({ resposne: controllerResponse });
+				.send({resposne: controllerResponse});
 		} catch (err) {
 			if (err instanceof Error)
-				reply.status(400).send({ resposne: JSON.parse(err.message) });
-			reply.status(400).send({ response: err });
+				reply.status(400).send({resposne: JSON.parse(err.message)});
+			reply.status(400).send({response: err});
 		}
 	});
 
@@ -32,23 +32,27 @@ export default async function petRoutes(fastify: FastifyInstance) {
 			const queryParams = z.object({
 				userID: z.string(),
 			});
-			const { userID } = queryParams.parse(request.query);
+			const {userID} = queryParams.parse(request.query);
 
 			const controllerResponse = await petController.getAllPets(
 				parseInt(userID)
 			);
 
+			if (controllerResponse.pets)
+				reply
+					.status(controllerResponse.statusCode)
+					.send({response: controllerResponse});
 			reply
-				.status(controllerResponse.statusCode)
-				.send({ message: controllerResponse });
+				.status(404)
+				.send({response: 'Nenhum registro encrontrado no banco de dados'})
 		} catch (err) {
 			if (err instanceof Error)
-				reply.status(400).send({ message: JSON.parse(err.message) });
-			reply.status(400).send({ message: err });
+				reply.status(400).send({message: JSON.parse(err.message)});
+			reply.status(400).send({message: err});
 		}
 	});
 
-	fastify.post('/pet', { onRequest: authenticate }, async (request, reply) => {
+	fastify.post('/pet', {onRequest: authenticate}, async (request, reply) => {
 		try {
 			const bodyParams = z.object({
 				name: z.string(),
@@ -64,7 +68,7 @@ export default async function petRoutes(fastify: FastifyInstance) {
 			});
 
 			const body = bodyParams.parse(request.body);
-			const { userID } = queryParams.parse(request.query);
+			const {userID} = queryParams.parse(request.query);
 
 			const createPetInfos: PetInfosControllerProps = {
 				...body,
@@ -75,38 +79,38 @@ export default async function petRoutes(fastify: FastifyInstance) {
 
 			reply
 				.status(controllerResponse.statusCode)
-				.send({ response: controllerResponse });
+				.send({response: controllerResponse});
 		} catch (err) {
 			if (err instanceof Error)
-				reply.status(400).send({ response: err.message });
-			reply.status(400).send({ response: err });
+				reply.status(400).send({response: err.message});
+			reply.status(400).send({response: err});
 		}
 	});
 
 	fastify.delete(
 		'/pet',
-		{ onRequest: authenticate },
+		{onRequest: authenticate},
 		async (request, reply) => {
 			try {
 				const queryParams = z.object({
 					petID: z.string(),
 				});
 
-				const { petID } = queryParams.parse(request.query);
+				const {petID} = queryParams.parse(request.query);
 				const controllerResponse = await petController.deletePet(
 					parseInt(petID)
 				);
 
-				reply.status(200).send({ response: controllerResponse });
+				reply.status(200).send({response: controllerResponse});
 			} catch (err) {
 				if (err instanceof Error)
-					reply.status(400).send({ response: err.message });
-				reply.status(400).send({ response: err });
+					reply.status(400).send({response: err.message});
+				reply.status(400).send({response: err});
 			}
 		}
 	);
 
-	fastify.put('/pet', { onRequest: authenticate }, async (request, reply) => {
+	fastify.put('/pet', {onRequest: authenticate}, async (request, reply) => {
 		try {
 			const bodyParams = z.object({
 				name: z.string(),
@@ -122,7 +126,7 @@ export default async function petRoutes(fastify: FastifyInstance) {
 				petID: z.string(),
 			});
 
-			const { petID } = queryParams.parse(request.query);
+			const {petID} = queryParams.parse(request.query);
 			const petInfos = bodyParams.parse(request.body);
 
 			const controllerResponse = await petController.updatePet(
@@ -137,11 +141,11 @@ export default async function petRoutes(fastify: FastifyInstance) {
 				});
 			reply
 				.status(controllerResponse.statusCode)
-				.send({ response: controllerResponse.message });
+				.send({response: controllerResponse.message});
 		} catch (err) {
 			if (err instanceof Error)
-				reply.status(400).send({ response: err.message });
-			reply.status(400).send({ response: err });
+				reply.status(400).send({response: err.message});
+			reply.status(400).send({response: err});
 		}
 	});
 }
