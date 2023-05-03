@@ -1,5 +1,5 @@
 import prisma from '../lib/prisma';
-import { Appointment, Status } from '@prisma/client';
+import {Appointment, Status} from '@prisma/client';
 
 class AppointmentModel {
 	async createAppointment(infos: AppointmentInfos): Promise<Appointment> {
@@ -110,8 +110,8 @@ class AppointmentModel {
 		return null;
 	}
 
-	async updateAppointmentStatus(id: number, status: Status) {
-		return await prisma.appointment.update({
+	async updateAppointmentStatus(id: number, status: Status): Promise<Appointment> {
+		return prisma.appointment.update({
 			where: {
 				id,
 			},
