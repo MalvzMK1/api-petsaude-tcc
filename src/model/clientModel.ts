@@ -82,7 +82,7 @@ export default class ClientModel {
 	}
 
 	async updateClientPersonalInfos(userID: number, userInfos: UpdateClientPersonalInfosProps) {
-		return await prisma.client.update({
+		return prisma.client.update({
 			where: {
 				id: userID,
 			},
