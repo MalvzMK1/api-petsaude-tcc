@@ -31,7 +31,14 @@ export default async function appointmentRoutes(fastify: FastifyInstance) {
 								...infos,
 								clientId: jwt.id,
 							});
-							reply.status(response.statusCode).send({response});
+							if (response.createdAppointment)
+								reply.status(response.statusCode).send({
+									response: {
+										message: response.message,
+										createdAppointment: response.createdAppointment
+									}
+								})
+							reply.status(response.statusCode).send({response: response.message});
 						}
 						reply.status(400).send({
 							response:
@@ -51,7 +58,7 @@ export default async function appointmentRoutes(fastify: FastifyInstance) {
 	fastify.get('/appointment/all', async (request, reply) => {
 		try {
 			const response = await appointmentController.getAllAppointments();
-			reply.status(response.statusCode).send(response.message);
+			reply.status(response.statusCode).send({response: {allAppointments: response.message}});
 		} catch (err) {
 			if (err instanceof ZodError) reply.status(400).send({response: err})
 			if (err instanceof Error) reply.status(500).send({response: JSON.parse(err.message)})

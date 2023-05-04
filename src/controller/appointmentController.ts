@@ -128,10 +128,8 @@ class AppointmentController {
 			if (createdAppointment)
 				return {
 					statusCode: 201,
-					response: {
-						message: 'Consulta criada com sucesso',
-						createdAppointment,
-					},
+					message: 'Consulta criada com sucesso',
+					createdAppointment
 				};
 			return {statusCode: 400, message: 'Não foi possível criar a consulta'};
 		} catch (err) {
