@@ -1,6 +1,6 @@
 import {FastifyInstance} from 'fastify';
 import authenticate from '../middlewares/authenticate';
-import {z} from 'zod';
+import {z, ZodError} from 'zod';
 import appointmentController from '../controller/appointmentController';
 import validateIfIsVet from "../utils/validateIfIsVet";
 
@@ -42,9 +42,9 @@ export default async function appointmentRoutes(fastify: FastifyInstance) {
 				}
 				reply.status(401).send({response: 'Token JWT não recebido'});
 			} catch (err) {
-				if (err instanceof Error)
-					reply.status(404).send({response: JSON.parse(err.message)});
-				else reply.status(404).send({response: 'Campos inválidos'});
+				if (err instanceof ZodError) reply.status(400).send({response: err})
+				if (err instanceof Error) reply.status(500).send({response: JSON.parse(err.message)})
+				reply.status(500).send({response: err})
 			}
 		}
 	);
@@ -53,9 +53,9 @@ export default async function appointmentRoutes(fastify: FastifyInstance) {
 			const response = await appointmentController.getAllAppointments();
 			reply.status(response.statusCode).send(response.message);
 		} catch (err) {
-			if (err instanceof Error)
-				reply.status(500).send({response: JSON.parse(err.message)});
-			reply.status(500).send({response: err});
+			if (err instanceof ZodError) reply.status(400).send({response: err})
+			if (err instanceof Error) reply.status(500).send({response: JSON.parse(err.message)})
+			reply.status(500).send({response: err})
 		}
 	});
 
@@ -72,9 +72,9 @@ export default async function appointmentRoutes(fastify: FastifyInstance) {
 			);
 			reply.status(response.statusCode).send({response: response.message});
 		} catch (err) {
-			if (err instanceof Error)
-				reply.status(400).send({response: JSON.parse(err.message)});
-			reply.status(400).send({response: err});
+			if (err instanceof ZodError) reply.status(400).send({response: err})
+			if (err instanceof Error) reply.status(500).send({response: JSON.parse(err.message)})
+			reply.status(500).send({response: err})
 		}
 	});
 
@@ -103,9 +103,9 @@ export default async function appointmentRoutes(fastify: FastifyInstance) {
 					}
 				}
 			} catch (err) {
-				if (err instanceof Error)
-					reply.status(400).send({response: JSON.parse(err.message)});
-				reply.status(400).send({response: err});
+				if (err instanceof ZodError) reply.status(400).send({response: err})
+				if (err instanceof Error) reply.status(500).send({response: JSON.parse(err.message)})
+				reply.status(500).send({response: err})
 			}
 		}
 	);
@@ -157,6 +157,32 @@ export default async function appointmentRoutes(fastify: FastifyInstance) {
 		} catch (err) {
 			if (err instanceof Error) reply.status(400).send({response: JSON.parse(err.message)})
 			reply.status(400).send({response: err})
+		}
+	})
+
+	fastify.put('/appointment/:appointmentId/status/:status', {onRequest: authenticate}, async (request, reply) => {
+		try {
+			const urlParams = z.object({
+				appointmentId: z.string(),
+				status: z.string()
+			})
+
+			const {appointmentId, status} = urlParams.parse(request.params)
+			// @ts-ignore
+			const user: JwtSignUser = request.user
+
+			const response = await appointmentController.changeAppointmentStatus(Number(appointmentId), {
+				isVet: user.isVet,
+				userId: user.id
+			}, status)
+
+			if (response.options)
+				reply.status(response.statusCode).send({response: {message: response.message, options: response.options}})
+			reply.status(response.statusCode).send({response: {message: response.message}})
+		} catch (err) {
+			if (err instanceof ZodError) reply.status(400).send({response: err})
+			if (err instanceof Error) reply.status(500).send({response: JSON.parse(err.message)})
+			reply.status(500).send({response: err})
 		}
 	})
 }

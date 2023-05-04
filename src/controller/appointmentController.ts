@@ -236,6 +236,43 @@ class AppointmentController {
 			return {statusCode: 500, message: {unknown_error: err}};
 		}
 	}
+
+	async changeAppointmentStatus(appointmentId: number, userInfos: { isVet: boolean, userId: number }, status: string) {
+		try {
+			let parsedStatus: Status
+			switch (status.toUpperCase()) {
+				case 'CANCELED':
+					parsedStatus = 'CANCELED'
+					break;
+				case 'CONCLUDED':
+					parsedStatus = 'CONCLUDED'
+					break;
+				default:
+					return {statusCode: 400, message: 'Status inválido', options: ['CANCELED', 'CONCLUDED']}
+			}
+
+			const appointment = await appointmentModel.findAppointmentById(appointmentId)
+			if (appointment) {
+				if (userInfos.isVet)
+					if (appointment.veterinaryId !== userInfos.userId)
+						return {statusCode: 401, message: 'Não é possível alterar consultas de outros usuários'}
+				if (!userInfos.isVet)
+					if (appointment.clientId !== userInfos.userId)
+						return {statusCode: 401, message: 'Não é possível alterar consultas de outros usuários'}
+
+				const updatedAppointment = await appointmentModel.updateAppointmentStatus(appointment.id, parsedStatus)
+				if (parsedStatus === 'CANCELED')
+					return {statusCode: 200, message: 'Consulta cancelada', updatedAppointment}
+				return {statusCode: 200, message: 'Consulta concluída', updatedAppointment}
+			}
+			return {statusCode: 404, message: 'Nenhuma consulta encontrada no banco de dados'}
+
+		} catch (err) {
+			if (err instanceof PrismaClientKnownRequestError) return {statusCode: 400, message: err}
+			if (err instanceof Error) return {statusCode: 500, message: JSON.parse(err.message)}
+			return {statusCode: 500, message: err}
+		}
+	}
 }
 
 export default new AppointmentController();
