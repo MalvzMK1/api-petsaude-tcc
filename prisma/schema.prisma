@@ -2,201 +2,201 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-	provider      = "prisma-client-js"
-	binaryTargets = ["native", "debian-openssl-1.1.x"]
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "debian-openssl-1.1.x"]
 }
 
 generator erd {
-	provider = "prisma-erd-generator"
+  provider = "prisma-erd-generator"
 }
 
 datasource db {
-	provider = "mysql"
-	url      = env("DATABASE_URL")
+  provider = "mysql"
+  url      = env("DATABASE_URL")
 }
 
 // ************************** COMMON USER **************************
 
 model Client {
-	id                 Int           @id @default(autoincrement())
-	personName         String        @map("person_name") @db.VarChar(100)
-	userName           String        @map("user_name") @db.VarChar(50)
-	cpf                String        @unique @db.VarChar(14)
-	rg                 String?       @unique @db.VarChar(14)
-	profilePhoto       String?       @map("profile_photo")
-	profileBannerPhoto String?       @map("profile_banner_photo")
-	email              String        @unique @db.VarChar(256)
-	password           String
-	phoneNumber        String?       @map("phone_number") @db.VarChar(15)
-	cellphoneNumber    String        @map("cellphone_number") @db.VarChar(15)
-	isVet              Boolean       @default(false) @map("is_vet")
-	biography          String?       @db.VarChar(1000)
-	Pet                Pet[]
-	Appointments       Appointment[]
+  id                 Int           @id @default(autoincrement())
+  personName         String        @map("person_name") @db.VarChar(100)
+  userName           String        @map("user_name") @db.VarChar(50)
+  cpf                String        @unique @db.VarChar(14)
+  rg                 String?       @unique @db.VarChar(14)
+  profilePhoto       String?       @map("profile_photo")
+  profileBannerPhoto String?       @map("profile_banner_photo")
+  email              String        @unique @db.VarChar(256)
+  password           String
+  phoneNumber        String?       @map("phone_number") @db.VarChar(15)
+  cellphoneNumber    String        @map("cellphone_number") @db.VarChar(15)
+  isVet              Boolean       @default(false) @map("is_vet")
+  biography          String?       @db.VarChar(1000)
+  Pet                Pet[]
+  Appointments       Appointment[]
 
-	addressId Int     @unique @map("address_id")
-	Address   Address @relation(fields: [addressId], references: [id])
+  addressId Int     @unique @map("address_id")
+  Address   Address @relation(fields: [addressId], references: [id])
 
-	@@map("tbl_client")
+  @@map("tbl_client")
 }
 
 model Veterinary {
-	id                 Int      @id @default(autoincrement())
-	personName         String   @map("person_name") @db.VarChar(100)
-	userName           String   @map("user_name") @db.VarChar(50)
-	cpf                String   @unique @db.VarChar(14)
-	rg                 String?  @unique @db.VarChar(13)
-	profilePhoto       String?  @map("profile_photo")
-	profileBannerPhoto String?  @map("profile_banner_photo")
-	email              String   @unique @db.VarChar(256)
-	password           String
-	occupationArea     String   @map("occupation_area") @db.VarChar(50)
-	formation          String   @db.VarChar(30)
-	institution        String   @db.VarChar(100)
-	crmv               String   @unique @db.VarChar(6)
-	formationDate      DateTime @map("formation_date") @db.Date
-	startActingDate    DateTime @map("start_acting_date") @db.Date
-	phoneNumber        String?  @map("phone_number") @db.VarChar(15)
-	cellphoneNumber    String   @map("cellphone_number") @db.VarChar(15)
-	isVet              Boolean  @default(true)
-	biography          String?  @db.VarChar(1000)
+  id                 Int      @id @default(autoincrement())
+  personName         String   @map("person_name") @db.VarChar(100)
+  userName           String   @map("user_name") @db.VarChar(50)
+  cpf                String   @unique @db.VarChar(14)
+  rg                 String?  @unique @db.VarChar(13)
+  profilePhoto       String?  @map("profile_photo")
+  profileBannerPhoto String?  @map("profile_banner_photo")
+  email              String   @unique @db.VarChar(256)
+  password           String
+  occupationArea     String   @map("occupation_area") @db.VarChar(50)
+  formation          String   @db.VarChar(30)
+  institution        String   @db.VarChar(100)
+  crmv               String   @unique @db.VarChar(6)
+  formationDate      DateTime @map("formation_date") @db.Date
+  startActingDate    DateTime @map("start_acting_date") @db.Date
+  phoneNumber        String?  @map("phone_number") @db.VarChar(15)
+  cellphoneNumber    String   @map("cellphone_number") @db.VarChar(15)
+  isVet              Boolean  @default(true)
+  biography          String?  @db.VarChar(1000)
 
-	PetSpecieVeterinary     PetSpecieVeterinary[]
-	VeterinaryEspecialities VeterinarySpecialities[]
-	Appointments            Appointment[]
+  PetSpecieVeterinary     PetSpecieVeterinary[]
+  VeterinaryEspecialities VeterinarySpecialities[]
+  Appointments            Appointment[]
 
-	addressId Int     @unique @map("address_id")
-	Address   Address @relation(fields: [addressId], references: [id])
-	Posts     Post[]
+  addressId Int     @unique @map("address_id")
+  Address   Address @relation(fields: [addressId], references: [id])
+  Posts     Post[]
 
-	@@map("tbl_veterinary")
+  @@map("tbl_veterinary")
 }
 
 // ************************** VET INFOS **************************
 
 model PetSpecieVeterinary {
-	id Int @id @default(autoincrement())
+  id Int @id @default(autoincrement())
 
-	petSpecieId  Int?        @map("pet_specie_id")
-	PetSpecie    PetSpecie?  @relation(fields: [petSpecieId], references: [id])
-	veterinaryId Int?        @map("veterinary_id")
-	Veterinary   Veterinary? @relation(fields: [veterinaryId], references: [id])
+  petSpecieId  Int?        @map("pet_specie_id")
+  PetSpecie    PetSpecie?  @relation(fields: [petSpecieId], references: [id])
+  veterinaryId Int?        @map("veterinary_id")
+  Veterinary   Veterinary? @relation(fields: [veterinaryId], references: [id])
 
-	@@map("tbl_pet_specie_veterinary")
+  @@map("tbl_pet_specie_veterinary")
 }
 
 model VeterinarySpecialities {
-	id             Int          @id @default(autoincrement())
-	specialitiesId Int          @map("specialities_id")
-	specialities   Specialities @relation(fields: [specialitiesId], references: [id])
-	veterinaryId   Int?         @map("veterinary_id")
-	Veterinary     Veterinary?  @relation(fields: [veterinaryId], references: [id])
+  id             Int          @id @default(autoincrement())
+  specialitiesId Int          @map("specialities_id")
+  specialities   Specialities @relation(fields: [specialitiesId], references: [id])
+  veterinaryId   Int?         @map("veterinary_id")
+  Veterinary     Veterinary?  @relation(fields: [veterinaryId], references: [id])
 
-	@@map("tbl_veterinary_specialities")
+  @@map("tbl_veterinary_specialities")
 }
 
 model Specialities {
-	id                      Int                      @id @default(autoincrement())
-	name                    String                   @db.TinyText
-	VeterinaryEspecialities VeterinarySpecialities[]
+  id                      Int                      @id @default(autoincrement())
+  name                    String                   @db.TinyText
+  VeterinaryEspecialities VeterinarySpecialities[]
 
-	@@map("tbl_specialities")
+  @@map("tbl_specialities")
 }
 
 // ************************** ADDRESS **************************
 
 model Address {
-	id         Int     @id @default(autoincrement())
-	cep        String  @db.VarChar(10)
-	complement String? @db.VarChar(5)
-	number     String  @db.VarChar(10)
+  id         Int     @id @default(autoincrement())
+  cep        String  @db.VarChar(10)
+  complement String? @db.VarChar(5)
+  number     String  @db.VarChar(10)
 
-	Client     Client[]
-	Veterinary Veterinary[]
+  Client     Client[]
+  Veterinary Veterinary[]
 
-	@@map("tbl_address")
+  @@map("tbl_address")
 }
 
 // ************************** PET INFOS **************************
 
 model Pet {
-	id        Int           @id @default(autoincrement())
-	name      String        @db.VarChar(100)
-	birthDate DateTime      @map("birth_date") @db.Date
-	photo     String?
-	microship Boolean
-	petSize   PetSizeEnum   @map("pet_size")
-	petGender PetGenderEnum @map("pet_gender")
+  id        Int           @id @default(autoincrement())
+  name      String        @db.VarChar(100)
+  birthDate DateTime      @map("birth_date") @db.Date
+  photo     String?
+  microship Boolean
+  petSize   PetSizeEnum   @map("pet_size")
+  petGender PetGenderEnum @map("pet_gender")
 
-	petSpecieId Int       @map("pet_specie_id")
-	petSpecie   PetSpecie @relation(fields: [petSpecieId], references: [id])
+  petSpecieId Int       @map("pet_specie_id")
+  petSpecie   PetSpecie @relation(fields: [petSpecieId], references: [id])
 
-	ownerId     Int           @map("owner_id")
-	Owner       Client        @relation(fields: [ownerId], references: [id])
-	Appointment Appointment[]
+  ownerId     Int           @map("owner_id")
+  Owner       Client        @relation(fields: [ownerId], references: [id])
+  Appointment Appointment[]
 
-	@@map("tbl_pet")
+  @@map("tbl_pet")
 }
 
 enum PetSizeEnum {
-	BIG
-	MEDIUM
-	SMALL
+  BIG
+  MEDIUM
+  SMALL
 
-	@@map("tbl_pet_size")
+  @@map("tbl_pet_size")
 }
 
 enum PetGenderEnum {
-	M
-	F
+  M
+  F
 
-	@@map("tbl_pet_gender")
+  @@map("tbl_pet_gender")
 }
 
 model PetSpecie {
-	id                  Int                   @id @default(autoincrement())
-	name                String                @db.TinyText
-	Pet                 Pet[]
-	PetSpecieVeterinary PetSpecieVeterinary[]
+  id                  Int                   @id @default(autoincrement())
+  name                String                @db.TinyText
+  Pet                 Pet[]
+  PetSpecieVeterinary PetSpecieVeterinary[]
 
-	@@map("tbl_pet_specie")
+  @@map("tbl_pet_specie")
 }
 
 model Appointment {
-	id          Int      @id @default(autoincrement())
-	description String   @db.VarChar(1000)
-	status      Status   @default(WAITING_CONFIRMATION)
-	date        DateTime @db.Date
-	startsAt    DateTime @map("starts_at") @db.Time()
-	endsAt      DateTime @map("ends_at") @db.Time()
+  id          Int      @id @default(autoincrement())
+  description String   @db.VarChar(1000)
+  status      Status   @default(WAITING_CONFIRMATION)
+  date        DateTime @db.Date
+  startsAt    DateTime @map("starts_at") @db.Time()
+  endsAt      DateTime @map("ends_at") @db.Time()
 
-	clientId     Int        @map("client_id")
-	Client       Client     @relation(fields: [clientId], references: [id])
-	veterinaryId Int        @map("veterinary_id")
-	Veterinary   Veterinary @relation(fields: [veterinaryId], references: [id])
-	petId        Int        @map("pet_id")
-	pet          Pet        @relation(fields: [petId], references: [id])
+  clientId     Int        @map("client_id")
+  Client       Client     @relation(fields: [clientId], references: [id])
+  veterinaryId Int        @map("veterinary_id")
+  Veterinary   Veterinary @relation(fields: [veterinaryId], references: [id])
+  petId        Int        @map("pet_id")
+  pet          Pet        @relation(fields: [petId], references: [id])
 
-	@@map("tbl_appointment")
+  @@map("tbl_appointment")
 }
 
 model Post {
-	id           Int        @id @default(autoincrement())
-	title        String     @db.VarChar(50)
-	text         String     @db.VarChar(1000)
-	image        String?
-	veterinaryId Int        @map("veterinary_id")
-	veterinary   Veterinary @relation(fields: [veterinaryId], references: [id])
+  id           Int        @id @default(autoincrement())
+  title        String     @db.VarChar(50)
+  text         String     @db.VarChar(1000)
+  image        String?
+  veterinaryId Int        @map("veterinary_id")
+  veterinary   Veterinary @relation(fields: [veterinaryId], references: [id])
 
-	@@map("tbl_post")
+  @@map("tbl_post")
 }
 
 enum Status {
-	CONCLUDED
-	SCHEDULED
-	WAITING_CONFIRMATION
-	CANCELED
-	DECLINED
+  CONCLUDED
+  SCHEDULED
+  WAITING_CONFIRMATION
+  CANCELED
+  DECLINED
 
-	@@map("tbl_status")
+  @@map("tbl_status")
 }

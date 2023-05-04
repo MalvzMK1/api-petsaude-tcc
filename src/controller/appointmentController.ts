@@ -199,7 +199,6 @@ class AppointmentController {
 
 	async updateAppointmentStatus(appointmentId: number, status: string, decodedToken: JwtSignUser) {
 		try {
-			validateIfIsVet(decodedToken)
 			let parsedStatus: Status;
 			switch (status) {
 				case 'SCHEDULED':
@@ -236,7 +235,3 @@ class AppointmentController {
 }
 
 export default new AppointmentController();
-
-function validateIfIsVet(decodedToken: JwtSignUser): boolean {
-	return decodedToken.isVet
-}

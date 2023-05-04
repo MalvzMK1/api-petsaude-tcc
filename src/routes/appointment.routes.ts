@@ -2,7 +2,7 @@ import {FastifyInstance} from 'fastify';
 import authenticate from '../middlewares/authenticate';
 import {z} from 'zod';
 import appointmentController from '../controller/appointmentController';
-import validateIfIsVet from "../middlewares/validateIfIsVet";
+import validateIfIsVet from "../utils/validateIfIsVet";
 
 export default async function appointmentRoutes(fastify: FastifyInstance) {
 	fastify.post(
@@ -110,7 +110,7 @@ export default async function appointmentRoutes(fastify: FastifyInstance) {
 		}
 	);
 
-	fastify.put('/appointment/:appointmentId/validate', {onRequest: [authenticate, validateIfIsVet]}, async (request, reply) => {
+	fastify.put('/appointment/:appointmentId/validate', {onRequest: [authenticate]}, async (request, reply) => {
 		try {
 			const urlParams = z.object({
 				appointmentId: z.string()
@@ -131,6 +131,12 @@ export default async function appointmentRoutes(fastify: FastifyInstance) {
 							options: ['SCHEDULED', 'DECLINED']
 						}
 					})
+					if (!validateIfIsVet(jwt))
+						reply.status(401).send({
+							response: {
+								error: 'Você não tem permissão para fazer essa alteração'
+							}
+						})
 
 					const {appointmentId} = urlParams.parse(request.params)
 					const controllerResponse = await appointmentController.updateAppointmentStatus(Number(appointmentId), status, jwt)
