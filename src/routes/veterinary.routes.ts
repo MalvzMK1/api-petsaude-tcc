@@ -34,27 +34,27 @@ export default async function veterinaryRoutes(fastify: FastifyInstance) {
 		}
 	});
 
-	// fastify.get('/veterinary', async (request, reply) => {
-	// 	try {
-	// 		const queryParams = z.object({
-	// 			userID: z.string(),
-	// 		});
-	//
-	// 		const { userID } = queryParams.parse(request.query);
-	//
-	// 		if (!userID) reply.status(400).send({ message: 'Required ID' });
-	//
-	// 		const userInfos = await veterinaryController.getVeterinaryById(parseInt(userID));
-	//
-	// 		reply
-	// 			.status(userInfos.statusCode)
-	// 			.send({ response: { user: userInfos?.message } });
-	// 	} catch (err) {
-	// 		if (err instanceof Error)
-	// 			reply.status(400).send({ response: JSON.parse(err.message) });
-	// 		reply.status(400).send({ response: 'Unknown error' });
-	// 	}
-	// });
+	fastify.get('/id/veterinary', async (request, reply) => {
+		try {
+			const queryParams = z.object({
+				userID: z.string(),
+			});
+	
+			const { userID } = queryParams.parse(request.query);
+	
+			if (!userID) reply.status(400).send({ message: 'Required ID' });
+	
+			const userInfos = await veterinaryController.getVeterinaryById(parseInt(userID));
+	
+			reply
+				.status(userInfos.statusCode)
+				.send({ response: { user: userInfos?.message } });
+		} catch (err) {
+			if (err instanceof Error)
+				reply.status(400).send({ response: JSON.parse(err.message) });
+			reply.status(400).send({ response: 'Unknown error' });
+		}
+	});
 
 	fastify.post('/veterinary', async (request, reply) => {
 		try {

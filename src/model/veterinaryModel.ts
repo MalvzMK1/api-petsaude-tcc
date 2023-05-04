@@ -105,7 +105,7 @@ export default class VeterinaryModel {
 		try {
 
 			return await prisma.veterinary.update({
-				where:{
+				where: {
 					id: id
 				},
 				data:{
@@ -114,7 +114,7 @@ export default class VeterinaryModel {
 					institution: body.institution,
 					crmv: body.crmv,
 					startActingDate: body.startActingDate,
-					formationDate: body.formationDate,
+					formationDate: body.formationDate
 				}
 			})
 
