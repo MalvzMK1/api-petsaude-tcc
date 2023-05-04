@@ -59,10 +59,57 @@ class SpecialtiesController {
 		}
 	}
 
+	async getSpecialities() {
+		try {
+			const response = await specialitiesModel.findAllSpecialities()
+
+			if (response)
+				return {
+					statusCode: 200,
+					message: response,
+				};
+			return {
+				statusCode: 404,
+				message: message.MESSAGE_ERROR.NOT_FOUND_DB,
+			};
+
+		}catch (err) {
+			if (err instanceof Error)
+				return {
+					statusCode: 500,
+					message: JSON.parse(err.message),
+				};
+			return {
+				statusCode: 500,
+				message: new Message().MESSAGE_ERROR.INTERNAL_ERROR_DB,
+			};
+		}
+
+	}
+
 	async getSpecialityById(id: number) {
 		try {
 			const response = await specialitiesModel.findSpecialityById(id);
 			if (response) return response;
+			return null;
+		} catch (err) {
+			if (err instanceof Error)
+				return {
+					statusCode: 500,
+					message: JSON.parse(err.message),
+				};
+			return {
+				statusCode: 500,
+				message: message.MESSAGE_ERROR.INTERNAL_ERROR_DB,
+			};
+		}
+	}
+
+	async findSpecialtiesVeterinary(id: number) {
+		try {
+			const response = await specialitiesModel.findSpecialitiesVeterinary(id);
+			if (response)
+				return { statusCode: 200, message: response };
 			return null;
 		} catch (err) {
 			if (err instanceof Error)

@@ -134,7 +134,7 @@ export default async function veterinaryRoutes(fastify: FastifyInstance) {
 				} else res.status(400).send(new Messages().MESSAGE_ERROR.REQUIRED_ID);
 			} catch (err) {
 				if (err instanceof Error)
-					res.status(400).send({response: JSON.parse(err.message)});
+					res.status(400).send({response: err.message});
 				res.status(400).send({response: 'Unknown error'});
 			}
 		}
