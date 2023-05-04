@@ -57,49 +57,55 @@ export default class VeterinaryModel {
 		}
 	}
 
-	async findVeterinaryById(id: number) {
+	async findVeterinaryById(userID: number) {
 		try {
 			return await prisma.veterinary.findUnique({
 				where: {
-					id
-				}
-			})
-		} catch (err) {
-			if (err instanceof Error) throw new Error(`${err.message}`)
-		}
-	}
-
-	async updateVeterinaryPersonalInfos(
-		id: number,
-		body: UpdateVeterinaryPersonalInfos
-	) {
-		try {
-			return await prisma.veterinary.update({
-				where: {
-					id: id,
+					id: userID,
 				},
-				data: {
-					personName: body.personName,
-					cpf: body.cpf,
-					email: body.email,
-					password: body.password,
-					cellphoneNumber: body.cellphoneNumber,
-					rg: body.rg,
-					phoneNumber: body.phoneNumber,
-					profileBannerPhoto: body.profileBannerPhoto,
-					profilePhoto: body.profilePhoto
+				include: {
+					PetSpecieVeterinary: true,
+					VeterinaryEspecialities: true,
+					Address: true,
+					Appointments: true
 				},
 			});
 		} catch (err) {
-			throw new Error(`${err}`);
+			throw new Error(`ERROR: ${err}`);
 		}
+	}
+
+	async updateVeterinaryPersonalInfos(userID: number, userInfos: UpdateClientPersonalInfosProps) {
+		return await prisma.veterinary.update({
+			where: {
+				id: userID,
+			},
+			data: {
+				personName: userInfos.personName,
+				cpf: userInfos.cpf,
+				rg: userInfos.rg,
+				phoneNumber: userInfos.phoneNumber,
+				cellphoneNumber: userInfos.cellphoneNumber,
+			},
+		});
+	}
+
+	async updateVeterinaryProfileInfos(veterinaryID: number, veterinaryInfos: UpdateClientProfileInfosProps) {
+		return await prisma.veterinary.update({
+			where: {
+				id: veterinaryID
+			},
+			data: {
+				...veterinaryInfos
+			}
+		})
 	}
 
 	async updateVeterinaryProfessionalInfos(id:number, body: UpdateVeterinaryProfessionalInfos) {
 		try {
 
 			return await prisma.veterinary.update({
-				where:{
+				where: {
 					id: id
 				},
 				data:{
@@ -108,7 +114,7 @@ export default class VeterinaryModel {
 					institution: body.institution,
 					crmv: body.crmv,
 					startActingDate: body.startActingDate,
-					formationDate: body.formationDate,
+					formationDate: body.formationDate
 				}
 			})
 

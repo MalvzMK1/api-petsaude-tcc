@@ -1,6 +1,9 @@
 import Message from '../messages/message';
 import VeterinaryModel from '../model/veterinaryModel';
-import {validateSameEmailBetweenClientsAndVeterinarians} from '../utils/validateExistentRegisters';
+import {
+	validateIfVeterinaryExists,
+	validateSameEmailBetweenClientsAndVeterinarians
+} from '../utils/validateExistentRegisters';
 import {Prisma} from "@prisma/client";
 import bcrypt from "../lib/bcrypt";
 
@@ -122,6 +125,34 @@ class VeterinaryController {
 		}
 	}
 
+	async getVeterinaryById(veterinaryID: number) {
+		try {
+			const userInfos = await veterinaryModel.findVeterinaryById(veterinaryID);
+
+			if (!userInfos) {
+				return {
+					statusCode: 404,
+					message: messages.MESSAGE_ERROR.NOT_FOUND_DB,
+				};
+			}
+
+			return {
+				statusCode: 200,
+				message: userInfos,
+			};
+		} catch (err) {
+			if (err instanceof Error)
+				return {
+					statusCode: 500,
+					message: JSON.parse(err.message),
+				};
+			return {
+				statusCode: 500,
+				message: messages.MESSAGE_ERROR.INTERNAL_ERROR_DB,
+			};
+		}
+	}
+
 	async createVeterinary(infos: createVeterinaryController) {
 		try {
 			const veterinarysWithSameCrmv =
@@ -210,28 +241,60 @@ class VeterinaryController {
 		}
 	}
 
-	async updateVeterinaryPersonalInfos(id: number, body: UpdateVeterinaryPersonalInfos) {
+	async updateVeterinaryPersonalInfos(veterinaryID: number, veterinaryInfos: UpdateClientPersonalInfosProps) {
 		try {
-
-			const response = await veterinaryModel.updateVeterinaryPersonalInfos(id, body)
-
-			if (response)
-				return {message: response, statusCode: 200}
-			else
-				return {statusCode: 404, message: new Message().MESSAGE_ERROR.NOT_FOUND_DB}
-
-
+			const updatedUser = await veterinaryModel.updateVeterinaryPersonalInfos(veterinaryID, veterinaryInfos);
+			if (updatedUser)
+				return {
+					statusCode: 200,
+					message: new Message().MESSAGE_SUCESS.UPDATE_ITEM,
+				};
+			return {
+				statusCode: 500,
+				message: new Message().MESSAGE_ERROR.INTERNAL_ERROR_DB,
+			};
 		} catch (err) {
+			if (err instanceof Prisma.PrismaClientKnownRequestError)
+				return {
+					statusCode: 400,
+					message: err
+				}
 			if (err instanceof Error)
 				return {
 					statusCode: 500,
 					message: JSON.parse(err.message),
 				};
-			else
+			return {
+				statusCode: 500,
+				message: new Message().MESSAGE_ERROR.INTERNAL_ERROR_DB,
+			};
+		}
+	}
+
+	async updateVeterinaryProfileInfos(veterinaryID: number, veterinaryInfos: UpdateClientProfileInfosProps) {
+		try {
+			if (!await validateIfVeterinaryExists(veterinaryID))
+				return {
+					statusCode: 404,
+					message: 'O Veterinario não existe no banco de dados'
+				}
+
+			const updatedUser = await veterinaryModel.updateVeterinaryProfileInfos(veterinaryID, veterinaryInfos)
+		} catch (err) {
+			if (err instanceof Prisma.PrismaClientKnownRequestError)
+				return {
+					statusCode: 400,
+					message: err
+				}
+			if (err instanceof Error)
 				return {
 					statusCode: 500,
-					message: new Message().MESSAGE_ERROR.INTERNAL_ERROR_DB,
+					message: JSON.parse(err.message),
 				};
+			return {
+				statusCode: 500,
+				message: new Message().MESSAGE_ERROR.INTERNAL_ERROR_DB,
+			};
 		}
 	}
 

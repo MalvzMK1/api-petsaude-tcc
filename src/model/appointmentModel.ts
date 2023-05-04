@@ -1,5 +1,5 @@
 import prisma from '../lib/prisma';
-import { Appointment } from '@prisma/client';
+import {Appointment, Status} from '@prisma/client';
 
 class AppointmentModel {
 	async createAppointment(infos: AppointmentInfos): Promise<Appointment> {
@@ -108,6 +108,17 @@ class AppointmentModel {
 
 		if (appointments.length > 0) return appointments;
 		return null;
+	}
+
+	async updateAppointmentStatus(id: number, status: Status): Promise<Appointment> {
+		return prisma.appointment.update({
+			where: {
+				id,
+			},
+			data: {
+				status,
+			},
+		});
 	}
 }
 

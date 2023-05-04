@@ -43,11 +43,6 @@ type UpdateClientProfileInfosProps = {
 	password: string;
 }
 
-type postPhoneUser = {
-	userId: number;
-	number: string;
-};
-
 type JwtSignUser = {
 	id: number;
 	userName: string;

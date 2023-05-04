@@ -196,6 +196,7 @@ enum Status {
   SCHEDULED
   WAITING_CONFIRMATION
   CANCELED
+  DECLINED
 
   @@map("tbl_status")
 }
