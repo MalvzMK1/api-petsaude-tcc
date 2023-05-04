@@ -139,8 +139,15 @@ export default async function appointmentRoutes(fastify: FastifyInstance) {
 						})
 
 					const {appointmentId} = urlParams.parse(request.params)
-					const controllerResponse = await appointmentController.updateAppointmentStatus(Number(appointmentId), status, jwt)
+					const controllerResponse = await appointmentController.acceptOrDeclineWaitingConfirmationAppointment(Number(appointmentId), status, jwt.id)
 
+					if (controllerResponse.updatedAppointment)
+						reply.status(controllerResponse.statusCode).send({
+							response: {
+								updatedAppointment: controllerResponse.updatedAppointment,
+								message: controllerResponse.message
+							}
+						})
 					reply.status(controllerResponse.statusCode).send({response: controllerResponse.message})
 				}
 			}

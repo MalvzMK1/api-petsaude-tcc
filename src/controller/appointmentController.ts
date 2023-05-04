@@ -12,7 +12,7 @@ import {
 	petAppointmentsOverlaps,
 	veterinaryAppointmentsOverlaps,
 } from '../utils/validateOverlappingAppointmentDateTimes';
-import {PrismaClientKnownRequestError} from '@prisma/client/runtime';
+import {PrismaClientKnownRequestError, PrismaClientUnknownRequestError} from '@prisma/client/runtime';
 
 class AppointmentController {
 	async createAppointment(infos: AppointmentInfosToBeParsed) {
@@ -197,7 +197,7 @@ class AppointmentController {
 		}
 	}
 
-	async updateAppointmentStatus(appointmentId: number, status: string, decodedToken: JwtSignUser) {
+	async acceptOrDeclineWaitingConfirmationAppointment(appointmentId: number, status: string, veterinaryId: number) {
 		try {
 			let parsedStatus: Status;
 			switch (status) {
@@ -207,27 +207,31 @@ class AppointmentController {
 				case 'DECLINED':
 					parsedStatus = 'DECLINED'
 					break;
-				case 'CANCELED':
-					parsedStatus = 'CANCELED';
-					break;
-				case 'CONCLUDED':
-					parsedStatus = 'CONCLUDED';
-					break;
 				default:
 					return {
 						statusCode: 400,
 						message: 'Status inválido',
-						options: ['SCHEDULED', 'DECLINED', 'CANCELED', 'CONCLUDED'],
+						options: ['SCHEDULED', 'DECLINED'],
 					};
 			}
-			return {statusCode: 300, message: decodedToken}
-			// const updatedAppointment = await appointmentModel.updateAppointmentStatus(appointmentId, parsedStatus)
-			// return {statusCode: 200, updatedAppointment}
+			const appointment = await appointmentModel.findAppointmentById(appointmentId)
+			if (appointment) {
+				if (appointment.veterinaryId !== veterinaryId)
+					return {
+						statusCode: 401,
+						message: 'Não é possível alterar consultas de outros usuários'
+					}
+				const updatedAppointment = await appointmentModel.updateAppointmentStatus(appointmentId, parsedStatus)
 
+				if (parsedStatus === 'DECLINED')
+					return {statusCode: 200, updatedAppointment, message: 'Consulta recusada'}
+				return {statusCode: 200, updatedAppointment, message: 'Consulta aceita'}
+			}
+			return {statusCode: 404, message: 'Nenhum agendamento encontrado no banco de dados'}
 		} catch (err) {
 			if (err instanceof Error)
-				return {statusCode: 400, message: JSON.parse(err.message)};
-			if (err instanceof PrismaClientKnownRequestError)
+				return {statusCode: 400, message: err.message};
+			if (err instanceof PrismaClientKnownRequestError || err instanceof PrismaClientUnknownRequestError)
 				return {statusCode: 500, message: err};
 			return {statusCode: 500, message: {unknown_error: err}};
 		}

@@ -1,6 +1,9 @@
 import Message from '../messages/message';
 import VeterinaryModel from '../model/veterinaryModel';
-import {validateIfVeterinaryExists, validateSameEmailBetweenClientsAndVeterinarians} from '../utils/validateExistentRegisters';
+import {
+	validateIfVeterinaryExists,
+	validateSameEmailBetweenClientsAndVeterinarians
+} from '../utils/validateExistentRegisters';
 import {Prisma} from "@prisma/client";
 import bcrypt from "../lib/bcrypt";
 
@@ -294,7 +297,6 @@ class VeterinaryController {
 			};
 		}
 	}
-
 
 	async deleteVeterinary(id: number) {
 		try {
