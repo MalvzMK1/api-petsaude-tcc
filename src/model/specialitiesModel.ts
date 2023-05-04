@@ -1,7 +1,7 @@
 import prisma from '../lib/prisma';
 
 export default class SpecialitiesModel {
-	async createSpecialties(specialties: {name: string}[]) {
+	async createSpecialties(specialties: { name: string }[]) {
 		try {
 			return await prisma.specialities.createMany({
 				data: specialties,
@@ -14,6 +14,21 @@ export default class SpecialitiesModel {
 	async findAllSpecialities() {
 		try {
 			return await prisma.specialities.findMany();
+		} catch (err) {
+			throw new Error(`${err}`);
+		}
+	}
+
+	async findSpecialitiesVeterinary(id: number) {
+		try {
+			return await prisma.veterinarySpecialities.findMany({
+				where: {
+					veterinaryId: id
+				},
+				include: {
+					specialities: true
+				}
+			})
 		} catch (err) {
 			throw new Error(`${err}`);
 		}
@@ -40,28 +55,12 @@ export default class SpecialitiesModel {
 	) {
 		try {
 			return specialtiesID.map(async (element) => {
-				const sql = `select * from tbl_veterinary_specialities where specialities_id = ${element.specialtiesId} AND vet_infos_id = ${element.veterinaryId}`;
-
-				const result = await prisma.$queryRawUnsafe(sql);
-
-				if (result) {
-					await prisma.veterinarySpecialities.update({
-						where: {
-							id: element.id,
-						},
-						data: {
-							veterinaryId: element.veterinaryId,
-							specialitiesId: element.specialtiesId,
-						},
-					});
-				} else {
-					await prisma.veterinarySpecialities.create({
-						data: {
-							specialitiesId: element.specialtiesId,
-							veterinaryId: element.veterinaryId,
-						},
-					});
-				}
+				await prisma.veterinarySpecialities.create({
+					data:{
+						specialitiesId: element.specialtiesId,
+						veterinaryId: element.veterinaryId
+					}
+				});
 			});
 		} catch (err) {
 			throw new Error(`${err}`);

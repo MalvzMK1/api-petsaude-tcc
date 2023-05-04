@@ -101,14 +101,12 @@ export default class VeterinaryModel {
 		})
 	}
 
-	async updateVeterinaryProfessionalInfos(id:number, body: UpdateVeterinaryProfessionalInfos) {
-		try {
-
-			return await prisma.veterinary.update({
+	async updateVeterinaryProfessionalInfos(id: number, body: UpdateVeterinaryProfessionalInfos) {
+			const result = await prisma.veterinary.update({
 				where: {
 					id: id
 				},
-				data:{
+				data: {
 					occupationArea: body.occupationArea,
 					formation: body.formation,
 					institution: body.institution,
@@ -118,11 +116,9 @@ export default class VeterinaryModel {
 				}
 			})
 
-		} catch (err) {
+			console.log(result);
 
-			if (err instanceof Error) throw new Error(`${err.message}`);
-
-		}
+			return result
 	}
 
 	async findVeterinarysByCrmv(crmv: string) {
@@ -161,7 +157,7 @@ export default class VeterinaryModel {
 	async deleteVeterinary(id: number) {
 		try {
 			return await prisma.veterinary.delete({
-				where:{
+				where: {
 					id: id
 				}
 			})
