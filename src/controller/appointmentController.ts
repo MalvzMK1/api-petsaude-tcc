@@ -203,6 +203,7 @@ class AppointmentController {
 					parsedStatus = 'SCHEDULED';
 					break;
 				case 'DECLINED':
+					// @ts-ignore
 					parsedStatus = 'DECLINED'
 					break;
 				default:
@@ -221,6 +222,7 @@ class AppointmentController {
 					}
 				const updatedAppointment = await appointmentModel.updateAppointmentStatus(appointmentId, parsedStatus)
 
+				// @ts-ignore
 				if (parsedStatus === 'DECLINED')
 					return {statusCode: 200, updatedAppointment, message: 'Consulta recusada'}
 				return {statusCode: 200, updatedAppointment, message: 'Consulta aceita'}
