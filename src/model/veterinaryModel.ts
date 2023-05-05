@@ -64,8 +64,16 @@ export default class VeterinaryModel {
 					id: userID,
 				},
 				include: {
-					PetSpecieVeterinary: true,
-					VeterinaryEspecialities: true,
+					PetSpecieVeterinary: {
+						include: {
+							PetSpecie: true
+						}
+					},
+					VeterinaryEspecialities: {
+						include: {
+							specialities: true
+						}
+					},
 					Address: true,
 					Appointments: true
 				},
@@ -102,23 +110,23 @@ export default class VeterinaryModel {
 	}
 
 	async updateVeterinaryProfessionalInfos(id: number, body: UpdateVeterinaryProfessionalInfos) {
-			const result = await prisma.veterinary.update({
-				where: {
-					id: id
-				},
-				data: {
-					occupationArea: body.occupationArea,
-					formation: body.formation,
-					institution: body.institution,
-					crmv: body.crmv,
-					startActingDate: body.startActingDate,
-					formationDate: body.formationDate
-				}
-			})
+		const result = await prisma.veterinary.update({
+			where: {
+				id: id
+			},
+			data: {
+				occupationArea: body.occupationArea,
+				formation: body.formation,
+				institution: body.institution,
+				crmv: body.crmv,
+				startActingDate: body.startActingDate,
+				formationDate: body.formationDate
+			}
+		})
 
-			console.log(result);
+		console.log(result);
 
-			return result
+		return result
 	}
 
 	async findVeterinarysByCrmv(crmv: string) {
