@@ -25,6 +25,9 @@ export default class PetModel {
 				where: {
 					ownerId: userID,
 				},
+				include: {
+					petSpecie: true,
+				}
 			});
 
 			if (pets.length > 0) return pets;

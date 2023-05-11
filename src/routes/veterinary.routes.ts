@@ -134,7 +134,7 @@ export default async function veterinaryRoutes(fastify: FastifyInstance) {
 				} else res.status(400).send(new Messages().MESSAGE_ERROR.REQUIRED_ID);
 			} catch (err) {
 				if (err instanceof Error)
-					res.status(400).send({response: JSON.parse(err.message)});
+					res.status(400).send({response: err.message});
 				res.status(400).send({response: 'Unknown error'});
 			}
 		}
@@ -214,7 +214,6 @@ export default async function veterinaryRoutes(fastify: FastifyInstance) {
 				const bodyParams = z.object({
 					AnimalTypesVetInfos: z.array(
 						z.object({
-							id: z.number(),
 							veterinaryId: z.number(),
 							animalTypesId: z.number(),
 						})
@@ -228,7 +227,7 @@ export default async function veterinaryRoutes(fastify: FastifyInstance) {
 						body.AnimalTypesVetInfos
 					);
 
-				res.status(updateUser.statusCode).send(updateUser.message);
+				res.status(updateUser.statusCode).send({message: updateUser.message});
 			} catch (err) {
 				if (err instanceof Error)
 					res.status(400).send({response: JSON.parse(err.message)});

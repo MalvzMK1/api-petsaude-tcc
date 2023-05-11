@@ -92,6 +92,7 @@ export default class ClientModel {
 				rg: userInfos.rg,
 				phoneNumber: userInfos.phoneNumber,
 				cellphoneNumber: userInfos.cellphoneNumber,
+				biography: userInfos.bio
 			},
 		});
 	}

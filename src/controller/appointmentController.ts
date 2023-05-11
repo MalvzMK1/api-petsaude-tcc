@@ -128,10 +128,8 @@ class AppointmentController {
 			if (createdAppointment)
 				return {
 					statusCode: 201,
-					response: {
-						message: 'Consulta criada com sucesso',
-						createdAppointment,
-					},
+					message: 'Consulta criada com sucesso',
+					createdAppointment
 				};
 			return {statusCode: 400, message: 'Não foi possível criar a consulta'};
 		} catch (err) {
@@ -205,6 +203,7 @@ class AppointmentController {
 					parsedStatus = 'SCHEDULED';
 					break;
 				case 'DECLINED':
+					// @ts-ignore
 					parsedStatus = 'DECLINED'
 					break;
 				default:
@@ -223,6 +222,7 @@ class AppointmentController {
 					}
 				const updatedAppointment = await appointmentModel.updateAppointmentStatus(appointmentId, parsedStatus)
 
+				// @ts-ignore
 				if (parsedStatus === 'DECLINED')
 					return {statusCode: 200, updatedAppointment, message: 'Consulta recusada'}
 				return {statusCode: 200, updatedAppointment, message: 'Consulta aceita'}

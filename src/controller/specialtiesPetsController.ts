@@ -6,6 +6,7 @@ const specialtiesPetModel = new SpecialtiesPetModel();
 const message = new Message();
 
 class SpecialtiesPetController {
+
 	async createPetSpecialties(attendedAnimals: { name: string }[]) {
 		try {
 			const attendedAnimalsArray = removeDuplicates(attendedAnimals);
@@ -60,7 +61,6 @@ class SpecialtiesPetController {
 
 	async updateSpecialitiesPet(
 		specialitiesPet: Array<{
-			id: number;
 			animalTypesId: number;
 			veterinaryId: number;
 		}>
@@ -69,9 +69,10 @@ class SpecialtiesPetController {
 			const updatedUser = await specialtiesPetModel.updatePetSpecialtiesInfos(
 				specialitiesPet
 			);
+
 			if (updatedUser)
 				return {
-					statusCode: 204,
+					statusCode: 200,
 					message: updatedUser,
 				};
 			return {
@@ -111,6 +112,54 @@ class SpecialtiesPetController {
 				statusCode: 500,
 				message: message.MESSAGE_ERROR.INTERNAL_ERROR_DB,
 			};
+		} catch (err) {
+			if (err instanceof Error)
+				return {
+					statusCode: 500,
+					message: JSON.parse(err.message),
+				};
+			return {
+				statusCode: 500,
+				message: message.MESSAGE_ERROR.INTERNAL_ERROR_DB,
+			};
+		}
+	} 
+
+	async getSpecialitiesPet() {
+		try {
+			const response = await specialtiesPetModel.getAllSpecialities()
+
+			if (response)
+				return {
+					statusCode: 200,
+					message: response,
+				};
+			return {
+				statusCode: 404,
+				message: message.MESSAGE_ERROR.NOT_FOUND_DB,
+			};
+
+		}catch (err) {
+			if (err instanceof Error)
+				return {
+					statusCode: 500,
+					message: JSON.parse(err.message),
+				};
+			return {
+				statusCode: 500,
+				message: new Message().MESSAGE_ERROR.INTERNAL_ERROR_DB,
+			};
+		}
+
+	}
+
+
+	async findSpecialtiesPetVeterinary(id: number) {
+		try {
+			const response = await specialtiesPetModel.findSpecialitiesPetVeterinary(id);
+			if (response)
+				return { statusCode: 200, message: response };
+			return null;
 		} catch (err) {
 			if (err instanceof Error)
 				return {

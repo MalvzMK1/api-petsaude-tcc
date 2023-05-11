@@ -1,9 +1,12 @@
 import { FastifyInstance } from 'fastify';
+import fastify = require('fastify');
 import { z } from 'zod';
+import specialtiesController from '../controller/specialtiesController';
 import SpecialtiesController from '../controller/specialtiesController';
 import SpecialtiesPetController from '../controller/specialtiesPetsController';
 import Messages from '../messages/message';
 import validateEmptyBody from '../utils/validateBody';
+import specialtiesPetsController from '../controller/specialtiesPetsController';
 
 export default async function specialitiesRoutes(fastify: FastifyInstance) {
 	fastify.post('/specialities', async (request, reply) => {
@@ -65,4 +68,83 @@ export default async function specialitiesRoutes(fastify: FastifyInstance) {
 			reply.status(400).send({ response: 'Unknown error' });
 		}
 	});
+
+	fastify.get('/specialities/:id', async (req, res) => {
+		try {
+			const queryParams = z.object({ id: z.string() })
+
+			const { id } = queryParams.parse(req.params);
+
+			if (!id) res.status(400).send({ message: 'Required ID' });
+
+			const response = await specialtiesController.findSpecialtiesVeterinary(parseInt(id));
+
+			if (response) {
+				res
+					.status(response.statusCode)
+					.send({ response: response?.message });
+			}
+
+		} catch (err) {
+			if (err instanceof Error)
+				res.status(400).send({ response: JSON.parse(err.message) });
+			res.status(400).send({ response: 'Unknown error' });
+		}
+	})
+
+	fastify.get('/attended-animals/:id', async (req, res) => {
+		try {
+			const queryParams = z.object({ id: z.string() })
+
+			const { id } = queryParams.parse(req.params);
+
+			if (!id) res.status(400).send({ message: 'Required ID' });
+
+			const response = await specialtiesPetsController.findSpecialtiesPetVeterinary(parseInt(id));
+
+			if (response) {
+				res
+					.status(response.statusCode)
+					.send({ response: response?.message });
+			}
+
+		} catch (err) {
+			if (err instanceof Error)
+				res.status(400).send({ response: JSON.parse(err.message) });
+			res.status(400).send({ response: 'Unknown error' });
+		}
+	})
+
+	fastify.get('/specialities', async (req, res) => {
+		try {
+			const response = await specialtiesController.getSpecialities();
+
+			if (response) {
+				res
+					.status(response.statusCode)
+					.send({ response: response?.message });
+			}
+		} catch (err) {
+			if (err instanceof Error)
+				res.status(400).send({ response: JSON.parse(err.message) });
+			res.status(400).send({ response: 'Unknown error' });
+		}
+	})
+
+	fastify.get('/attended-animals', async (req, res) => {
+		try {
+			const response = await specialtiesPetsController.getSpecialitiesPet();
+
+			if (response) {
+				res
+					.status(response.statusCode)
+					.send({ response: response?.message });
+			}
+		} catch (err) {
+			if (err instanceof Error)
+				res.status(400).send({ response: JSON.parse(err.message) });
+			res.status(400).send({ response: 'Unknown error' });
+		}
+	})
+
 }
