@@ -94,7 +94,6 @@ class SpecialtiesPetController {
 
 	async deleteSpecialitiesPet(
 		specialtiesPetID: Array<{
-			id: number;
 			animalTypesId: number;
 			veterinaryId: number;
 		}>

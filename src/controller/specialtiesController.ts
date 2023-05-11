@@ -58,6 +58,70 @@ class SpecialtiesController {
 			};
 		}
 	}
+	async updateSpecialities(
+		specialties: Array<{
+			specialtiesId: number;
+			veterinaryId: number;
+		}>
+	) {
+		try {
+			const updatedSpecialities = await specialitiesModel.updateSpecialtiesInfos(
+				specialties
+			);
+
+			if (updatedSpecialities)
+				return {
+					statusCode: 200,
+					message: updatedSpecialities,
+				};
+			return {
+				statusCode: 500,
+				message: message.MESSAGE_ERROR.INTERNAL_ERROR_DB,
+			};
+		} catch (err) {
+			if (err instanceof Error)
+				return {
+					statusCode: 500,
+					message: JSON.parse(err.message),
+				};
+			return {
+				statusCode: 500,
+				message: message.MESSAGE_ERROR.INTERNAL_ERROR_DB,
+			};
+		}
+	}
+
+	async deleteSpecialities(
+		specialties: Array<{
+			specialtiesId: number;
+			veterinaryId: number;
+		}>
+	) {
+		try {
+			const deleteSpecialitiesPet = await specialitiesModel.DeleteSpecialtiesInfos(
+				specialties
+			);
+			if (deleteSpecialitiesPet)
+				return {
+					statusCode: 204,
+					message: deleteSpecialitiesPet,
+				};
+			return {
+				statusCode: 500,
+				message: message.MESSAGE_ERROR.INTERNAL_ERROR_DB,
+			};
+		} catch (err) {
+			if (err instanceof Error)
+				return {
+					statusCode: 500,
+					message: JSON.parse(err.message),
+				};
+			return {
+				statusCode: 500,
+				message: message.MESSAGE_ERROR.INTERNAL_ERROR_DB,
+			};
+		}
+	} 
 
 	async getSpecialities() {
 		try {
