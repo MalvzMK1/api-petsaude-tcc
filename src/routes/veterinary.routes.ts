@@ -214,7 +214,6 @@ export default async function veterinaryRoutes(fastify: FastifyInstance) {
 				const bodyParams = z.object({
 					AnimalTypesVetInfos: z.array(
 						z.object({
-							id: z.number(),
 							veterinaryId: z.number(),
 							animalTypesId: z.number(),
 						})
@@ -228,7 +227,7 @@ export default async function veterinaryRoutes(fastify: FastifyInstance) {
 						body.AnimalTypesVetInfos
 					);
 
-				res.status(updateUser.statusCode).send(updateUser.message);
+				res.status(updateUser.statusCode).send({message: updateUser.message});
 			} catch (err) {
 				if (err instanceof Error)
 					res.status(400).send({response: JSON.parse(err.message)});

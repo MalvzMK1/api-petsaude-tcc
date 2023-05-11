@@ -61,7 +61,6 @@ class SpecialtiesPetController {
 
 	async updateSpecialitiesPet(
 		specialitiesPet: Array<{
-			id: number;
 			animalTypesId: number;
 			veterinaryId: number;
 		}>
@@ -70,9 +69,10 @@ class SpecialtiesPetController {
 			const updatedUser = await specialtiesPetModel.updatePetSpecialtiesInfos(
 				specialitiesPet
 			);
+
 			if (updatedUser)
 				return {
-					statusCode: 204,
+					statusCode: 200,
 					message: updatedUser,
 				};
 			return {
