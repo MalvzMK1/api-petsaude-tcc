@@ -5,7 +5,6 @@ type AppointmentInfos = {
 	petId: number;
 	date: Date;
 	startsAt: Date;
-	endsAt: Date;
 }
 
 type AppointmentInfosToBeParsed = {
@@ -15,7 +14,6 @@ type AppointmentInfosToBeParsed = {
 	petId: number;
 	date: string;
 	startsAt: string;
-	endsAt: string;
 }
 
 enum EnumUserType {
