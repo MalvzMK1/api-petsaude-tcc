@@ -168,7 +168,8 @@ model Appointment {
   status      Status   @default(WAITING_CONFIRMATION)
   date        DateTime @db.Date
   startsAt    DateTime @map("starts_at") @db.Time()
-  endsAt      DateTime @map("ends_at") @db.Time()
+  duration    Int?
+  price       Decimal?
 
   clientId     Int        @map("client_id")
   Client       Client     @relation(fields: [clientId], references: [id])

@@ -123,8 +123,9 @@ async function main() {
 				create: {
 					date: new Date(),
 					startsAt: new Date('2023-07-03T10:00:00'),
-					endsAt: new Date('2023-07-03T11:00:00'),
+					duration: 30,
 					clientId: 2,
+					price: 99.50,
 					description: 'lorem ipsum',
 					petId: 2
 				},
@@ -179,7 +180,8 @@ async function main() {
 				create: {
 					date: new Date(),
 					startsAt: new Date('2023-07-03T10:00:00'),
-					endsAt: new Date('2023-07-03T11:00:00'),
+					duration: 60,
+					price: 89.90,
 					clientId: 1,
 					description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse vitae metus arcu. Cras sit amet risus id nulla eleifend sagittis at ac justo. Vivamus orci diam, maximus sed dolor quis, porttitor cursus neque. Duis quis mauris eget justo imperdiet pellentesque faucibus sit amet nibh. Vestibulum dolor nisi, bibendum eget semper eleifend, pretium efficitur urna. Nulla gravida nulla id dui accumsan, ac luctus nulla pretium. Fusce vel elit at orci faucibus euismod. Vivamus maximus ut sem in posuere. Interdum et malesuada fames ac ante ipsum primis in faucibus. Praesent porta rhoncus dui, sit amet fermentum nisi hendrerit ut. Curabitur sodales iaculis arcu quis aliquet.',
 					petId: 1,
