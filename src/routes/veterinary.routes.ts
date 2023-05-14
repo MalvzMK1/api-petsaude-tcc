@@ -239,7 +239,7 @@ export default async function veterinaryRoutes(fastify: FastifyInstance) {
 	);
 
 	fastify.put(
-		'/veterinarian/specialities/',
+		'/veterinarian/specialities',
 		{onRequest: authenticate},
 		async (req, res) => {
 			try {
