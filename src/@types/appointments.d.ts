@@ -16,10 +16,10 @@ type AppointmentInfosToBeParsed = {
 	startsAt: string;
 }
 
-enum EnumUserType {
+enum EnumUserRole {
 	COMMON = 'COMMON',
 	VETERINARY = 'VETERINARY',
 }
 
-type UserType = keyof typeof EnumUserType;
+type UserRole = keyof typeof EnumUserRole;
 
