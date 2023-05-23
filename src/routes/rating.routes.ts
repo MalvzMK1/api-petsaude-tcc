@@ -34,7 +34,7 @@ export default async function ratingRoutes(fastify: FastifyInstance) {
 				id: z.string()
 			})
 			const {id} = urlParams.parse(request.params)
-			if (isNaN(Number(id))) reply.status(400).send({response: {error: 'Não foi passado um id de veterinário válido'}})
+			if (isNaN(Number(id)) || id === '') reply.status(400).send({response: {error: 'Não foi passado um id de veterinário válido'}})
 			const ratings = await ratingController.getVeterinaryRatings(Number(id))
 			// @ts-ignore
 			reply.status(ratings.statusCode).send(ratings.ratings ? {response: {ratings: ratings.ratings}} : {response: {error: ratings.error}})
