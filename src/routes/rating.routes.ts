@@ -18,7 +18,7 @@ export default async function ratingRoutes(fastify: FastifyInstance) {
 
 			const infos: RatingInfos = bodyParams.parse(request.body)
 
-			const createdRating = await ratingController.createRating(infos)
+			const createdRating = await ratingController.createRating(infos, user)
 			// @ts-ignore
 			reply.status(createdRating.statusCode).send(createdRating.createdRating ? {response: {createdRating: createdRating.createdRating}} : {response: createdRating.error})
 		} catch (error) {

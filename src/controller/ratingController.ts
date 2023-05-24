@@ -1,9 +1,27 @@
 import ratingModel from "../model/ratingModel";
+import appointmentModel from "../model/appointmentModel";
+import VeterinaryModel from "../model/veterinaryModel";
 
 class RatingController {
-	async createRating(infos: RatingInfos) {
+	async createRating(infos: RatingInfos, user: JwtSignUser) {
 		try {
+			if (user.isVet) return {statusCode: 401, error: 'Apenas usuários comuns podem avaliar'}
 			if (infos.score < 0 || infos.score > 5) return {statusCode: 400, error: 'A avaliação deve ter um range de 0 a 5'}
+
+			const veterinary = await new VeterinaryModel().findVeterinaryById(infos.veterinaryId)
+			if (!veterinary) return {statusCode: 404, error: 'Nenhum veterinário encontrado'}
+
+			const allUserAppointments = await appointmentModel.getClientAppointments(user.id)
+			if (!allUserAppointments) return {
+				statusCode: 401,
+				error: 'Você não tem permissão para realizar uma avaliação sem ter uma consulta'
+			}
+
+			const appointmentsWithSelectedVeterinary = allUserAppointments.filter(appointment => appointment.veterinaryId === infos.veterinaryId)
+			if (appointmentsWithSelectedVeterinary.length < 1) return {
+				statusCode: 401,
+				error: 'Você não possui consultas com esse veterinário, logo não pode avaliá-lo'
+			}
 
 			const createdRating = await ratingModel.createRating(infos)
 			if (createdRating) return {statusCode: 201, createdRating}
