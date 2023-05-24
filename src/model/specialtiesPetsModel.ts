@@ -55,7 +55,7 @@ export default class SpecialtiesPetModel {
 		}
 	}
 
-	async DeleteSpecialtiesPet(specialtiesPetID: Array<{ id: number, animalTypesId: number, veterinaryId: number }>) {
+	async DeleteSpecialtiesPet(specialtiesPetID: Array<{animalTypesId: number, veterinaryId: number }>) {
 
 		try {
 

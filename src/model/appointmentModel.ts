@@ -9,7 +9,6 @@ class AppointmentModel {
 					description: infos.description,
 					date: infos.date,
 					startsAt: infos.startsAt,
-					endsAt: infos.endsAt,
 					clientId: infos.clientId,
 					veterinaryId: infos.veterinaryId,
 					petId: infos.petId,
@@ -110,13 +109,15 @@ class AppointmentModel {
 		return null;
 	}
 
-	async updateAppointmentStatus(id: number, status: Status): Promise<Appointment> {
+	async updateAppointmentStatus(appointmentInfos: { id: number, status: Status, duration?: number, price?: number }): Promise<Appointment> {
 		return prisma.appointment.update({
 			where: {
-				id,
+				id: appointmentInfos.id,
 			},
 			data: {
-				status,
+				status: appointmentInfos.status,
+				duration: appointmentInfos.duration,
+				price: appointmentInfos.price,
 			},
 		});
 	}

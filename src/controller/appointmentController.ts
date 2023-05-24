@@ -55,47 +55,23 @@ class AppointmentController {
 					},
 				};
 
-			if (
-				parse(infos.endsAt, 'dd-MM-yyyy HH:mm:ss', new Date())
-					.toString()
-					.toLowerCase() === 'invalid date'
-			)
-				return {
-					statusCode: 400,
-					message: {
-						error: {
-							title: 'Formato de data incorreto',
-							fix: 'Espera-se um formato dd-MM-yyyy HH:mm:ss',
-							path: 'endsAt',
-						},
-					},
-				};
-
 			const appointmentStartsAt = transformDateTimeStringIntoDate(
 				infos.startsAt
 			);
-			const appointmentEndsAt = transformDateTimeStringIntoDate(infos.endsAt);
 			const appointmentDate = transformDateStringIntoDate(infos.date);
 
 			if (
 				appointmentStartsAt < new Date() ||
-				appointmentDate < new Date() ||
-				appointmentEndsAt < new Date()
+				appointmentDate < new Date()
 			)
 				return {
 					statusCode: 400,
 					message: 'A data não pode ser anterior a atual',
 				};
-			else if (appointmentEndsAt < appointmentStartsAt)
-				return {
-					statusCode: 400,
-					message: 'A data de término não pode ser anterior à data de início',
-				};
 
 			const appointmentInfos: AppointmentInfos = {
 				date: appointmentDate,
 				startsAt: appointmentStartsAt,
-				endsAt: appointmentEndsAt,
 				veterinaryId: infos.veterinaryId,
 				clientId: infos.clientId,
 				description: infos.description,
@@ -195,10 +171,10 @@ class AppointmentController {
 		}
 	}
 
-	async acceptOrDeclineWaitingConfirmationAppointment(appointmentId: number, status: string, veterinaryId: number) {
+	async acceptOrDeclineWaitingConfirmationAppointment(appointmentInfos: { id: number, status: string, duration: number, price: number }, veterinaryId: number) {
 		try {
 			let parsedStatus: Status;
-			switch (status) {
+			switch (appointmentInfos.status) {
 				case 'SCHEDULED':
 					parsedStatus = 'SCHEDULED';
 					break;
@@ -213,14 +189,19 @@ class AppointmentController {
 						options: ['SCHEDULED', 'DECLINED'],
 					};
 			}
-			const appointment = await appointmentModel.findAppointmentById(appointmentId)
+			const appointment = await appointmentModel.findAppointmentById(appointmentInfos.id)
 			if (appointment) {
 				if (appointment.veterinaryId !== veterinaryId)
 					return {
 						statusCode: 401,
 						message: 'Não é possível alterar consultas de outros usuários'
 					}
-				const updatedAppointment = await appointmentModel.updateAppointmentStatus(appointmentId, parsedStatus)
+				const updatedAppointment = await appointmentModel.updateAppointmentStatus({
+					id: appointmentInfos.id,
+					status: parsedStatus,
+					price: appointmentInfos.price,
+					duration: appointmentInfos.duration
+				})
 
 				// @ts-ignore
 				if (parsedStatus === 'DECLINED')
@@ -229,6 +210,7 @@ class AppointmentController {
 			}
 			return {statusCode: 404, message: 'Nenhum agendamento encontrado no banco de dados'}
 		} catch (err) {
+			console.log(err)
 			if (err instanceof Error)
 				return {statusCode: 400, message: err.message};
 			if (err instanceof PrismaClientKnownRequestError || err instanceof PrismaClientUnknownRequestError)
@@ -260,7 +242,10 @@ class AppointmentController {
 					if (appointment.clientId !== userInfos.userId)
 						return {statusCode: 401, message: 'Não é possível alterar consultas de outros usuários'}
 
-				const updatedAppointment = await appointmentModel.updateAppointmentStatus(appointment.id, parsedStatus)
+				const updatedAppointment = await appointmentModel.updateAppointmentStatus({
+					id: appointmentId,
+					status: parsedStatus
+				})
 				if (parsedStatus === 'CANCELED')
 					return {statusCode: 200, message: 'Consulta cancelada', updatedAppointment}
 				return {statusCode: 200, message: 'Consulta concluída', updatedAppointment}

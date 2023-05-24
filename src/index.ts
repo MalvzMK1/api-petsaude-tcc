@@ -8,6 +8,7 @@ import addressRoutes from './routes/address.routes';
 import veterinaryRoutes from './routes/veterinary.routes';
 import specialitiesRoutes from './routes/specialities.routes';
 import appointmentRoutes from './routes/appointment.routes';
+import ratingRoutes from "./routes/rating.routes";
 
 const fastify = Fastify({
 	logger: true,
@@ -28,6 +29,7 @@ fastify.register(addressRoutes);
 fastify.register(veterinaryRoutes);
 fastify.register(specialitiesRoutes);
 fastify.register(appointmentRoutes);
+fastify.register(ratingRoutes);
 
 const port = process.env.PORT || 3333;
 // @ts-ignore

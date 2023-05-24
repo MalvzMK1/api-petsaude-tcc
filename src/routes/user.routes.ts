@@ -105,6 +105,7 @@ export default async function userRoutes(fastify: FastifyInstance) {
 							decodedJwt.id,
 							body
 						);
+						reply.status(200).send(updatedUser)
 					}
 				}
 			} catch (err) {

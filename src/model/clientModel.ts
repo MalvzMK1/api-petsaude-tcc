@@ -117,8 +117,8 @@ export default class ClientModel {
 			})
 			const userPetDelete = await prisma.pet.deleteMany({
 				where: {
-					id: userID,
-				},
+					ownerId: userID,
+				}
 			});
 			const userDelete = await prisma.client.deleteMany({
 				where: {

@@ -15,7 +15,6 @@ export default async function appointmentRoutes(fastify: FastifyInstance) {
 					const bodyParams = z.object({
 						date: z.string(),
 						startsAt: z.string(),
-						endsAt: z.string(),
 						description: z.string(),
 						veterinaryId: z.number(),
 						petId: z.number(),
@@ -125,6 +124,10 @@ export default async function appointmentRoutes(fastify: FastifyInstance) {
 			const queryParams = z.object({
 				status: z.string()
 			})
+			const bodyParams = z.object({
+				duration: z.number(),
+				price: z.number()
+			})
 			const token: string | undefined = request.headers.authorization;
 			if (token?.split(' ')[1]) {
 				const jwt: JwtSignUser | null = fastify.jwt.decode(
@@ -146,7 +149,13 @@ export default async function appointmentRoutes(fastify: FastifyInstance) {
 						})
 
 					const {appointmentId} = urlParams.parse(request.params)
-					const controllerResponse = await appointmentController.acceptOrDeclineWaitingConfirmationAppointment(Number(appointmentId), status, jwt.id)
+					const {duration, price} = bodyParams.parse(request.body)
+					const controllerResponse = await appointmentController.acceptOrDeclineWaitingConfirmationAppointment({
+						id: Number(appointmentId),
+						status: status,
+						duration,
+						price
+					}, jwt.id)
 
 					if (controllerResponse.updatedAppointment)
 						reply.status(controllerResponse.statusCode).send({
@@ -158,10 +167,8 @@ export default async function appointmentRoutes(fastify: FastifyInstance) {
 					reply.status(controllerResponse.statusCode).send({response: controllerResponse.message})
 				}
 			}
-
-			// const updatedAppointment = await appointmentController.updateAppointmentStatus()
-
 		} catch (err) {
+			if (err instanceof ZodError) reply.status(400).send({response: err})
 			if (err instanceof Error) reply.status(400).send({response: JSON.parse(err.message)})
 			reply.status(400).send({response: err})
 		}
