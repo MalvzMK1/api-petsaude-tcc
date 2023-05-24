@@ -30,6 +30,15 @@ class RatingModel {
 			}
 		})
 	}
+
+	async updateRaging(id: number, infos: RatingInfos) {
+		return prisma.rating.update({
+			where: {
+				id
+			},
+			data: infos
+		})
+	}
 }
 
 export default new RatingModel()

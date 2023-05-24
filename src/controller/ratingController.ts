@@ -23,9 +23,16 @@ class RatingController {
 				error: 'Você não possui consultas com esse veterinário, logo não pode avaliá-lo'
 			}
 
+			const ratings = await ratingModel.getVeterinaryRatings(infos.veterinaryId)
+			const ratingWithSameVeterinary = ratings.find(rating => rating.clientId === user.id && rating.veterinaryId === infos.veterinaryId)
+
+			if (!!ratingWithSameVeterinary) {
+				const updatedRating = await ratingModel.updateRaging(ratingWithSameVeterinary.id, infos)
+				return {statusCode: 200, updatedRating}
+			}
+
 			const createdRating = await ratingModel.createRating(infos)
-			if (createdRating) return {statusCode: 201, createdRating}
-			return {statusCode: 500, error: 'Não foi possível realizar a avaliação'}
+			return {statusCode: 201, createdRating}
 		} catch (error) {
 			return handleError(error)
 		}

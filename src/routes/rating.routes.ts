@@ -12,15 +12,18 @@ export default async function ratingRoutes(fastify: FastifyInstance) {
 			const bodyParams = z.object({
 				score: z.number(),
 				description: z.string(),
-				clientId: z.number(),
 				veterinaryId: z.number()
 			})
 
 			const infos: RatingInfos = bodyParams.parse(request.body)
 
-			const createdRating = await ratingController.createRating(infos, user)
+			const controllerResponse = await ratingController.createRating(infos, user)
 			// @ts-ignore
-			reply.status(createdRating.statusCode).send(createdRating.createdRating ? {response: {createdRating: createdRating.createdRating}} : {response: createdRating.error})
+			if (controllerResponse.createdRating) reply.status(controllerResponse.statusCode).send({response: {createdRating: controllerResponse.createdRating}})
+			// @ts-ignore
+			if (controllerResponse.updatedRating) reply.status(controllerResponse.statusCode).send({response: {updatedRating: controllerResponse.updatedRating}})
+			// @ts-ignore
+			if (controllerResponse.error) reply.status(controllerResponse.statusCode).send(controllerResponse.error)
 		} catch (error) {
 			if (error instanceof Error) reply.status(400).send({response: {error}})
 			if (error instanceof ZodError) reply.status(400).send({response: {error}})
