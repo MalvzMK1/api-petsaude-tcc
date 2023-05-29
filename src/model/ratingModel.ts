@@ -5,6 +5,10 @@ class RatingModel {
 		return prisma.rating.findUnique({
 			where: {
 				id
+			},
+			include: {
+				Veterinary: true,
+				Client: true
 			}
 		})
 	}
@@ -19,6 +23,10 @@ class RatingModel {
 		return prisma.rating.findMany({
 			where: {
 				veterinaryId
+			},
+			include: {
+				Veterinary: true,
+				Client: true
 			}
 		});
 	}
