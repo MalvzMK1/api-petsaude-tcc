@@ -1,8 +1,7 @@
-import { FastifyInstance } from 'fastify';
+import {FastifyInstance} from 'fastify';
 import userController from '../controller/userController';
 import authenticate from '../middlewares/authenticate';
-import { z } from 'zod';
-import Message from '../messages/message';
+import {z} from 'zod';
 import Messages from '../messages/message';
 
 export default async function userRoutes(fastify: FastifyInstance) {
@@ -28,7 +27,7 @@ export default async function userRoutes(fastify: FastifyInstance) {
 			if (JSON.stringify(rawBody) === '{}')
 				reply
 					.status(400)
-					.send({ response: new Messages().MESSAGE_ERROR.EMPTY_BODY });
+					.send({response: new Messages().MESSAGE_ERROR.EMPTY_BODY});
 
 			const body = bodyParams.parse(request.body);
 
@@ -37,11 +36,11 @@ export default async function userRoutes(fastify: FastifyInstance) {
 
 			reply
 				.status(createUser.statusCode)
-				.send({ response: createUser.message });
+				.send({response: createUser.message});
 		} catch (err) {
 			if (err instanceof Error)
-				reply.status(400).send({ response: JSON.parse(err.message) });
-			reply.status(400).send({ response: 'Unknown error' });
+				reply.status(400).send({response: JSON.parse(err.message)});
+			reply.status(400).send({response: 'Unknown error'});
 		}
 	});
 
@@ -51,19 +50,19 @@ export default async function userRoutes(fastify: FastifyInstance) {
 				userID: z.string(),
 			});
 
-			const { userID } = queryParams.parse(request.query);
+			const {userID} = queryParams.parse(request.query);
 
-			if (!userID) reply.status(400).send({ message: 'Required ID' });
+			if (!userID) reply.status(400).send({message: 'Required ID'});
 
 			const userInfos = await userController.getUserById(parseInt(userID));
 
 			reply
 				.status(userInfos.statusCode)
-				.send({ response: { user: userInfos?.message } });
+				.send({response: {user: userInfos?.message}});
 		} catch (err) {
 			if (err instanceof Error)
-				reply.status(400).send({ response: JSON.parse(err.message) });
-			reply.status(400).send({ response: 'Unknown error' });
+				reply.status(400).send({response: JSON.parse(err.message)});
+			reply.status(400).send({response: 'Unknown error'});
 		}
 	});
 
@@ -73,17 +72,17 @@ export default async function userRoutes(fastify: FastifyInstance) {
 
 			reply
 				.status(allUsers.statusCode)
-				.send({ response: { users: allUsers.message } });
+				.send({response: {users: allUsers.message}});
 		} catch (err) {
 			if (err instanceof Error)
-				reply.status(400).send({ response: JSON.parse(err.message) });
-			reply.status(400).send({ response: 'Unknown error' });
+				reply.status(400).send({response: JSON.parse(err.message)});
+			reply.status(400).send({response: 'Unknown error'});
 		}
 	});
 
 	fastify.put(
 		'/client/profile-infos',
-		{ onRequest: authenticate },
+		{onRequest: authenticate},
 		async (request, reply) => {
 			try {
 				const jwt = request.headers.authorization;
@@ -110,15 +109,15 @@ export default async function userRoutes(fastify: FastifyInstance) {
 				}
 			} catch (err) {
 				if (err instanceof Error)
-					reply.status(400).send({ response: JSON.parse(err.message) });
-				reply.status(400).send({ response: 'Unknown error' });
+					reply.status(400).send({response: JSON.parse(err.message)});
+				reply.status(400).send({response: 'Unknown error'});
 			}
 		}
 	);
 
 	fastify.put(
 		'/client/personal-infos',
-		{ onRequest: authenticate },
+		{onRequest: authenticate},
 		async (request, reply) => {
 			try {
 				const jwt = request.headers.authorization;
@@ -127,10 +126,10 @@ export default async function userRoutes(fastify: FastifyInstance) {
 				const bodyParams = z.object({
 					personName: z.string(),
 					cpf: z.string(),
-					rg: z.string(),
-					phoneNumber: z.string(),
+					rg: z.string().nullable(),
+					phoneNumber: z.string().nullable(),
 					cellphoneNumber: z.string(),
-					bio: z.string(),
+					bio: z.string().nullable(),
 				});
 
 				const body: UpdateClientPersonalInfosProps = bodyParams.parse(
@@ -146,22 +145,22 @@ export default async function userRoutes(fastify: FastifyInstance) {
 						);
 						reply
 							.status(updateUser.statusCode)
-							.send({ response: updateUser.message });
+							.send({response: updateUser.message});
 					}
-					reply.status(401).send({ response: 'Token inválido' });
+					reply.status(401).send({response: 'Token inválido'});
 				}
-				reply.status(401).send({ response: 'Token inválido' });
+				reply.status(401).send({response: 'Token inválido'});
 			} catch (err) {
 				if (err instanceof Error)
-					reply.status(400).send({ response: JSON.parse(err.message) });
-				reply.status(400).send({ response: 'Unknown error' });
+					reply.status(400).send({response: JSON.parse(err.message)});
+				reply.status(400).send({response: 'Unknown error'});
 			}
 		}
 	);
 
 	fastify.delete(
 		'/client',
-		{ onRequest: authenticate },
+		{onRequest: authenticate},
 		async (request, reply) => {
 			try {
 				const jwt = request.headers.authorization;
@@ -172,15 +171,15 @@ export default async function userRoutes(fastify: FastifyInstance) {
 					if (decodedToken) {
 						const result = await userController.deleteUser(decodedToken.id);
 
-						reply.status(result.statusCode).send({ response: result.message });
+						reply.status(result.statusCode).send({response: result.message});
 					}
-					reply.status(401).send({ response: 'Token inválido' });
+					reply.status(401).send({response: 'Token inválido'});
 				}
-				reply.status(401).send({ response: 'Token inválido' });
+				reply.status(401).send({response: 'Token inválido'});
 			} catch (err) {
 				if (err instanceof Error)
-					reply.status(400).send({ response: JSON.parse(err.message) });
-				reply.status(400).send({ response: 'Unknown error' });
+					reply.status(400).send({response: JSON.parse(err.message)});
+				reply.status(400).send({response: 'Unknown error'});
 			}
 		}
 	);
