@@ -40,20 +40,20 @@ export default async function veterinaryRoutes(fastify: FastifyInstance) {
 			const queryParams = z.object({
 				userID: z.string(),
 			});
-	
-			const { userID } = queryParams.parse(request.query);
-	
-			if (!userID) reply.status(400).send({ message: 'Required ID' });
-	
+
+			const {userID} = queryParams.parse(request.query);
+
+			if (!userID) reply.status(400).send({message: 'Required ID'});
+
 			const userInfos = await veterinaryController.getVeterinaryById(parseInt(userID));
-	
+
 			reply
 				.status(userInfos.statusCode)
-				.send({ response: { user: userInfos?.message } });
+				.send({response: {user: userInfos?.message}});
 		} catch (err) {
 			if (err instanceof Error)
-				reply.status(400).send({ response: JSON.parse(err.message) });
-			reply.status(400).send({ response: 'Unknown error' });
+				reply.status(400).send({response: JSON.parse(err.message)});
+			reply.status(400).send({response: 'Unknown error'});
 		}
 	});
 
@@ -124,7 +124,7 @@ export default async function veterinaryRoutes(fastify: FastifyInstance) {
 				const body = bodyParams.parse(req.body);
 				const {id} = queryParams.parse(req.params);
 
-				if (id != null && id != undefined) {
+				if (id !== null) {
 					const updateVeterinary =
 						await veterinaryController.updateVeterinaryProfessionalInfos(
 							parseInt(id),
@@ -180,10 +180,10 @@ export default async function veterinaryRoutes(fastify: FastifyInstance) {
 				const bodyParams = z.object({
 					personName: z.string(),
 					cpf: z.string(),
-					rg: z.string(),
-					phoneNumber: z.string(),
+					rg: z.string().nullable(),
+					phoneNumber: z.string().nullable(),
 					cellphoneNumber: z.string(),
-					bio: z.string(),
+					bio: z.string().nullable(),
 				});
 
 				const body: UpdateClientPersonalInfosProps = bodyParams.parse(request.body);

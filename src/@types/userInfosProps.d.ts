@@ -29,10 +29,10 @@ type CreateUserInfosModelProps = {
 type UpdateClientPersonalInfosProps = {
 	personName: string;
 	cpf: string;
-	rg: string;
+	rg: string | null;
 	cellphoneNumber: string;
-	phoneNumber: string;
-	bio: string;
+	phoneNumber: string | null;
+	bio: string | null;
 };
 
 type UpdateClientProfileInfosProps = {
