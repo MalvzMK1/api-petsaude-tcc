@@ -53,5 +53,9 @@ jobs:
           app-name: 'pet-saude-api'
           slot-name: 'Production'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_8DF21B04FE7F48FC88C9966B2CCCC85D }}
-          package: ./dist
+          package: .
 
+      - name: 'Starting application'
+        run: |
+          npx prisma generate
+          npm run start
