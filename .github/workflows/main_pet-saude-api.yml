@@ -26,7 +26,6 @@ jobs:
           npm install
           npm run build --if-present
 
-
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v2
         with:
@@ -54,8 +53,4 @@ jobs:
           slot-name: 'Production'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_8DF21B04FE7F48FC88C9966B2CCCC85D }}
           package: .
-
-      - name: 'Starting application'
-        run: |
-          npx prisma generate
-          npm run start
+          
