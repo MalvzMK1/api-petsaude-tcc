@@ -4,6 +4,7 @@ import Messages from '../messages/message';
 import authenticate from '../middlewares/authenticate';
 import specialtiesPetsController from '../controller/specialtiesPetsController';
 import veterinaryController from '../controller/veterinaryController';
+import specialtiesController from '../controller/specialtiesController';
 
 export default async function veterinaryRoutes(fastify: FastifyInstance) {
 	fastify.get('/veterinary', async (request, reply) => {
@@ -39,20 +40,20 @@ export default async function veterinaryRoutes(fastify: FastifyInstance) {
 			const queryParams = z.object({
 				userID: z.string(),
 			});
-	
-			const { userID } = queryParams.parse(request.query);
-	
-			if (!userID) reply.status(400).send({ message: 'Required ID' });
-	
+
+			const {userID} = queryParams.parse(request.query);
+
+			if (!userID) reply.status(400).send({message: 'Required ID'});
+
 			const userInfos = await veterinaryController.getVeterinaryById(parseInt(userID));
-	
+
 			reply
 				.status(userInfos.statusCode)
-				.send({ response: { user: userInfos?.message } });
+				.send({response: {user: userInfos?.message}});
 		} catch (err) {
 			if (err instanceof Error)
-				reply.status(400).send({ response: JSON.parse(err.message) });
-			reply.status(400).send({ response: 'Unknown error' });
+				reply.status(400).send({response: JSON.parse(err.message)});
+			reply.status(400).send({response: 'Unknown error'});
 		}
 	});
 
@@ -123,7 +124,7 @@ export default async function veterinaryRoutes(fastify: FastifyInstance) {
 				const body = bodyParams.parse(req.body);
 				const {id} = queryParams.parse(req.params);
 
-				if (id != null && id != undefined) {
+				if (id !== null) {
 					const updateVeterinary =
 						await veterinaryController.updateVeterinaryProfessionalInfos(
 							parseInt(id),
@@ -179,10 +180,10 @@ export default async function veterinaryRoutes(fastify: FastifyInstance) {
 				const bodyParams = z.object({
 					personName: z.string(),
 					cpf: z.string(),
-					rg: z.string(),
-					phoneNumber: z.string(),
+					rg: z.string().nullable(),
+					phoneNumber: z.string().nullable(),
 					cellphoneNumber: z.string(),
-					bio: z.string(),
+					bio: z.string().nullable(),
 				});
 
 				const body: UpdateClientPersonalInfosProps = bodyParams.parse(request.body);
@@ -206,6 +207,7 @@ export default async function veterinaryRoutes(fastify: FastifyInstance) {
 			}
 		}
 	);
+
 	fastify.put(
 		'/veterinarian/attended-animals',
 		{onRequest: authenticate},
@@ -214,7 +216,6 @@ export default async function veterinaryRoutes(fastify: FastifyInstance) {
 				const bodyParams = z.object({
 					AnimalTypesVetInfos: z.array(
 						z.object({
-							id: z.number(),
 							veterinaryId: z.number(),
 							animalTypesId: z.number(),
 						})
@@ -228,7 +229,7 @@ export default async function veterinaryRoutes(fastify: FastifyInstance) {
 						body.AnimalTypesVetInfos
 					);
 
-				res.status(updateUser.statusCode).send(updateUser.message);
+				res.status(updateUser.statusCode).send({message: updateUser.message});
 			} catch (err) {
 				if (err instanceof Error)
 					res.status(400).send({response: JSON.parse(err.message)});
@@ -238,31 +239,25 @@ export default async function veterinaryRoutes(fastify: FastifyInstance) {
 	);
 
 	fastify.put(
-		'/veterinarian/user/',
+		'/veterinarian/specialities',
 		{onRequest: authenticate},
 		async (req, res) => {
 			try {
 				const bodyParams = z.object({
-					VeterinaryEspecialities: z.array(
+					specialties: z.array(
 						z.object({
-							id: z.number(),
-							vetInfosId: z.number(),
+							veterinaryId: z.number(),
 							specialtiesId: z.number(),
 						})
 					),
 				});
 				const body = bodyParams.parse(req.body);
 
-				// const updateUser = await specialtiesController.updateSpecialities(
-				// 	body.VeterinaryEspecialities
-				// );
+				const updateUser = await specialtiesController.updateSpecialities(
+					body.specialties
+				);
 
-				// res.status(updateUser.statusCode).send(updateUser.message);
-				res.status(500).send({
-					response: {
-						message: 'Feature in progress',
-					},
-				});
+				res.status(updateUser.statusCode).send(updateUser.message);
 			} catch (err) {
 				if (err instanceof Error)
 					res.status(400).send({response: JSON.parse(err.message)});
@@ -299,14 +294,13 @@ export default async function veterinaryRoutes(fastify: FastifyInstance) {
 	);
 
 	fastify.delete(
-		'/veterinarian/user/pet',
+		'/veterinarian/attended-animals',
 		{onRequest: authenticate},
 		async (req, res) => {
 			try {
 				const bodyParams = z.object({
 					AnimalTypesVetInfos: z.array(
 						z.object({
-							id: z.number(),
 							veterinaryId: z.number(),
 							animalTypesId: z.number(),
 						})
@@ -330,15 +324,14 @@ export default async function veterinaryRoutes(fastify: FastifyInstance) {
 	);
 
 	fastify.delete(
-		'/veterinarian/user',
+		'/veterinarian/specialities',
 		{onRequest: authenticate},
 		async (req, res) => {
 			try {
 				const bodyParams = z.object({
-					VeterinaryEspecialities: z.array(
+					specialties: z.array(
 						z.object({
-							id: z.number(),
-							vetInfosId: z.number(),
+							veterinaryId: z.number(),
 							specialtiesId: z.number(),
 						})
 					),
@@ -346,16 +339,11 @@ export default async function veterinaryRoutes(fastify: FastifyInstance) {
 
 				const body = bodyParams.parse(req.body);
 
-				// const updateUser = await specialtiesController.deleteSpecialities(
-				// 	body.VeterinaryEspecialities
-				// );
+				const updateUser = await specialtiesController.deleteSpecialities(
+					body.specialties
+				);
 
-				// res.status(updateUser.statusCode).send(updateUser.message);
-				res.status(500).send({
-					response: {
-						message: 'Feature in progress',
-					},
-				});
+				res.status(updateUser.statusCode).send(updateUser.message);
 			} catch (err) {
 				if (err instanceof Error)
 					res.status(400).send({response: JSON.parse(err.message)});

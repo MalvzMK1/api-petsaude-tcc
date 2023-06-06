@@ -94,6 +94,7 @@ export default class VeterinaryModel {
 				rg: userInfos.rg,
 				phoneNumber: userInfos.phoneNumber,
 				cellphoneNumber: userInfos.cellphoneNumber,
+				biography: userInfos.bio
 			},
 		});
 	}

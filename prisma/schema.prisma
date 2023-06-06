@@ -18,21 +18,23 @@ datasource db {
 // ************************** COMMON USER **************************
 
 model Client {
-  id                 Int           @id @default(autoincrement())
-  personName         String        @map("person_name") @db.VarChar(100)
-  userName           String        @map("user_name") @db.VarChar(50)
-  cpf                String        @unique @db.VarChar(14)
-  rg                 String?       @unique @db.VarChar(14)
-  profilePhoto       String?       @map("profile_photo")
-  profileBannerPhoto String?       @map("profile_banner_photo")
-  email              String        @unique @db.VarChar(256)
+  id                 Int     @id @default(autoincrement())
+  personName         String  @map("person_name") @db.VarChar(100)
+  userName           String  @map("user_name") @db.VarChar(50)
+  cpf                String  @unique @db.VarChar(14)
+  rg                 String? @unique @db.VarChar(14)
+  profilePhoto       String? @map("profile_photo")
+  profileBannerPhoto String? @map("profile_banner_photo")
+  email              String  @unique @db.VarChar(256)
   password           String
-  phoneNumber        String?       @map("phone_number") @db.VarChar(15)
-  cellphoneNumber    String        @map("cellphone_number") @db.VarChar(15)
-  isVet              Boolean       @default(false) @map("is_vet")
-  biography          String?       @db.VarChar(1000)
-  Pet                Pet[]
-  Appointments       Appointment[]
+  phoneNumber        String? @map("phone_number") @db.VarChar(15)
+  cellphoneNumber    String  @map("cellphone_number") @db.VarChar(15)
+  isVet              Boolean @default(false) @map("is_vet")
+  biography          String? @db.VarChar(1000)
+
+  Pet          Pet[]
+  Appointments Appointment[]
+  Rating       Rating[]
 
   addressId Int     @unique @map("address_id")
   Address   Address @relation(fields: [addressId], references: [id])
@@ -64,10 +66,10 @@ model Veterinary {
   PetSpecieVeterinary     PetSpecieVeterinary[]
   VeterinaryEspecialities VeterinarySpecialities[]
   Appointments            Appointment[]
+  Rating                  Rating[]
 
   addressId Int     @unique @map("address_id")
   Address   Address @relation(fields: [addressId], references: [id])
-  Posts     Post[]
 
   @@map("tbl_veterinary")
 }
@@ -168,7 +170,8 @@ model Appointment {
   status      Status   @default(WAITING_CONFIRMATION)
   date        DateTime @db.Date
   startsAt    DateTime @map("starts_at") @db.Time()
-  endsAt      DateTime @map("ends_at") @db.Time()
+  duration    Int?
+  price       Decimal?
 
   clientId     Int        @map("client_id")
   Client       Client     @relation(fields: [clientId], references: [id])
@@ -180,15 +183,18 @@ model Appointment {
   @@map("tbl_appointment")
 }
 
-model Post {
-  id           Int        @id @default(autoincrement())
-  title        String     @db.VarChar(50)
-  text         String     @db.VarChar(1000)
-  image        String?
-  veterinaryId Int        @map("veterinary_id")
-  veterinary   Veterinary @relation(fields: [veterinaryId], references: [id])
+model Rating {
+  id          Int      @id @default(autoincrement())
+  description String   @db.VarChar(200)
+  score       Decimal  @db.Decimal(2, 1)
+  createdAt   DateTime @default(now())
 
-  @@map("tbl_post")
+  veterinaryId Int?        @map("veterinary_id")
+  Veterinary   Veterinary? @relation(fields: [veterinaryId], references: [id])
+  clientId     Int?        @map("client_id")
+  Client       Client?     @relation(fields: [clientId], references: [id])
+
+  @@map("tbl_rating")
 }
 
 enum Status {

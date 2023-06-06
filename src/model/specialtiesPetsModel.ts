@@ -34,16 +34,13 @@ export default class SpecialtiesPetModel {
 		}
 	}
 
-	async updatePetSpecialtiesInfos(specialtiesPet: Array<{ id: number, animalTypesId: number, veterinaryId: number }>) {
+	async updatePetSpecialtiesInfos(specialtiesPet: Array<{animalTypesId: number, veterinaryId: number }>) {
 
 		try {
 
 			const specialtiesPets = specialtiesPet.map(async (element) => {
 
-				await prisma.petSpecieVeterinary.update({
-					where: {
-						id: element.id
-					},
+				await prisma.petSpecieVeterinary.create({
 					data: {
 						veterinaryId: element.veterinaryId,
 						petSpecieId: element.animalTypesId
@@ -58,7 +55,7 @@ export default class SpecialtiesPetModel {
 		}
 	}
 
-	async DeleteSpecialtiesPet(specialtiesPetID: Array<{ id: number, animalTypesId: number, veterinaryId: number }>) {
+	async DeleteSpecialtiesPet(specialtiesPetID: Array<{animalTypesId: number, veterinaryId: number }>) {
 
 		try {
 

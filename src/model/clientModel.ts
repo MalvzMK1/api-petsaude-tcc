@@ -92,6 +92,7 @@ export default class ClientModel {
 				rg: userInfos.rg,
 				phoneNumber: userInfos.phoneNumber,
 				cellphoneNumber: userInfos.cellphoneNumber,
+				biography: userInfos.bio
 			},
 		});
 	}
@@ -116,8 +117,8 @@ export default class ClientModel {
 			})
 			const userPetDelete = await prisma.pet.deleteMany({
 				where: {
-					id: userID,
-				},
+					ownerId: userID,
+				}
 			});
 			const userDelete = await prisma.client.deleteMany({
 				where: {

@@ -47,14 +47,13 @@ export default class SpecialitiesModel {
 	}
 
 	async updateSpecialtiesInfos(
-		specialtiesID: Array<{
-			id: number;
+		specialties: Array<{
 			specialtiesId: number;
 			veterinaryId: number;
 		}>
 	) {
 		try {
-			return specialtiesID.map(async (element) => {
+			return specialties.map(async (element) => {
 				await prisma.veterinarySpecialities.create({
 					data:{
 						specialitiesId: element.specialtiesId,
@@ -68,14 +67,13 @@ export default class SpecialitiesModel {
 	}
 
 	async DeleteSpecialtiesInfos(
-		specialtiesID: Array<{
-			id: number;
+		specialties: Array<{
 			specialtiesId: number;
 			veterinaryId: number;
 		}>
 	) {
 		try {
-			return specialtiesID.map(async (element) => {
+			return specialties.map(async (element) => {
 				await prisma.veterinarySpecialities.deleteMany({
 					where: {
 						specialitiesId: element.specialtiesId,
