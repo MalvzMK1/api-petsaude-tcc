@@ -29,6 +29,6 @@ fastify.register(veterinaryRoutes);
 fastify.register(specialitiesRoutes);
 fastify.register(appointmentRoutes);
 
-const port = process.env.PORT || 3333;
+const port = process.env.PORT || 8080;
 // @ts-ignore
-fastify.listen({port, host: '0.0.0.0'});
+fastify.listen({ port, host: '0.0.0.0' });
