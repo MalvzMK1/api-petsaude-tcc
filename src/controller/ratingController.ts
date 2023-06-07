@@ -31,7 +31,7 @@ class RatingController {
 				return {statusCode: 200, updatedRating}
 			}
 
-			const createdRating = await ratingModel.createRating(infos)
+			const createdRating = await ratingModel.createRating(infos, user.id)
 			return {statusCode: 201, createdRating}
 		} catch (error) {
 			return handleError(error)

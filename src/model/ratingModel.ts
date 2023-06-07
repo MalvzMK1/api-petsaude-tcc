@@ -13,9 +13,14 @@ class RatingModel {
 		})
 	}
 
-	async createRating(infos: RatingInfos) {
+	async createRating(infos: RatingInfos, clientId: number) {
 		return prisma.rating.create({
-			data: infos
+			data: {
+				clientId: clientId,
+				description: infos.description,
+				score: infos.score,
+				veterinaryId: infos.veterinaryId
+			} 
 		});
 	}
 

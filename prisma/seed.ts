@@ -1,5 +1,5 @@
-import {PrismaClient} from '@prisma/client';
-import bcrypt from '../src/lib/bcrypt'
+import { PrismaClient } from '@prisma/client';
+import bcrypt from '../src/lib/bcrypt';
 
 const prisma = new PrismaClient();
 
@@ -14,12 +14,13 @@ async function main() {
 			password: await bcrypt.hash('senhaherman', 10),
 			phoneNumber: '',
 			cellphoneNumber: '11932169874',
-			profilePhoto: 'https://whiplash.net/imagens_promo_22/dragonforce_herman_li_promo.jpg?nocache',
+			profilePhoto:
+				'https://pbs.twimg.com/profile_images/1216142489112870914/bRgFG5zJ_400x400.jpg',
 			profileBannerPhoto:
-				'https://images.unsplash.com/photo-1563437018645-2bc38e3b5308?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=735&q=80',
+				'https://images.pexels.com/photos/36717/amazing-animal-beautiful-beautifull.jpg?cs=srgb&dl=pexels-pixabay-36717.jpg&fm=jpg',
 			Address: {
 				create: {
-					cep: '06216-901',
+					cep: '76814-054',
 					number: '305',
 				},
 			},
@@ -34,8 +35,8 @@ async function main() {
 					petGender: 'M',
 					petSpecie: {
 						create: {
-							name: 'Cachorro'
-						}
+							name: 'Cachorro',
+						},
 					},
 				},
 			},
@@ -46,24 +47,24 @@ async function main() {
 		data: {
 			personName: 'John Doe',
 			userName: 'johhnyDoe',
-			cpf: '333.333.333-00',
-			rg: '00.000.000-00',
+			cpf: '368.063.750-06',
+			rg: '28.860.489-1',
 			email: 'johndoe@gmail.com',
 			password: await bcrypt.hash('password123', 10),
 			phoneNumber: '',
 			cellphoneNumber: '11994600546',
-			profilePhoto: 'github.com/malvzmk1.png',
-			profileBannerPhoto:
-				'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS-8k6DfaHAPvcDZfwfslGElUzDsMJkYqKN253N6TF7JEC9yv4EZBNwsWr_TJSt31owGQ&usqp=CAU',
+			profilePhoto:
+				'https://images.unsplash.com/photo-1607990281513-2c110a25bd8c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=934&q=80',
+			profileBannerPhoto: 'https://wallpapercave.com/wp/wp3123600.jpg',
 			Address: {
 				create: {
-					cep: '06600-025',
+					cep: '51150-650',
 					number: '905',
 				},
 			},
 			Pet: {
 				create: {
-					name: 'Patinho',
+					name: 'Bob',
 					birthDate: new Date(),
 					photo:
 						'https://images.unsplash.com/photo-1558322394-4d8813ceef8a?ixid=MnwyNTE2NnwwfDF8c2VhcmNofDIwfHxzdHJheSUyMGRvZ3xlbnwwfHx8fDE2NDQyNDgzOTM&ixlib=rb-1.2.1&q=85&w=2160',
@@ -76,22 +77,60 @@ async function main() {
 		},
 	});
 
-	const veterinary = await prisma.veterinary.create({
+	await prisma.client.create({
 		data: {
-			personName: 'Deco Alves',
-			userName: 'Dedeco',
-			cpf: '222.222.222-22',
-			rg: '22.222.222-22',
-			email: 'dedeco@gmail.com',
-			password: await bcrypt.hash('senhadodeco', 10),
+			personName: 'Maisha Fernandez',
+			userName: 'maisha_fer',
+			cpf: '333.298.120-01',
+			rg: '33.410.892-5',
+			email: 'maisha@gmail.com',
+			password: await bcrypt.hash('maisha', 10),
 			phoneNumber: '',
-			cellphoneNumber: '11999999999',
-			profilePhoto: 'https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80',
+			cellphoneNumber: '13984567321',
+			profilePhoto:
+				'https://plus.unsplash.com/premium_photo-1664442593274-38caa77af985?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80',
 			profileBannerPhoto:
-				'https://images.unsplash.com/photo-1596272875729-ed2ff7d6d9c5?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80',
+				'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80',
 			Address: {
 				create: {
-					cep: '04012-909',
+					cep: '68506-610',
+					number: '905',
+				},
+			},
+			Pet: {
+				create: {
+					name: 'Rex',
+					birthDate: new Date(),
+					photo:
+						'https://images.unsplash.com/photo-1620001796685-adf7110fe1a7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=764&q=80',
+					microship: false,
+					petSize: 'BIG',
+					petGender: 'M',
+					petSpecieId: 1,
+				},
+			},
+		},
+	});
+
+	/** VETERINÁRIOS **/
+
+	const veterinary = await prisma.veterinary.create({
+		data: {
+			personName: 'Will Ramos',
+			userName: 'will123',
+			cpf: '961.980.830-47',
+			rg: '11.943.060-5',
+			email: 'will.ramos@gmail.com',
+			password: await bcrypt.hash('senhawill', 10),
+			phoneNumber: '',
+			cellphoneNumber: '11999999999',
+			profilePhoto:
+				'https://cms.kerrang.com/images/Lorna-Shore-Will-Ramos-Kerrang-cover-story-2022-header-credit-Nick-Karp.png',
+			profileBannerPhoto:
+				'https://t4.ftcdn.net/jpg/05/21/18/03/360_F_521180377_2iAVJqBQSo3cgKaVp8vMBR8asrC61DoU.jpg',
+			Address: {
+				create: {
+					cep: '69905-112',
 					number: '500',
 				},
 			},
@@ -114,10 +153,10 @@ async function main() {
 				create: {
 					PetSpecie: {
 						create: {
-							name: 'Gato'
-						}
-					}
-				}
+							name: 'Gato',
+						},
+					},
+				},
 			},
 			Appointments: {
 				create: {
@@ -125,9 +164,9 @@ async function main() {
 					startsAt: new Date('2023-07-03T10:00:00'),
 					duration: 30,
 					clientId: 2,
-					price: 99.50,
+					price: 99.5,
 					description: 'lorem ipsum',
-					petId: 2
+					petId: 2,
 				},
 			},
 		},
@@ -135,24 +174,25 @@ async function main() {
 
 	await prisma.veterinary.create({
 		data: {
-			personName: 'Will Ramos',
-			userName: 'willCore',
+			personName: 'Ricardo Ohara',
+			userName: 'ric_ohara',
 			cpf: '321.123.654-78',
 			rg: '23.123.123-12',
-			email: 'willramos@gmail.com',
-			password: await bcrypt.hash('lorna321', 10),
+			email: 'ohara@gmail.com',
+			password: await bcrypt.hash('password123', 10),
 			phoneNumber: '',
 			cellphoneNumber: '12995513265',
-			profilePhoto: 'https://cdn-p.smehost.net/sites/7f9737f2506941499994d771a29ad47a/wp-content/uploads/2022/03/Will-Ramos.png',
+			profilePhoto:
+				'https://www.shopveterinario.com.br/blog/wp-content/uploads/2021/03/medico-veterinario-bem-sucedido-artigo.jpg',
 			profileBannerPhoto:
-				'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS-8k6DfaHAPvcDZfwfslGElUzDsMJkYqKN253N6TF7JEC9yv4EZBNwsWr_TJSt31owGQ&usqp=CAU',
+				'https://i0.wp.com/abglt.org.br/wp-content/uploads/2020/10/wallpaper-pc1-scaled-1.jpg?fit=2560%2C1440&ssl=1',
 			Address: {
 				create: {
-					cep: '04301-905',
-					number: '4241',
+					cep: '71996-240',
+					number: '654',
 				},
 			},
-			crmv: '4321',
+			crmv: '3287',
 			formation: 'Veterinary',
 			institution: 'USP',
 			formationDate: new Date('2017-02-03'),
@@ -171,20 +211,204 @@ async function main() {
 				create: {
 					PetSpecie: {
 						create: {
-							name: 'Exóticos'
-						}
-					}
-				}
+							name: 'Exóticos',
+						},
+					},
+				},
 			},
-			Appointments: {
+		},
+	});
+
+	await prisma.veterinary.create({
+		data: {
+			personName: 'Angus Buck',
+			userName: 'angus_buck',
+			cpf: '347.585.870-35',
+			rg: '12.259.012-0',
+			email: 'buck@gmail.com',
+			password: await bcrypt.hash('password123', 10),
+			phoneNumber: '',
+			cellphoneNumber: '12995513265',
+			profilePhoto:
+				'https://images.unsplash.com/photo-1529665253569-6d01c0eaf7b6?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1085&q=80',
+			profileBannerPhoto:
+				'https://static1.squarespace.com/static/5e949a92e17d55230cd1d44f/t/613f65bbaf30031d31df3077/1631544779120/California+Streaming+6K+No+Logo.png',
+			Address: {
 				create: {
-					date: new Date(),
-					startsAt: new Date('2023-07-03T10:00:00'),
-					duration: 60,
-					price: 89.90,
-					clientId: 1,
-					description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse vitae metus arcu. Cras sit amet risus id nulla eleifend sagittis at ac justo. Vivamus orci diam, maximus sed dolor quis, porttitor cursus neque. Duis quis mauris eget justo imperdiet pellentesque faucibus sit amet nibh. Vestibulum dolor nisi, bibendum eget semper eleifend, pretium efficitur urna. Nulla gravida nulla id dui accumsan, ac luctus nulla pretium. Fusce vel elit at orci faucibus euismod. Vivamus maximus ut sem in posuere. Interdum et malesuada fames ac ante ipsum primis in faucibus. Praesent porta rhoncus dui, sit amet fermentum nisi hendrerit ut. Curabitur sodales iaculis arcu quis aliquet.',
-					petId: 1,
+					cep: '63504-325',
+					number: '321',
+				},
+			},
+			crmv: '1937',
+			formation: 'Veterinary',
+			institution: 'USP',
+			formationDate: new Date('2017-02-03'),
+			startActingDate: new Date('2017-04-03'),
+			occupationArea: 'Zoológico',
+			VeterinaryEspecialities: {
+				connect: {
+					id: 1,
+				},
+			},
+			PetSpecieVeterinary: {
+				connect: {
+					id: 1,
+				},
+			},
+		},
+	});
+
+	await prisma.veterinary.create({
+		data: {
+			personName: 'Judy Harrison',
+			userName: 'judy_har',
+			cpf: '230.696.200-60',
+			rg: '49.492.797-5',
+			email: 'judy@gmail.com',
+			password: await bcrypt.hash('password123', 10),
+			phoneNumber: '',
+			cellphoneNumber: '12995513265',
+			profilePhoto:
+				'https://yt3.googleusercontent.com/_EMbFejwX_g7MXYP0wIaruoQAVB-4RshNhvXp08xkA7pasRtJe51O6woRznAQ4Wx4EYThNmuMiE=s900-c-k-c0x00ffffff-no-rj',
+			profileBannerPhoto:
+				'https://i0.wp.com/abglt.org.br/wp-content/uploads/2020/10/wallpaper-pc1-scaled-1.jpg?fit=2560%2C1440&ssl=1',
+			Address: {
+				create: {
+					cep: '04301-905',
+					number: '4241',
+				},
+			},
+			crmv: '9173',
+			formation: 'Veterinary',
+			institution: 'USP',
+			formationDate: new Date('2017-02-03'),
+			startActingDate: new Date('2017-04-03'),
+			occupationArea: 'Zoológico',
+			VeterinaryEspecialities: {
+				connect: {
+					id: 1,
+				},
+			},
+			PetSpecieVeterinary: {
+				connect: {
+					id: 1,
+				},
+			},
+		},
+	});
+
+	await prisma.veterinary.create({
+		data: {
+			personName: 'Markus Sykes',
+			userName: 'markus_sykes',
+			cpf: '077.201.110-95',
+			rg: '33.021.845-1',
+			email: 'markus@gmail.com',
+			password: await bcrypt.hash('password123', 10),
+			phoneNumber: '',
+			cellphoneNumber: '12995513265',
+			profilePhoto:
+				'https://yt3.googleusercontent.com/_EMbFejwX_g7MXYP0wIaruoQAVB-4RshNhvXp08xkA7pasRtJe51O6woRznAQ4Wx4EYThNmuMiE=s900-c-k-c0x00ffffff-no-rj',
+			profileBannerPhoto:
+				'https://i0.wp.com/abglt.org.br/wp-content/uploads/2020/10/wallpaper-pc1-scaled-1.jpg?fit=2560%2C1440&ssl=1',
+			Address: {
+				create: {
+					cep: '04301-905',
+					number: '4241',
+				},
+			},
+			crmv: '6482',
+			formation: 'Veterinary',
+			institution: 'USP',
+			formationDate: new Date('2017-02-03'),
+			startActingDate: new Date('2017-04-03'),
+			occupationArea: 'Zoológico',
+			VeterinaryEspecialities: {
+				connect: {
+					id: 1,
+				},
+			},
+			PetSpecieVeterinary: {
+				connect: {
+					id: 1,
+				},
+			},
+		},
+	});
+
+	await prisma.veterinary.create({
+		data: {
+			personName: 'Rayhan Vargas',
+			userName: 'ray_varg',
+			cpf: '685.830.860-10',
+			rg: '23.634.715-9',
+			email: 'ray@gmail.com',
+			password: await bcrypt.hash('password123', 10),
+			phoneNumber: '',
+			cellphoneNumber: '12995513265',
+			profilePhoto:
+				'https://yt3.googleusercontent.com/_EMbFejwX_g7MXYP0wIaruoQAVB-4RshNhvXp08xkA7pasRtJe51O6woRznAQ4Wx4EYThNmuMiE=s900-c-k-c0x00ffffff-no-rj',
+			profileBannerPhoto:
+				'https://i0.wp.com/abglt.org.br/wp-content/uploads/2020/10/wallpaper-pc1-scaled-1.jpg?fit=2560%2C1440&ssl=1',
+			Address: {
+				create: {
+					cep: '04301-905',
+					number: '4241',
+				},
+			},
+			crmv: '5283',
+			formation: 'Veterinary',
+			institution: 'USP',
+			formationDate: new Date('2017-02-03'),
+			startActingDate: new Date('2017-04-03'),
+			occupationArea: 'Zoológico',
+			VeterinaryEspecialities: {
+				connect: {
+					id: 1,
+				},
+			},
+			PetSpecieVeterinary: {
+				connect: {
+					id: 1,
+				},
+			},
+		},
+	});
+
+	await prisma.veterinary.create({
+		data: {
+			personName: 'Maria Nolan',
+			userName: 'nolan_vet',
+			cpf: '868.357.030-40',
+			rg: '34.680.590-9',
+			email: 'nolan@gmail.com',
+			password: await bcrypt.hash('password123', 10),
+			phoneNumber: '',
+			cellphoneNumber: '12995513265',
+			profilePhoto:
+				'https://yt3.googleusercontent.com/_EMbFejwX_g7MXYP0wIaruoQAVB-4RshNhvXp08xkA7pasRtJe51O6woRznAQ4Wx4EYThNmuMiE=s900-c-k-c0x00ffffff-no-rj',
+			profileBannerPhoto:
+				'https://i0.wp.com/abglt.org.br/wp-content/uploads/2020/10/wallpaper-pc1-scaled-1.jpg?fit=2560%2C1440&ssl=1',
+			Address: {
+				create: {
+					cep: '04301-905',
+					number: '4241',
+				},
+			},
+			crmv: '4128',
+			formation: 'Veterinary',
+			institution: 'USP',
+			formationDate: new Date('2017-02-03'),
+			startActingDate: new Date('2017-04-03'),
+			occupationArea: 'Zoológico',
+			VeterinaryEspecialities: {
+				connect: {
+					id: 1,
+				},
+			},
+			PetSpecieVeterinary: {
+				connect: {
+					id: 1,
 				},
 			},
 		},
@@ -196,6 +420,6 @@ async function main() {
 	});
 }
 
-main().catch(async (err) => {
+main().catch(async (err: Error) => {
 	console.log(err);
 });
